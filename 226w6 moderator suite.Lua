@@ -28,7 +28,7 @@ local Window = Rayfield:CreateWindow({
    KeySystem = true, -- Set this to true to use our key system
    KeySettings = {
       Title = "Anti-Red guys verification",
-      Subtitle = "Please complete to use",
+      Subtitle = ">Say "No" to verifiate",
       Note = "Are you Red guy?", -- Use this to tell the user how to get a key
       FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
@@ -380,3 +380,4 @@ function startNSFWScan()
         end)
     end)
 end
+
