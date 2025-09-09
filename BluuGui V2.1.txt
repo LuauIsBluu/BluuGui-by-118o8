@@ -1327,6 +1327,77 @@ elseif placeId == 71895508397153 then
         end,
     })
 
+        local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local localPlayer = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+local targetMinMaxHealth = 200
+local aimbotEnabled = false
+local aimSmoothness = 0.2 -- 0 = instant snap, higher = slower smooth
+
+-- Find closest valid target player (max health >= 200)
+local function findClosestTarget()
+    local closestPlayer = nil
+    local shortestDistance = math.huge
+    local localChar = localPlayer.Character
+    if not localChar then return nil end
+    local localHRP = localChar:FindFirstChild("HumanoidRootPart")
+    if not localHRP then return nil end
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+            local humanoid = player.Character.Humanoid
+            if humanoid.MaxHealth >= targetMinMaxHealth and humanoid.Health > 0 then
+                local targetPart = player.Character:FindFirstChild("Head") or player.Character:FindFirstChild("HumanoidRootPart")
+                if targetPart then
+                    local distance = (targetPart.Position - localHRP.Position).Magnitude
+                    if distance < shortestDistance then
+                        shortestDistance = distance
+                        closestPlayer = player
+                    end
+                end
+            end
+        end
+    end
+    return closestPlayer
+end
+
+-- Smoothly aim camera at target position
+local function aimAtPosition(targetPos)
+    local currentCFrame = camera.CFrame
+    local lookVector = (targetPos - currentCFrame.Position).Unit
+    local targetCFrame = CFrame.new(currentCFrame.Position, currentCFrame.Position + lookVector)
+    camera.CFrame = currentCFrame:Lerp(targetCFrame, aimSmoothness)
+end
+
+-- Main aimbot loop
+RunService.RenderStepped:Connect(function()
+    if aimbotEnabled then
+        local targetPlayer = findClosestTarget()
+        if targetPlayer and targetPlayer.Character then
+            local targetPart = targetPlayer.Character:FindFirstChild("Head") or targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if targetPart then
+                aimAtPosition(targetPart.Position)
+            end
+        end
+    end
+end)
+
+-- Rayfield toggle integration example:
+
+local Toggle = Games:CreateToggle({
+    Name = "Aimbot Killer",
+    CurrentValue = false,
+    Flag = "Aimbot200HP",
+    Callback = function(value)
+        aimbotEnabled = value
+    end,
+})
+
+
 -- 🟦 Pwned by 14:00
 elseif placeId == 81517697608629 then
     local Section = Games:CreateSection("Pwned by 14:00")
@@ -1404,6 +1475,315 @@ elseif placeId == 99630341423433 then
             end
         end,
     })
+
+        local player = game.Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+local runAimbot = false
+local HEALTH_THRESHOLD = 200
+local AIM_UPDATE_INTERVAL = 0.1
+
+-- Returns the closest player with MaxHealth > 200
+local function getClosestTarget()
+    local closest = nil
+    local shortestDistance = math.huge
+
+    for _, otherPlayer in pairs(game.Players:GetPlayers()) do
+        if otherPlayer ~= player and otherPlayer.Character then
+            local hrp = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
+            local hum = otherPlayer.Character:FindFirstChild("Humanoid")
+            if hrp and hum and hum.MaxHealth > HEALTH_THRESHOLD then
+                local distance = (player.Character.HumanoidRootPart.Position - hrp.Position).Magnitude
+                if distance < shortestDistance then
+                    shortestDistance = distance
+                    closest = hrp
+                end
+            end
+        end
+    end
+
+    return closest
+end
+
+-- Point camera at the target
+local function lookAt(target)
+    if not target then return end
+    local camPos = camera.CFrame.Position
+    local lookVector = (target.Position - camPos).Unit
+    camera.CFrame = CFrame.new(camPos, camPos + lookVector)
+end
+
+-- Aimbot main loop
+local function aimbotLoop()
+    while runAimbot do
+        local target = getClosestTarget()
+        if target then
+            lookAt(target)
+        end
+        task.wait(AIM_UPDATE_INTERVAL)
+    end
+end
+
+-- ✅ Rayfield Toggle
+local AimbotBiast = Games:CreateToggle({
+   Name = "Aimbot Killer",
+   CurrentValue = false,
+   Flag = "AimbotToggle",
+   Callback = function(Value)
+       runAimbot = Value
+       if runAimbot then
+           task.spawn(aimbotLoop)
+       end
+   end,
+})
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+-- Settings
+local itemsFolder = workspace:FindFirstChild("Items") or workspace
+local fallbackPosition = Vector3.new(0, 5, 0)
+local itemKeywords = {"teapot", "scroll", "drako"}
+local deliveryKeywords = {"delivery", "drop", "submit", "turnin", "goal"}
+
+local pickedItems = {}
+
+-- Simulate key press
+local function pressKey(key)
+    local vim = game:GetService("VirtualInputManager")
+    vim:SendKeyEvent(true, key:lower(), false, game)
+    task.wait(0.1)
+    vim:SendKeyEvent(false, key:lower(), false, game)
+end
+
+-- Find delivery zone
+local function findDeliveryPoint()
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") or obj:IsA("Model") then
+            local name = obj.Name:lower()
+            for _, keyword in pairs(deliveryKeywords) do
+                if name:find(keyword) then
+                    print("[Delivery Found]:", obj:GetFullName())
+                    return obj
+                end
+            end
+        end
+    end
+    return nil
+end
+
+-- Teleport to object
+local function teleportTo(obj)
+    if not obj then return end
+    if obj:IsA("Model") and obj.PrimaryPart then
+        hrp.CFrame = obj.PrimaryPart.CFrame + Vector3.new(0, 3, 0)
+    elseif obj:IsA("BasePart") then
+        hrp.CFrame = obj.CFrame + Vector3.new(0, 3, 0)
+    end
+end
+
+-- Find nearest valid item
+local function findNextItem()
+    local closest = nil
+    local shortest = math.huge
+
+    for _, obj in pairs(itemsFolder:GetChildren()) do
+        if (obj:IsA("Model") or obj:IsA("BasePart")) and not pickedItems[obj] then
+            local name = obj.Name:lower()
+            for _, keyword in pairs(itemKeywords) do
+                if name:find(keyword) then
+                    local objPos = (obj:IsA("Model") and obj.PrimaryPart and obj.PrimaryPart.Position) or obj.Position
+                    local distance = (hrp.Position - objPos).Magnitude
+                    if distance < shortest then
+                        shortest = distance
+                        closest = obj
+                    end
+                end
+            end
+        end
+    end
+
+    if closest then
+        pickedItems[closest] = true
+    end
+    return closest
+end
+
+-- ✅ Rayfield Toggle
+Games:CreateToggle({
+    Name = " (BETA) Auto Farm Items",
+    CurrentValue = false,
+    Flag = "AutoFarmToggle",
+    Callback = function(runFarm)
+        if runFarm then
+            task.spawn(function()
+                local deliveryPoint = findDeliveryPoint()
+                while runFarm do
+                    task.wait(1)
+
+                    character = player.Character or player.CharacterAdded:Wait()
+                    hrp = character:FindFirstChild("HumanoidRootPart")
+                    if not hrp then continue end
+
+                    local targetItem = findNextItem()
+                    if targetItem then
+                        teleportTo(targetItem)
+                        task.wait(0.5)
+                        pressKey("e")
+                        task.wait(1)
+
+                        if deliveryPoint then
+                            teleportTo(deliveryPoint)
+                        else
+                            hrp.CFrame = CFrame.new(fallbackPosition)
+                        end
+
+                        task.wait(0.5)
+
+                        local tool = player.Backpack:FindFirstChildOfClass("Tool") or character:FindFirstChildOfClass("Tool")
+                        if tool then
+                            pressKey("q")
+                        end
+                    end
+                end
+            end)
+        end
+    end,
+})
+
+        local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+local localPlayer = Players.LocalPlayer
+local targetMinMaxHealth = 200
+local scaleFactor = 5 -- How much bigger hitboxes get (5x size)
+
+-- Parts to expand (commonly hitbox parts)
+local hitboxParts = {
+    "HumanoidRootPart",
+    "Head",
+    "Torso",
+    "UpperTorso",
+    "LowerTorso"
+}
+
+-- Store original sizes and original CFrames (to restore size and avoid shifting)
+local originalSizes = {}
+local originalCFrames = {}
+
+local runExpand = false
+
+-- Tween info for smooth scaling
+local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+local function expandPart(part)
+    if not part then return end
+    if originalSizes[part] == nil then
+        originalSizes[part] = part.Size
+        originalCFrames[part] = part.CFrame
+    end
+
+    local newSize = originalSizes[part] * scaleFactor
+    -- Calculate size diff and adjust CFrame to keep part centered properly
+    local sizeDiff = (newSize - part.Size) * 0.5
+    local newCFrame = part.CFrame * CFrame.new(0, sizeDiff.Y, 0)
+
+    local tweenSize = TweenService:Create(part, tweenInfo, {Size = newSize, CFrame = newCFrame})
+    tweenSize:Play()
+end
+
+local function restorePart(part)
+    if not part then return end
+    if originalSizes[part] then
+        local tweenRestore = TweenService:Create(part, tweenInfo, {Size = originalSizes[part], CFrame = originalCFrames[part]})
+        tweenRestore:Play()
+        originalSizes[part] = nil
+        originalCFrames[part] = nil
+    end
+end
+
+local function expandCharacter(character)
+    for _, partName in ipairs(hitboxParts) do
+        local part = character:FindFirstChild(partName)
+        if part and part:IsA("BasePart") then
+            expandPart(part)
+        end
+    end
+end
+
+local function restoreCharacter(character)
+    for _, partName in ipairs(hitboxParts) do
+        local part = character:FindFirstChild(partName)
+        if part and part:IsA("BasePart") then
+            restorePart(part)
+        end
+    end
+end
+
+-- Main loop to apply expansion on valid players
+task.spawn(function()
+    while true do
+        task.wait(1)
+        if runExpand then
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= localPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+                    local humanoid = player.Character.Humanoid
+                    if humanoid.MaxHealth >= targetMinMaxHealth then
+                        expandCharacter(player.Character)
+                    else
+                        restoreCharacter(player.Character)
+                    end
+                end
+            end
+        else
+            -- Restore all if toggle off
+            for _, player in pairs(Players:GetPlayers()) do
+                if player.Character then
+                    restoreCharacter(player.Character)
+                end
+            end
+        end
+    end
+end)
+
+-- Handle character respawn for each player
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        task.wait(1)
+        if runExpand and player ~= localPlayer then
+            local humanoid = character:WaitForChild("Humanoid")
+            if humanoid.MaxHealth >= targetMinMaxHealth then
+                expandCharacter(character)
+            end
+        end
+    end)
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+    if player.Character then
+        restoreCharacter(player.Character)
+    end
+end)
+
+-- Now plug into Rayfield toggle:
+
+local Toggle = Games:CreateToggle({
+    Name = "Easy Hitbox Expander",
+    CurrentValue = false,
+    Flag = "UniversalHitboxExpander",
+    Callback = function(value)
+        runExpand = value
+        if not value then
+            -- Restore immediately on toggle off
+            for _, player in pairs(Players:GetPlayers()) do
+                if player.Character then
+                    restoreCharacter(player.Character)
+                end
+            end
+        end
+    end,
+})
 
 -- 🟥 Unsupported Games
 else
