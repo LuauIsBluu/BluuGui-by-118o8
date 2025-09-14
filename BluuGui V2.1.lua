@@ -3838,10 +3838,10 @@ ModeratorTab:CreateButton({
 
 -- 🌐 Community Tab
 local Community = Window:CreateTab("Community", 4483362458)
-local Section = Community:CreateSection("Bluu Updates & News")
+local Section = Community:CreateSection("BluuNews & Updates")
 
 -- Permanent Pastebin raw link
-local newsLink = "https://pastebin.com/raw/pnU7exSu" -- replace with your real raw link
+local newsLink = "https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-11808/refs/heads/main/BluuNews!!11!" -- replace with your real raw link
 
 -- Fetch and show updates
 local function loadNews()
@@ -3851,13 +3851,13 @@ local function loadNews()
 
     if success and response then
         Community:CreateParagraph({
-            Title = "📢 Bluu Updates",
+            Title = "📢 BluuNews!!11!",
             Content = response
         })
     else
         Community:CreateParagraph({
             Title = "⚠️ Error",
-            Content = "Could not load the latest updates. Please check the Pastebin link."
+            Content = "Could not load the latest updates. Please wait..."
         })
     end
 end
