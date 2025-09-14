@@ -7,24 +7,15 @@ StarterGui:SetCore("SendNotification", {
     Duration = 5
 })
 
--- try to load Rayfield safely
-local success, Rayfield = pcall(function()
-    return loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-end)
+-- wait 5 seconds
+task.wait(5)
 
-if success and Rayfield then
-    StarterGui:SetCore("SendNotification", {
-        Title = "BluuGui",
-        Text = "BluuGui loaded successfully!",
-        Duration = 5
-    })
-else
-    StarterGui:SetCore("SendNotification", {
-        Title = "BluuGui",
-        Text = "If it didn’t execute, it’s probably broken.",
-        Duration = 5
-    })
-end
+-- second notify
+StarterGui:SetCore("SendNotification", {
+    Title = "BluuGui",
+    Text = "If it didn’t execute, it’s probably broken.",
+    Duration = 5
+})
 
 --Stars real BluuGui
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
@@ -62,8 +53,8 @@ local Window = Rayfield:CreateWindow({
       Note = "Tip: say YesHeSucks", -- Use this to tell the user how to get a key
       FileName = "Question", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-      GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"https://pastebin.com/raw/rpqKvd9K"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"YesHeSucks"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
    }
 })
 
