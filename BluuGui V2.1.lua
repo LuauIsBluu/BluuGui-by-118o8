@@ -1,3 +1,32 @@
+local StarterGui = game:GetService("StarterGui")
+
+-- first notify
+StarterGui:SetCore("SendNotification", {
+    Title = "BluuGui",
+    Text = "BluuGui is executing...",
+    Duration = 5
+})
+
+-- try to load Rayfield safely
+local success, Rayfield = pcall(function()
+    return loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+end)
+
+if success and Rayfield then
+    StarterGui:SetCore("SendNotification", {
+        Title = "BluuGui",
+        Text = "BluuGui loaded successfully!",
+        Duration = 5
+    })
+else
+    StarterGui:SetCore("SendNotification", {
+        Title = "BluuGui",
+        Text = "If it didn’t execute, it’s probably broken.",
+        Duration = 5
+    })
+end
+
+--Stars real BluuGui
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 
