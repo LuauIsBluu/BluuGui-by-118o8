@@ -906,7 +906,8 @@ local supportedGames = {
     [81517697608629] = "Pwned by 14:00", 
     [3851622790] = "Break In", 
     [79546208627805] = "99 Nights in the Forest",
-    [17382280326] = "RobloxiaUntilDown",
+    [17382280326] = "RobloxiaUntilDown", --classic
+    [80238404781977] = "RobloxiaUntilDown", -- Chaos Mode
     [5096191125] = "Field Trip Z",
     [99630341423433] = "Biast" 
 }
@@ -1824,7 +1825,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/nexeralt/Loaders/refs
 })
 
         -- 🟦 RobloxiaUntilDown
-elseif placeId == 987654321 then
+elseif placeId == 987654321 or placeId == 80238404781977 then
     local Section = Games:CreateSection("RobloxiaUntilDown")
 
         local Button = Games:CreateButton({
