@@ -69,7 +69,7 @@ local MainSection = MainTab:CreateSection("Movility")
  
 Rayfield:Notify({
    Title = "Notification",
-   Content = "scipt have been executed correctly",
+   Content = "BluuGui executed,Enjoy my gang >:D.",
    Duration = 3,
    Image = 4483362458,
 })
@@ -2987,3 +2987,4 @@ Community:CreateButton({
         loadNews()
     end,
 })
+
