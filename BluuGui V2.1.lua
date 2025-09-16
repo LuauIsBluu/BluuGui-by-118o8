@@ -878,7 +878,7 @@ end
 })
  
         local Button = Trolling:CreateButton({
-   Name = "Super Ring",
+   Name = "Super Ring (by lukas)",
    Callback = function()
            loadstring(game:HttpGet("https://pastebin.com/raw/aZjaAr6F"))()
    end,
@@ -891,6 +891,1050 @@ local Button = Trolling:CreateButton({
    end,
 })
 
+local Button = Trolling:CreateButton({
+   Name = "Fe Angel of death (Controlls--Q-K-L-Z)",
+   Callback = function()
+   		--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+-- LocalScript
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local InsertService = game:GetService("InsertService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+local rightArm = character:FindFirstChild("Right Arm") or character:FindFirstChild("RightHand")
+
+-- Function to check if the character is R6 or R15
+local function isR15()
+    return humanoid.RigType == Enum.HumanoidRigType.R15
+end
+
+-- Create animations
+local animation1 = Instance.new("Animation")
+local animation2 = Instance.new("Animation")
+local animation3 = Instance.new("Animation")
+local animationL = Instance.new("Animation")
+local walkAnimation = Instance.new("Animation")
+local flyAnimation = Instance.new("Animation")
+local zAnimation = Instance.new("Animation")
+local zFollowUpAnimation = Instance.new("Animation")
+
+if isR15() then
+    animation2.AnimationId = "rbxassetid://15392759696"
+    animation3.AnimationId = "rbxassetid://55630898"
+    animationL.AnimationId = "rbxassetid://10714395441"
+    walkAnimation.AnimationId = "rbxassetid://10714174918"
+    flyAnimation.AnimationId = "rbxassetid://15549124879"
+else
+    animation1.AnimationId = "rbxassetid://55306564"
+    animation2.AnimationId = "rbxassetid://55306564"
+    animation3.AnimationId = "rbxassetid://42070830"
+    animationL.AnimationId = "rbxassetid://35978913"
+    walkAnimation.AnimationId = "rbxassetid://28440069"
+    flyAnimation.AnimationId = "rbxassetid://35152447"
+end
+
+zAnimation.AnimationId = "rbxassetid://44418205"
+zFollowUpAnimation.AnimationId = "rbxassetid://28090053"
+
+-- Load animations onto the humanoid
+local animationTrack1 = humanoid:LoadAnimation(animation1)
+local animationTrack2 = humanoid:LoadAnimation(animation2)
+local animationTrack3 = humanoid:LoadAnimation(animation3)
+local animationTrackL = humanoid:LoadAnimation(animationL)
+local walkTrack = humanoid:LoadAnimation(walkAnimation)
+local flyTrack = humanoid:LoadAnimation(flyAnimation)
+local zTrack = humanoid:LoadAnimation(zAnimation)
+local zFollowUpTrack = humanoid:LoadAnimation(zFollowUpAnimation)
+
+-- Create sound effects
+local gunSound = Instance.new("Sound")
+gunSound.SoundId = "rbxassetid://1906350651"
+gunSound.Volume = 1
+gunSound.Looped = false
+gunSound.Parent = character:WaitForChild("HumanoidRootPart")
+
+local zSound = Instance.new("Sound")
+zSound.SoundId = "rbxassetid://9113122694"
+zSound.Volume = 1
+zSound.Looped = false
+zSound.PlaybackSpeed = 1
+zSound.Parent = character:WaitForChild("HumanoidRootPart")
+
+-- Create particle emitter
+local particleEmitter = Instance.new("ParticleEmitter")
+particleEmitter.Texture = "rbxassetid://410049012"
+particleEmitter.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
+particleEmitter.Lifetime = NumberRange.new(5.10)
+particleEmitter.Rate = 100
+particleEmitter.EmissionDirection = Enum.NormalId.Bottom
+particleEmitter.Enabled = false
+particleEmitter.Parent = rightArm
+
+-- Function to play the animations in order when "K" is pressed (only for R6)
+local function onKeyPressK(input)
+    if input.KeyCode == Enum.KeyCode.K and not isR15() then
+        animationTrack1:Play()
+        animationTrack1.Stopped:Wait()
+        animationTrack2:Play()
+        animationTrack2.Stopped:Wait()
+        animationTrack3:Play()
+        wait(0.5)  -- Stop the third animation after 0.5 seconds
+        animationTrack3:Stop()
+    elseif input.KeyCode == Enum.KeyCode.K and isR15() then
+        animationTrack2:Play()
+        animationTrack2.Stopped:Wait()
+        animationTrack3:Play()
+        wait(0.5)  -- Stop the third animation after 0.5 seconds
+        animationTrack3:Stop()
+    end
+end
+
+-- Function to play the animation with gun sound and particles when "L" is pressed
+local function onKeyPressL(input)
+    if input.KeyCode == Enum.KeyCode.L then
+        animationTrackL:Play()
+        gunSound:Play()
+        particleEmitter.Enabled = true
+        wait(0.5)
+        particleEmitter.Enabled = false
+    end
+end
+
+-- Function to make the player fly and play the animation when "Q" is pressed
+local function onKeyPressQ(input)
+    if input.KeyCode == Enum.KeyCode.Q then
+        flyTrack:Play()
+        character.HumanoidRootPart.Anchored = true
+        character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame * CFrame.new(0, 6, 0)
+
+        if isR15() then
+            wait(flyTrack.Length)  -- Wait for the duration of the animation
+        else
+            for i = 1, 3 do
+                flyTrack:Play()
+                wait(flyTrack.Length)  -- Wait for the duration of the animation before playing it again
+            end
+        end
+
+        flyTrack:Stop()
+        character.HumanoidRootPart.Anchored = false
+
+        -- Add highlight effect to the character
+        local highlight = Instance.new("Highlight")
+        highlight.FillColor = Color3.fromRGB(255, 255, 0)
+        highlight.FillTransparency = 0.5
+        highlight.Parent = character
+    end
+end
+
+-- Function to play the Z animation and follow-up animation when "Z" is pressed
+local function onKeyPressZ(input)
+    if input.KeyCode == Enum.KeyCode.Z then
+        zTrack:Play()
+        zSound:Play()
+        wait(2)  -- Play the Z animation and sound for 2 seconds
+        zTrack:Stop()
+        zSound:Stop()
+        zFollowUpTrack:Play()  -- Play the follow-up animation
+    end
+end
+
+-- Function to play the walk animation
+local function playWalk()
+    if not walkTrack.IsPlaying then
+        walkTrack:Play()
+    end
+end
+
+-- Detect when the player starts moving
+humanoid.Running:Connect(function(speed)
+    if speed > 0 then
+        playWalk()
+    else
+        walkTrack:Stop()
+    end
+end)
+
+-- Connect the functions to the InputBegan event
+UserInputService.InputBegan:Connect(onKeyPressK)
+UserInputService.InputBegan:Connect(onKeyPressL)
+UserInputService.InputBegan:Connect(onKeyPressQ)
+UserInputService.InputBegan:Connect(onKeyPressZ)
+
+   end,
+})
+
+        local Button = Trolling:CreateButton({
+   Name = "Time stop",
+   Callback = function()
+   --- [[ Shadow Dio's Time Stop ]] ---
+-- by ChillVR
+
+local me = game.Players.LocalPlayer
+local mouse = me:GetMouse()
+local char = me.Character
+local hum = char:FindFirstChild('Humanoid')
+local hd = char:FindFirstChild('Head')
+local ts = char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
+local ra = char:FindFirstChild('Right Arm') or char:FindFirstChild('RightUpperArm')
+local la = char:FindFirstChild('Left Arm') or char:FindFirstChild('LeftUpperArm')
+local rl = char:FindFirstChild('Right Leg') or char:FindFirstChild('RightUpperLeg')
+local ll = char:FindFirstChild('Left Leg') or char:FindFirstChild('LeftUpperLeg')
+local root = char:FindFirstChild('HumanoidRootPart')
+local rj = root:FindFirstChild('RootJoint')
+local rs = ts:FindFirstChild('Right Shoulder')
+local ls = ts:FindFirstChild('Left Shoulder')
+local rh = ts:FindFirstChild('Right Hip')
+local lh = ts:FindFirstChild('Left Hip')
+local nk = ts:FindFirstChild('Neck')
+local anim = char:FindFirstChild('Animate')
+local base = workspace:FindFirstChild('Baseplate') or workspace:FindFirstChild('Base')
+local cantimestop = true
+local cooldown = false
+local cc = workspace.CurrentCamera
+local cos = math.cos
+local sin = math.sin
+local rad = math.rad
+local rand = math.random
+local cfn = CFrame.new
+local cfa = CFrame.Angles
+local v3 = Vector3.new
+local str = string
+local unfreeze = {}
+local health = {}
+local connect = {}
+local sine = 0
+local effects = nil
+hum.WalkSpeed = 23
+if char:FindFirstChild('Effects') then
+	effects = char:FindFirstChild('Effects')
+else
+	effects = Instance.new('Folder', char)
+	effects.Name = 'Effects'
+end
+
+ArtificialHB = Instance.new('BindableEvent', script)
+ArtificialHB.Name = 'Heartbeat'
+script:WaitForChild('Heartbeat')
+
+frame = 1 / 60
+tf = 0
+allowframeloss = false
+tossremainder = false
+lastframe = tick()
+script.Heartbeat:Fire()
+
+game:GetService('RunService').Heartbeat:connect(function(s, p)
+	tf = tf + s
+	if tf >= frame then
+		if allowframeloss then
+			script.Heartbeat:Fire()
+			lastframe = tick()
+		else
+			for i = 1, math.floor(tf / frame) do
+				script.Heartbeat:Fire()
+			end
+			lastframe = tick()
+		end
+		if tossremainder then
+			tf = 0
+		else
+			tf = tf - frame * math.floor(tf / frame)
+		end
+	end
+end)
+
+function swait(t)
+	if t == 0 or t == nil then
+		script.Heartbeat.Event:Wait()
+	else
+		for i = 0, t do
+			script.Heartbeat.Event:Wait()
+		end
+	end
+end
+
+function sound(id, parent, vol, pitch, timepos)
+	local s = Instance.new('Sound')
+	s.Parent = parent
+	s.SoundId = id
+	s.Volume = vol
+	s.PlaybackSpeed = pitch
+	s.TimePosition = timepos
+	s:Play()
+	game.Debris:AddItem(s, s.PlaybackSpeed + 5)
+end
+
+function camshake(duration, intensity)
+	coroutine.wrap(function()
+		for i = 1, duration do
+			hum.CameraOffset = hum.CameraOffset:lerp(v3(rand(-1, 1), rand(-1, 1), rand(-1, 1)), 0.1 * intensity)
+			swait()
+		end
+		hum.CameraOffset = v3(0, 0, 0)
+	end)()
+end
+
+function findascendant(obj, class)
+	local par = obj
+	local ret = nil
+	pcall(function()
+		repeat 
+			par = par.Parent
+			if par:IsA(class) then
+				ret = par
+				break
+			end
+		until par == nil
+	end)
+	return ret
+end
+
+local TimeStopSounds = {
+	
+	TimeStop = 'rbxassetid://5782635691';
+	TimeResume = 'rbxassetid://6859642317';
+	
+}
+
+function timestop()
+	cantimestop = false
+	coroutine.wrap(function()
+	local effect1 = Instance.new('Part', effects)
+	effect1.Shape = 'Ball'
+	effect1.Material = 'ForceField'
+	effect1.Anchored = true
+	effect1.CanCollide = false
+	effect1.Size = v3(0, 0, 0)
+	effect1.Transparency = 0
+	sound(TimeStopSounds.TimeStop, ts, 5, 1, 0)
+	for i,v in pairs(workspace:GetDescendants()) do
+		if v:IsA('BasePart') then
+			if not v.Anchored and not findascendant(v, 'Tool') and not findascendant(v, 'HopperBin') then
+				if not v:IsDescendantOf(char) then
+					v.Anchored = true
+					table.insert(unfreeze, v)
+				end
+			end
+		end
+		if v:IsA('Sound') then
+			if not v:IsDescendantOf(char) then
+				if v.IsPlaying then
+					v:Pause()
+					table.insert(unfreeze, v)
+				end
+			end
+		end
+		if v:IsA('Humanoid') then
+			local last = v.Health
+			local always = last
+			local e = v.HealthChanged:connect(function(hp)
+				if last - hp > 0 then
+					table.insert(health, {humanoid = v, change = last - hp})
+				end
+				last = hp
+				v.Health = always
+			end)
+			table.insert(connect, e)
+		end
+		if v:IsA('BodyVelocity') then
+			local lastforce = v.MaxForce
+			v.MaxForce = v3(0, 0, 0)
+			table.insert(unfreeze, {force = v, change = lastforce})
+		end
+		if v:IsA('BodyPosition') then
+			local lastposition = v.MaxForce
+			local lastD = v.D
+			local lastP = v.P
+			v.MaxForce = v3(0, 0, 0)
+			v.D = 0
+			v.P = 0
+			table.insert(unfreeze, {position = v, change = lastposition, dchange = lastD, pchange = lastP})
+		end
+		if v:IsA('BodyForce') then
+			local lastforce2 = v.Force
+			v.Force = v3(0, 0, 0)
+			table.insert(unfreeze, {force2 = v, fchange = lastforce2})
+		end
+	end
+	ee = workspace.DescendantAdded:Connect(function(v)
+		if v:IsA('BasePart') then
+			if not v.Anchored and not findascendant(v, 'Tool') and not findascendant(v, 'HopperBin') then
+				if not v:IsDescendantOf(char) then
+					v.Anchored = true
+					table.insert(unfreeze, v)
+				end
+			end
+		end
+		if v:IsA('Sound') then
+			if not v:IsDescendantOf(char) then
+				if v.IsPlaying then
+					v:Pause()
+					table.insert(unfreeze, v)
+				end
+			end
+		end
+		if v:IsA('Humanoid') then
+			local last = v.Health
+			local always = last
+			local e = v.HealthChanged:connect(function(hp)
+				if last - hp > 0 then
+					table.insert(health, {humanoid = v, change = last - hp})
+				end
+				last = hp
+				v.Health = always
+			end)
+			table.insert(connect, e)
+		end
+	end)
+	cce = Instance.new('ColorCorrectionEffect', game.Lighting)
+	coroutine.wrap(function()
+		for i = 1, 10 do
+			camshake(70, 2)
+			cce.Saturation = cce.Saturation - 0.1
+			cce.Contrast = cce.Contrast + 0.1
+			swait(5)
+		end
+	end)()
+	coroutine.wrap(function()
+	for i = 1, 1000 do
+		effect1.CFrame = ts.CFrame
+		effect1.Size = effect1.Size:lerp(v3(50, 50, 50), 0.015)
+		effect1.Transparency = effect1.Transparency + 0.010
+		if effect1.Transparency >= 1 then
+			effect1:Destroy()
+		end
+		swait()
+	end
+	end)()
+	wait(0.5)
+	local effect2 = Instance.new('Part', effects)
+	local effect3 = Instance.new('Part', effects)
+	effect3.Shape = 'Ball'
+	effect3.Material = 'ForceField'
+	effect3.Anchored = true
+	effect3.CanCollide = false
+	effect3.Size = v3(0, 0, 0)
+	effect3.Transparency = 0
+	effect2.Shape = 'Ball'
+	effect2.Material = 'ForceField'
+	effect2.Anchored = true
+	effect2.CanCollide = false
+	effect2.Size = v3(40, 40, 40)
+	effect2.Transparency = 1
+	coroutine.wrap(function()
+		for i = 1, 15 do
+			effect2.Transparency = effect2.Transparency - 0.11
+			swait()
+		end
+	end)()
+	coroutine.wrap(function()
+		for i = 1, 1000 do
+			effect3.CFrame = ts.CFrame
+			effect3.Size = effect3.Size:lerp(v3(50, 50, 50), 0.015)
+			effect3.Transparency = effect3.Transparency + 0.010
+			if effect3.Transparency >= 1 then
+				effect3:Destroy()
+			end
+			swait()
+		end
+	end)()
+	for i = 1, 1000 do
+		effect2.CFrame = ts.CFrame
+		effect2.Size = effect2.Size:lerp(v3(0, 0, 0), 0.015)
+		effect2.Transparency = effect2.Transparency + 0.015
+		if effect2.Transparency >= 1 then
+			effect2:Destroy()
+		end
+		swait()
+	end
+	end)()
+	wait(1.5) -- cooldown
+	cooldown = true
+end
+
+function timeresume()
+	coroutine.wrap(function()
+	sound(TimeStopSounds.TimeResume, ts, 5, 1, 0.15)
+	coroutine.wrap(function()
+		for i = 1, 10 do
+			camshake(20, 0.3)
+			cce.Saturation = cce.Saturation + 0.1
+			cce.Contrast = cce.Contrast - 0.1
+			swait(5)
+		end
+		cce:Destroy()
+	end)()
+	coroutine.wrap(function()
+		wait(1.5)
+	for i,v in pairs(unfreeze) do
+		pcall(function()
+			v.Anchored = false
+		end)
+		pcall(function()
+			v:Resume()
+		end)
+	end
+	for i,v in pairs(connect) do
+		pcall(function()
+			v:Disconnect()
+		end)
+	end
+	for i,v in pairs(health) do
+		pcall(function()
+			local humanoid = v.humanoid
+			humanoid.Health = humanoid.Health - v.change
+			if humanoid.Parent:FindFirstChild('Health') then
+				pcall(function()
+					humanoid.Parent.Health.Disabled = false
+				end)
+			end
+		end)
+	end
+	pcall(function()
+		ee:Disconnect()
+	end)
+	health = {}
+	unfreeze = {}
+	end)()
+	cantimestop = true
+	end)()
+	wait(1.5) -- cooldown
+	cooldown = false
+end
+
+mouse.KeyDown:connect(function(key)
+	if str.lower(key) == 'r' and cantimestop and cooldown == false then
+		timestop()
+	elseif str.lower(key) == 'r' and cantimestop == false and cooldown then
+		timeresume()
+	end
+end)--- [[ Shadow Dio's Time Stop ]] ---
+-- by ChillVR
+
+local me = game.Players.LocalPlayer
+local mouse = me:GetMouse()
+local char = me.Character
+local hum = char:FindFirstChild('Humanoid')
+local hd = char:FindFirstChild('Head')
+local ts = char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
+local ra = char:FindFirstChild('Right Arm') or char:FindFirstChild('RightUpperArm')
+local la = char:FindFirstChild('Left Arm') or char:FindFirstChild('LeftUpperArm')
+local rl = char:FindFirstChild('Right Leg') or char:FindFirstChild('RightUpperLeg')
+local ll = char:FindFirstChild('Left Leg') or char:FindFirstChild('LeftUpperLeg')
+local root = char:FindFirstChild('HumanoidRootPart')
+local rj = root:FindFirstChild('RootJoint')
+local rs = ts:FindFirstChild('Right Shoulder')
+local ls = ts:FindFirstChild('Left Shoulder')
+local rh = ts:FindFirstChild('Right Hip')
+local lh = ts:FindFirstChild('Left Hip')
+local nk = ts:FindFirstChild('Neck')
+local anim = char:FindFirstChild('Animate')
+local base = workspace:FindFirstChild('Baseplate') or workspace:FindFirstChild('Base')
+local cantimestop = true
+local cooldown = false
+local cc = workspace.CurrentCamera
+local cos = math.cos
+local sin = math.sin
+local rad = math.rad
+local rand = math.random
+local cfn = CFrame.new
+local cfa = CFrame.Angles
+local v3 = Vector3.new
+local str = string
+local unfreeze = {}
+local health = {}
+local connect = {}
+local sine = 0
+local effects = nil
+hum.WalkSpeed = 23
+if char:FindFirstChild('Effects') then
+	effects = char:FindFirstChild('Effects')
+else
+	effects = Instance.new('Folder', char)
+	effects.Name = 'Effects'
+end
+
+ArtificialHB = Instance.new('BindableEvent', script)
+ArtificialHB.Name = 'Heartbeat'
+script:WaitForChild('Heartbeat')
+
+frame = 1 / 60
+tf = 0
+allowframeloss = false
+tossremainder = false
+lastframe = tick()
+script.Heartbeat:Fire()
+
+game:GetService('RunService').Heartbeat:connect(function(s, p)
+	tf = tf + s
+	if tf >= frame then
+		if allowframeloss then
+			script.Heartbeat:Fire()
+			lastframe = tick()
+		else
+			for i = 1, math.floor(tf / frame) do
+				script.Heartbeat:Fire()
+			end
+			lastframe = tick()
+		end
+		if tossremainder then
+			tf = 0
+		else
+			tf = tf - frame * math.floor(tf / frame)
+		end
+	end
+end)
+
+function swait(t)
+	if t == 0 or t == nil then
+		script.Heartbeat.Event:Wait()
+	else
+		for i = 0, t do
+			script.Heartbeat.Event:Wait()
+		end
+	end
+end
+
+function sound(id, parent, vol, pitch, timepos)
+	local s = Instance.new('Sound')
+	s.Parent = parent
+	s.SoundId = id
+	s.Volume = vol
+	s.PlaybackSpeed = pitch
+	s.TimePosition = timepos
+	s:Play()
+	game.Debris:AddItem(s, s.PlaybackSpeed + 5)
+end
+
+function camshake(duration, intensity)
+	coroutine.wrap(function()
+		for i = 1, duration do
+			hum.CameraOffset = hum.CameraOffset:lerp(v3(rand(-1, 1), rand(-1, 1), rand(-1, 1)), 0.1 * intensity)
+			swait()
+		end
+		hum.CameraOffset = v3(0, 0, 0)
+	end)()
+end
+
+function findascendant(obj, class)
+	local par = obj
+	local ret = nil
+	pcall(function()
+		repeat 
+			par = par.Parent
+			if par:IsA(class) then
+				ret = par
+				break
+			end
+		until par == nil
+	end)
+	return ret
+end
+
+local TimeStopSounds = {
+	
+	TimeStop = 'rbxassetid://5782635691';
+	TimeResume = 'rbxassetid://6859642317';
+	
+}
+
+function timestop()
+	cantimestop = false
+	coroutine.wrap(function()
+	local effect1 = Instance.new('Part', effects)
+	effect1.Shape = 'Ball'
+	effect1.Material = 'ForceField'
+	effect1.Anchored = true
+	effect1.CanCollide = false
+	effect1.Size = v3(0, 0, 0)
+	effect1.Transparency = 0
+	sound(TimeStopSounds.TimeStop, ts, 5, 1, 0)
+	for i,v in pairs(workspace:GetDescendants()) do
+		if v:IsA('BasePart') then
+			if not v.Anchored and not findascendant(v, 'Tool') and not findascendant(v, 'HopperBin') then
+				if not v:IsDescendantOf(char) then
+					v.Anchored = true
+					table.insert(unfreeze, v)
+				end
+			end
+		end
+		if v:IsA('Sound') then
+			if not v:IsDescendantOf(char) then
+				if v.IsPlaying then
+					v:Pause()
+					table.insert(unfreeze, v)
+				end
+			end
+		end
+		if v:IsA('Humanoid') then
+			local last = v.Health
+			local always = last
+			local e = v.HealthChanged:connect(function(hp)
+				if last - hp > 0 then
+					table.insert(health, {humanoid = v, change = last - hp})
+				end
+				last = hp
+				v.Health = always
+			end)
+			table.insert(connect, e)
+		end
+		if v:IsA('BodyVelocity') then
+			local lastforce = v.MaxForce
+			v.MaxForce = v3(0, 0, 0)
+			table.insert(unfreeze, {force = v, change = lastforce})
+		end
+		if v:IsA('BodyPosition') then
+			local lastposition = v.MaxForce
+			local lastD = v.D
+			local lastP = v.P
+			v.MaxForce = v3(0, 0, 0)
+			v.D = 0
+			v.P = 0
+			table.insert(unfreeze, {position = v, change = lastposition, dchange = lastD, pchange = lastP})
+		end
+		if v:IsA('BodyForce') then
+			local lastforce2 = v.Force
+			v.Force = v3(0, 0, 0)
+			table.insert(unfreeze, {force2 = v, fchange = lastforce2})
+		end
+	end
+	ee = workspace.DescendantAdded:Connect(function(v)
+		if v:IsA('BasePart') then
+			if not v.Anchored and not findascendant(v, 'Tool') and not findascendant(v, 'HopperBin') then
+				if not v:IsDescendantOf(char) then
+					v.Anchored = true
+					table.insert(unfreeze, v)
+				end
+			end
+		end
+		if v:IsA('Sound') then
+			if not v:IsDescendantOf(char) then
+				if v.IsPlaying then
+					v:Pause()
+					table.insert(unfreeze, v)
+				end
+			end
+		end
+		if v:IsA('Humanoid') then
+			local last = v.Health
+			local always = last
+			local e = v.HealthChanged:connect(function(hp)
+				if last - hp > 0 then
+					table.insert(health, {humanoid = v, change = last - hp})
+				end
+				last = hp
+				v.Health = always
+			end)
+			table.insert(connect, e)
+		end
+	end)
+	cce = Instance.new('ColorCorrectionEffect', game.Lighting)
+	coroutine.wrap(function()
+		for i = 1, 10 do
+			camshake(70, 2)
+			cce.Saturation = cce.Saturation - 0.1
+			cce.Contrast = cce.Contrast + 0.1
+			swait(5)
+		end
+	end)()
+	coroutine.wrap(function()
+	for i = 1, 1000 do
+		effect1.CFrame = ts.CFrame
+		effect1.Size = effect1.Size:lerp(v3(50, 50, 50), 0.015)
+		effect1.Transparency = effect1.Transparency + 0.010
+		if effect1.Transparency >= 1 then
+			effect1:Destroy()
+		end
+		swait()
+	end
+	end)()
+	wait(0.5)
+	local effect2 = Instance.new('Part', effects)
+	local effect3 = Instance.new('Part', effects)
+	effect3.Shape = 'Ball'
+	effect3.Material = 'ForceField'
+	effect3.Anchored = true
+	effect3.CanCollide = false
+	effect3.Size = v3(0, 0, 0)
+	effect3.Transparency = 0
+	effect2.Shape = 'Ball'
+	effect2.Material = 'ForceField'
+	effect2.Anchored = true
+	effect2.CanCollide = false
+	effect2.Size = v3(40, 40, 40)
+	effect2.Transparency = 1
+	coroutine.wrap(function()
+		for i = 1, 15 do
+			effect2.Transparency = effect2.Transparency - 0.11
+			swait()
+		end
+	end)()
+	coroutine.wrap(function()
+		for i = 1, 1000 do
+			effect3.CFrame = ts.CFrame
+			effect3.Size = effect3.Size:lerp(v3(50, 50, 50), 0.015)
+			effect3.Transparency = effect3.Transparency + 0.010
+			if effect3.Transparency >= 1 then
+				effect3:Destroy()
+			end
+			swait()
+		end
+	end)()
+	for i = 1, 1000 do
+		effect2.CFrame = ts.CFrame
+		effect2.Size = effect2.Size:lerp(v3(0, 0, 0), 0.015)
+		effect2.Transparency = effect2.Transparency + 0.015
+		if effect2.Transparency >= 1 then
+			effect2:Destroy()
+		end
+		swait()
+	end
+	end)()
+	wait(1.5) -- cooldown
+	cooldown = true
+end
+
+function timeresume()
+	coroutine.wrap(function()
+	sound(TimeStopSounds.TimeResume, ts, 5, 1, 0.15)
+	coroutine.wrap(function()
+		for i = 1, 10 do
+			camshake(20, 0.3)
+			cce.Saturation = cce.Saturation + 0.1
+			cce.Contrast = cce.Contrast - 0.1
+			swait(5)
+		end
+		cce:Destroy()
+	end)()
+	coroutine.wrap(function()
+		wait(1.5)
+	for i,v in pairs(unfreeze) do
+		pcall(function()
+			v.Anchored = false
+		end)
+		pcall(function()
+			v:Resume()
+		end)
+	end
+	for i,v in pairs(connect) do
+		pcall(function()
+			v:Disconnect()
+		end)
+	end
+	for i,v in pairs(health) do
+		pcall(function()
+			local humanoid = v.humanoid
+			humanoid.Health = humanoid.Health - v.change
+			if humanoid.Parent:FindFirstChild('Health') then
+				pcall(function()
+					humanoid.Parent.Health.Disabled = false
+				end)
+			end
+		end)
+	end
+	pcall(function()
+		ee:Disconnect()
+	end)
+	health = {}
+	unfreeze = {}
+	end)()
+	cantimestop = true
+	end)()
+	wait(1.5) -- cooldown
+	cooldown = false
+end
+
+mouse.KeyDown:connect(function(key)
+	if str.lower(key) == 'r' and cantimestop and cooldown == false then
+		timestop()
+	elseif str.lower(key) == 'r' and cantimestop == false and cooldown then
+		timeresume()
+	end
+end)
+   end,
+})
+
+        local Button = Trolling:CreateButton({
+   Name = "Fe plane",
+   Callback = function()
+   --made by regular!plank
+function noplsmesh(hat)
+    _G.OldCF=workspace.Camera.CFrame
+    oldchar=game.Players.LocalPlayer.Character
+    game.Players.LocalPlayer.Character=workspace[game.Players.LocalPlayer.Name]
+    for i,v in next, workspace[game.Players.LocalPlayer.Name][hat]:GetDescendants() do
+    if v:IsA('Mesh') or v:IsA('SpecialMesh') then
+    v:Remove()
+    end
+    end
+    game.Players.LocalPlayer.Character=oldchar
+    workspace.Camera.CFrame=_G.OldCF
+    game.Players.LocalPlayer.Character=oldchar
+    end
+    HumanDied = false for i,v in next, game:GetService("Players").LocalPlayer.Character:GetDescendants() do if v:IsA("BasePart") then  _G.netless=game:GetService("RunService").Heartbeat:connect(function() v.AssemblyLinearVelocity = Vector3.new(-30,0,0) sethiddenproperty(game.Players.LocalPlayer,"MaximumSimulationRadius",math.huge) sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",999999999) end) end end  local plr = game.Players.LocalPlayer local char = plr.Character local srv = game:GetService('RunService') local ct = {}  char.Archivable = true local reanim = char:Clone() reanim.Name = 'Nexo '..plr.Name..'' fl=Instance.new('Folder',char) fl.Name ='Nexo' reanim.Animate.Disabled=true char.HumanoidRootPart:Destroy() char.Humanoid:ChangeState(16)  for i,v in next, char.Humanoid:GetPlayingAnimationTracks() do v:Stop() end char.Animate:Remove()  function create(part, parent, p, r) Instance.new("Attachment",part) Instance.new("AlignPosition",part) Instance.new("AlignOrientation",part) Instance.new("Attachment",parent) part.Attachment.Name = part.Name parent.Attachment.Name = part.Name part.AlignPosition.Attachment0 = part[part.Name] part.AlignOrientation.Attachment0 = part[part.Name] part.AlignPosition.Attachment1 = parent[part.Name] part.AlignOrientation.Attachment1 = parent[part.Name] parent[part.Name].Position = p or Vector3.new() part[part.Name].Orientation = r or Vector3.new() part.AlignPosition.MaxForce = 999999999 part.AlignPosition.MaxVelocity = math.huge part.AlignPosition.ReactionForceEnabled = false part.AlignPosition.Responsiveness = math.huge part.AlignOrientation.Responsiveness = math.huge part.AlignPosition.RigidityEnabled = false part.AlignOrientation.MaxTorque = 999999999 end  for i,v in next, char:GetDescendants() do if v:IsA('Accessory') then v.Handle:BreakJoints() create(v.Handle,reanim[v.Name].Handle) end end  char.Torso['Left Shoulder']:Destroy() char.Torso['Right Shoulder']:Destroy() char.Torso['Left Hip']:Destroy() char.Torso['Right Hip']:Destroy()  create(char['Torso'],reanim['Torso']) create(char['Left Arm'],reanim['Left Arm']) create(char['Right Arm'],reanim['Right Arm']) create(char['Left Leg'],reanim['Left Leg']) create(char['Right Leg'],reanim['Right Leg'])  for i,v in next, reanim:GetDescendants() do if v:IsA('BasePart') or v:IsA('Decal') then v.Transparency = 1 end end  reanim.Parent = fl  for i,v in next, reanim:GetDescendants() do if v:IsA('BasePart') then table.insert(ct,srv.RenderStepped:Connect(function() v.CanCollide = false end)) end end  for i,v in next, char:GetDescendants() do if v:IsA('BasePart') then table.insert(ct,srv.RenderStepped:Connect(function() v.CanCollide = false end)) end end  for i,v in next, reanim:GetDescendants() do if v:IsA('BasePart') then table.insert(ct,srv.Stepped:Connect(function() v.CanCollide = false end)) end end  for i,v in next, char:GetDescendants() do if v:IsA('BasePart') then table.insert(ct,srv.Stepped:Connect(function() v.CanCollide = false end)) end end  table.insert(ct,reanim.Humanoid.Died:Connect(function() plr.Character = char char:BreakJoints() reanim:Destroy() game.Players:Chat('-gr') _G.netless:Disconnect() HumanDied = true for _,v in pairs(ct) do v:Disconnect() end end))  plr.Character = reanim workspace.CurrentCamera.CameraSubject = reanim.Humanoid
+    
+    IT = Instance.new
+    CF = CFrame.new
+    VT = Vector3.new
+    RAD = math.rad
+    C3 = Color3.new
+    UD2 = UDim2.new
+    BRICKC = BrickColor.new
+    ANGLES = CFrame.Angles
+    EULER = CFrame.fromEulerAnglesXYZ
+    COS = math.cos
+    ACOS = math.acos
+    SIN = math.sin
+    ASIN = math.asin
+    ABS = math.abs
+    MRANDOM = math.random
+    FLOOR = math.floor
+    
+    speed = 1
+    sine = 1
+    srv = game:GetService('RunService')
+    
+    reanim = game.Players.LocalPlayer.Character
+    
+    function hatset(yes,part,c1,c0,nm)
+    reanim[yes].Handle.AccessoryWeld.Part1=reanim[part]
+    reanim[yes].Handle.AccessoryWeld.C1=c1 or CFrame.new()
+    reanim[yes].Handle.AccessoryWeld.C0=c0 or CFrame.new()
+    if nm==true then
+    noplsmesh(yes)
+    end
+    end
+    
+    --put the hat script converted here do not put it in loop or it will make ur camera bugged.
+    
+    RJ = reanim.HumanoidRootPart.RootJoint
+    RS = reanim.Torso['Right Shoulder']
+    LS = reanim.Torso['Left Shoulder']
+    RH = reanim.Torso['Right Hip']
+    LH = reanim.Torso['Left Hip']
+    Root = reanim.HumanoidRootPart
+    NECK = reanim.Torso.Neck
+    NECK.C0 = CF(0,1,0)*ANGLES(RAD(0),RAD(0),RAD(0))
+    NECK.C1 = CF(0,-0.5,0)*ANGLES(RAD(0),RAD(0),RAD(0))
+    RJ.C1 = CF(0,0,0)*ANGLES(RAD(0),RAD(0),RAD(0))
+    RJ.C0 = CF(0,0,0)*ANGLES(RAD(0),RAD(0),RAD(0))
+    RS.C1 = CF(0,0.5,0)*ANGLES(RAD(0),RAD(0),RAD(0))
+    LS.C1 = CF(0,0.5,0)*ANGLES(RAD(0),RAD(0),RAD(0))
+    RH.C1 = CF(0.5,1,0)*ANGLES(RAD(0),RAD(0),RAD(0))
+    LH.C1 = CF(-0.5,1,0)*ANGLES(RAD(0),RAD(0),RAD(0))
+    RH.C0 = CF(0,0,0)*ANGLES(RAD(0),RAD(0),RAD(0))
+    LH.C0 = CF(0,0,0)*ANGLES(RAD(0),RAD(0),RAD(0))
+    RS.C0 = CF(0,0,0)*ANGLES(RAD(0),RAD(0),RAD(0))
+    LS.C0 = CF(0,0,0)*ANGLES(RAD(0),RAD(0),RAD(0))
+    
+    Mode='1'
+    
+    mousechanger=game.Players.LocalPlayer:GetMouse().KeyDown:Connect(function(k)
+    if k == 'f' then-- first mode
+    Mode='1'
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+    elseif k == 'urkeybind' then-- second mode
+    Mode='2'
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 22
+    elseif k == 'urkeybind' then-- third mode
+    Mode='3'
+    end
+    end)
+    
+    coroutine.wrap(function()
+    --hat script here
+    
+    while true do -- anim changer
+    if HumanDied then break end
+    sine = sine + speed
+    local rlegray = Ray.new(reanim["Right Leg"].Position + Vector3.new(0, 0.5, 0), Vector3.new(0, -2, 0))
+    local rlegpart, rlegendPoint = workspace:FindPartOnRay(rlegray, char)
+    local llegray = Ray.new(reanim["Left Leg"].Position + Vector3.new(0, 0.5, 0), Vector3.new(0, -2, 0))
+    local llegpart, llegendPoint = workspace:FindPartOnRay(llegray, char)
+    local rightvector = (Root.Velocity * Root.CFrame.rightVector).X + (Root.Velocity * Root.CFrame.rightVector).Z
+    local lookvector = (Root.Velocity * Root.CFrame.lookVector).X + (Root.Velocity * Root.CFrame.lookVector).Z
+    if lookvector > reanim.Humanoid.WalkSpeed then
+    lookvector = reanim.Humanoid.WalkSpeed
+    end
+    if lookvector < -reanim.Humanoid.WalkSpeed then
+    lookvector = -reanim.Humanoid.WalkSpeed
+    end
+    if rightvector > reanim.Humanoid.WalkSpeed then
+    rightvector = reanim.Humanoid.WalkSpeed
+    end
+    if rightvector < -reanim.Humanoid.WalkSpeed then
+    rightvector = -reanim.Humanoid.WalkSpeed
+    end
+    local lookvel = lookvector / reanim.Humanoid.WalkSpeed
+    local rightvel = rightvector / reanim.Humanoid.WalkSpeed
+    if Mode == '1' then
+    if Root.Velocity.y > 1 then -- jump
+    
+    elseif Root.Velocity.y < -1 then -- fall
+    
+    elseif Root.Velocity.Magnitude < 2 then -- idle
+    hatset('FireMohawk','Head',CFrame.new(),reanim['FireMohawk'].Handle.AccessoryWeld.C0:Lerp(CF(0+0*math.cos(sine/13),0+0*math.cos(sine/13),-2.5+0*math.cos(sine/13))*ANGLES(RAD(-90+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13))),1),false)
+        NECK.C0 = NECK.C0:Lerp(CF(0+0*math.cos(sine/13),1+0*math.cos(sine/13),0+0*math.cos(sine/13))*ANGLES(RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13))),.3)
+        RJ.C0 = RJ.C0:Lerp(CF(0+0*math.cos(sine/13),-1+0*math.cos(sine/13),0+0*math.cos(sine/13))*ANGLES(RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13))),.3)
+        RS.C0 = RS.C0:Lerp(CF(1.5+0*math.cos(sine/13),0.5+0*math.cos(sine/13),0+0*math.cos(sine/13))*ANGLES(RAD(45+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(-25+0*math.cos(sine/13))),.3)
+        LS.C0 = LS.C0:Lerp(CF(-1.5+0*math.cos(sine/13),0.5+0*math.cos(sine/13),0+0*math.cos(sine/13))*ANGLES(RAD(45+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(25+0*math.cos(sine/13))),.3)
+        RH.C0 = RH.C0:Lerp(CF(0.5+0*math.cos(sine/13),-1+0*math.cos(sine/13),0+0*math.cos(sine/13))*ANGLES(RAD(90+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13))),.3)
+        LH.C0 = LH.C0:Lerp(CF(-0.5+0*math.cos(sine/13),-1+0*math.cos(sine/13),0+0*math.cos(sine/13))*ANGLES(RAD(90+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13))),.3)
+        reanim['FireMohawk'].Handle.AccessoryWeld.C0 = reanim['FireMohawk'].Handle.AccessoryWeld.C0:Lerp(CF(0+0*math.cos(sine/13),0+0*math.cos(sine/13),-2.5+0*math.cos(sine/13))*ANGLES(RAD(-90+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13))),.3)
+    elseif Root.Velocity.Magnitude < 20 then -- walk
+    hatset('FireMohawk','Head',CFrame.new(),reanim['FireMohawk'].Handle.AccessoryWeld.C0:Lerp(CF(0+0*math.cos(sine/13),0+0*math.cos(sine/13),-2.5+0*math.cos(sine/13))*ANGLES(RAD(-90+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13))),1),false)
+        NECK.C0 = NECK.C0:Lerp(CF(0+0*math.cos(sine/13),1+0*math.cos(sine/13),0+0*math.cos(sine/13))*ANGLES(RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13))),.3)
+        RJ.C0 = RJ.C0:Lerp(CF(0+0*math.cos(sine/13),-1+0*math.cos(sine/13),0+0*math.cos(sine/13))*ANGLES(RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13))),.3)
+        RS.C0 = RS.C0:Lerp(CF(1.5+0*math.cos(sine/13),0.5+0*math.cos(sine/13),0+0*math.cos(sine/13))*ANGLES(RAD(45+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(-25+0*math.cos(sine/13))),.3)
+        LS.C0 = LS.C0:Lerp(CF(-1.5+0*math.cos(sine/13),0.5+0*math.cos(sine/13),0+0*math.cos(sine/13))*ANGLES(RAD(45+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(25+0*math.cos(sine/13))),.3)
+        RH.C0 = RH.C0:Lerp(CF(0.5+0*math.cos(sine/13),-1+0*math.cos(sine/13),0+0*math.cos(sine/13))*ANGLES(RAD(90+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13))),.3)
+        LH.C0 = LH.C0:Lerp(CF(-0.5+0*math.cos(sine/13),-1+0*math.cos(sine/13),0+0*math.cos(sine/13))*ANGLES(RAD(90+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13))),.3)
+        reanim['FireMohawk'].Handle.AccessoryWeld.C0 = reanim['FireMohawk'].Handle.AccessoryWeld.C0:Lerp(CF(0+0*math.cos(sine/13),0+0*math.cos(sine/13),-2.5+0*math.cos(sine/13))*ANGLES(RAD(-90+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13)),RAD(0+0*math.cos(sine/13))),.3)
+    
+    elseif Root.Velocity.Magnitude > 20 then -- run
+    
+    end
+    elseif Mode == '2' then
+    if Root.Velocity.y > 1 then -- jump
+    
+    elseif Root.Velocity.y < -1 then -- fall
+    
+    elseif Root.Velocity.Magnitude < 2 then -- idle
+    
+    elseif Root.Velocity.Magnitude < 20 then -- walk
+    
+    elseif Root.Velocity.Magnitude > 20 then -- run
+    
+    end
+    elseif Mode == '3' then
+    if Root.Velocity.y > 1 then -- jump
+    
+    elseif Root.Velocity.y < -1 then -- fall
+    
+    elseif Root.Velocity.Magnitude < 2 then -- idle
+    
+    elseif Root.Velocity.Magnitude < 20 then -- walk
+    
+    elseif Root.Velocity.Magnitude > 20 then -- run
+    
+    end
+    end
+    srv.RenderStepped:Wait()
+    end
+    end)()
+    --pls no steal :(
+    --Im not just If do you see this is by regular_plank
+    
+   end,
+})
+        
 -- 📌 Create Games Tab
 local Games = Window:CreateTab("Games", 4483362458)
 
@@ -3589,6 +4633,18 @@ end)
    end,
 })
 
+local Button = Fun:CreateButton({
+   Name = "Fe fake dead",
+   Callback = function()
+   _, Protected_by_MoonSecV2, Discord = 'discord.gg/gQEH2uZxUk'
+
+
+,nil,nil;(function() _msec=(function(e,l,o)local T=l[(0xa9+-70)];local E=o[e[(9324/0xe)]][e[(763+-0x20)]];local _=(56+-0x34)/(-0x1f+(169-(-113+(0x242-329))))local r=(42-((-45+0x5)+0x50))-(0xdb/219)local p=o[e[(0x1ad-275)]][e[(-26+0x110)]];local B=(0x51/(205+(-16+-0x6c)))+(41+-0x27)local t=o[e[((-126+0x45)+620)]][e[(0x277c6/193)]]local n=(110+-0x6c)-(0x27+((-0x39934/29)/214))local S=(0x21-((14136/(0x40aa/89))-0x2f))local v=(0x75-((41182-(0x13d178/63))/182))local L=(148/(0xc6e/(299-(0x28c5/49))))local C=((((-0x1fa38386/(304-0xd5))/249)/0xdd)+0x6e)local s=((((0xe+(-0x40f5/241))+0x41)-32)+0x1a)local m=((((-0x1a3f+-92)+0xd1b)/144)+0x1c)local O=((((0x174228/42)/0xac)-0xa3)/24)local h=((-156/(0x338/(278+-0x48)))+0x29)local f=(0xca/(2525/((0x5b00e/(234-0xa4))/213)))local k=(0xb6/((4981340/(0xf8+(-4338/0xf1)))/238))local w=(95+((((0x1c+-60)+-0x49f)/243)+-88))local U=(((159216/(500-0x11e))-422)/0xa1)local i=(0x1b+(-5256/((0x265+(-0x2a-17))-0x14f)))local c=(0x5b-(((104710-0xcca2)/206)-166))local b=((((-0x2d4f8/111)/152)+-109)+123)local D=(-0x68+(-41+(23976/(0x162-192))))local N=(87/((0x139-(8225/0x2f))+-0x6d))local u=(((173-(0x7d1a/239))-57)+21)local K=e[(0x2418c/108)];local G=o[e[(258+-0x68)]][e[((0x33f7b/201)-0x24f)]];local Q=o[(function(e)return type(e):sub(1,1)..'\101\116'end)('##!&,=%+')..'\109\101'..('\116\97'or'/*!/+%%:')..e[(615+-0x34)]];local A=o[e[(1227-0x298)]][e[(89010/0x5a)]];local j=(84+-0x52)-((278-((84933-0xa61d)/0xe4))-90)local g=(332/((0x8ad9-17783)/0x6b))-(0x36-52)local Y=o[e[(0x160-198)]][e[(0xa90c/124)]];local l=function(l,e)return l..e end local y=(0x55-81)*(((0x1a349-53701)/0xfd)/53)local V=o[e[(2498-0x51b)]];local x=(109-0x6b)*(((-0x212d+-92)/0x55)+0xe5)local J=(208896/0xcc)*(0x17-(0x2b+(-0x48e/53)))local W=(0xd2-((793-0x1c7)-0xb4))local P=(0x6c-(-111+(0xf1+-24)))*(-0x63+101)local M=o[e[(2169-0x45f)]]or o[e[(0x49f-620)]][e[(2169-0x45f)]];local a=((1162-(0x6a59/45))-301)local e=o[e[(-53+0x541)]];local A=(function(a)local x,o=1,0x10 local l={j={},v={}}local d=-n local e=o+r while true do l[a:sub(e,(function()e=x+e return e-r end)())]=(function()d=d+n return d end)()if d==(y-n)then d=""o=j break end end local d=#a while e<d+r do l.v[o]=a:sub(e,(function()e=x+e return e-r end)())o=o+n if o%_==j then o=g A(l.j,(Y((l[l.v[g]]*y)+l[l.v[n]])))end end return t(l.j)end)("..:::MoonSec::..!*%&/+^,;.:_#$}==}.+%%_//^$;^:=#;}%!_%//$^^;=_;#*}_!/%$}^^=;;:*$:}/!$%^+=,;;*::#&}$!^%=/;^*#::&##}*#=#;/*^:;/.;#_}}}&!^#:.}/*:/^%!;#*%:/&^$+!#+/,##*=.&,,*.,$$*#+/%}&,#/+^};;/_}=//!^_&}=%,;!:.#&$;!:+}_*,+/.^$%!=/:;!:#*^.;%:_#^!%%,%!/.^%._:/#$},^%/./%^_;/}$#^=!!.%%/_:;%$:^#=}./%%_+/^$#:/=#;}%!_}//$,^;!##}*}_!/%$;^^=;;:%%}%/!$%^/!%;;*_:#&=$!^^%};^*;::/;#}^*=%.^+;:;&:##^!=!;%*/:#^##:+#}};#*%:+&^#.+:=!_;*!:%&/$%+;}_,#%!}%&%#/+^}_,:!#.}+!=++/}^,;!:.#&!#!+%*#,^!..:%$_}+!}%,/%&.;%:_#+!}!,/!/.^&$_:/#$},!!%./%^_;+/$#^}!!.&%/_^/;$_^#=}.!!#_./^$;^:*%&},+_.=%$}^;=:;#*}}$/%$+^^=;;:*#:}+%*/^/=;;;*_:#&}$!^;%:;^*_::&##}^*=%;^*^:;;}##+}=!;&*/:^&;#:_!}};!*%:/&^#;+:}#_.*!:/&/#;+;}_,#!}#_&%#++^}:,:!#.}&!##+/}^,;!_.#%}#!+%}/,^!;.:%$_}+!}%:^!_.;%:_#^/.=#=!$/#%#_:/#$};%//./%^_;/_$#^}!!.%+#_^/.$:^#=}.!%%_/;*$;^:=#.!%!_&//$^,%=:;#*}_*/%$/^^=_;:*#:}/!$:^/=^;;!/_%&}$!^%!$/,,}:}}#*}/:=^;/*^:;/&;*_&=$;%*/:^&;#:_#=*;!*%://=;:_!,:;%*!:%&/#}*}+%,#..:!&%#/+^};,:,#$};$#%+/}^,;!:.#*}==&#=!,^!;.:/.+/;,#*%=+_,#$^=%%!,,.:%+.^%;_:+}%!,!!+./%}_;/:$#^}&=.%%,_^/_$:^$=}.^//_//.$;,*=#;=%!_%//$::%=:;#*}_,/%$+^^!:##*#_*/!$:^/=^;;*:}_&}$&^%=,;^*.::&#=.^!=+;/*;:;&:##,!!^;%*,:^&=#:+#}}.%&_:/&:#;+$}#,}*!_/&/#^+$}:;&!}:!&%#/+^};;!!#.}&!#%+/=;,;!::&%}#,+%}/,^!#.:%##&+!==,/!,.;%:!^/}}.,%!;.^%;_:+}}%,!!#./%,_;/:$#;}!!.%%}_^+%$:^}=}_!%%_/+*$;^:=#.%%!_%//$^,+=:./*}_!/%$/^^=;.;*#_^/!$%^/=^;;*:_,&}$}^%=^;^&;::&#$.^!=$;/*_:;&:##+}=_;%*^:^&:#:+#}};!*$://*#;+$}#.}*!:%&=#^^&}:;%!}:!&%#/^!};,#!#:!&!#%+/}^,#!::+%}#:+%}/,^!;:&%##*+!}/,/%^.;%:_=/}}.,%!:.^%##+/#}&,!!=./%,_;+#*}^}!+.%%#_^/;$:^#/$.!%,_//,$;^}=#;}/__%/;$^^:=:;#*}_!/#$/^^=;;_*#:}/!$/^+=^;;*::#&}$!^%=/;^*;::&#$+^!=%;/*^_/&:##+}=*;%*/:^&;#:+#}};!*%:/&^#;+:}#,}*!:%&/#^+;}:,#!}:!&%#/+.};,:!#.}&!#%+/}^,;!:.#%}#!+%}/,^!;.#%#_}+!}%,/!^.;%:_$/}}!,%!^.^%;_:/$$},!!%./%^_;/:$#%:!+.%%/_^+};:#*!+&}&=_//^$;,#*%;}%%_%/+$^^;=:.}&/_!/+$/^,=;;:*##!;%$%^;=^;:*::#&}$^.;=/;_*;::&##=^!=^;/*^=#&:##+}=%;%*/:^&;*}+#}};!*%:/&^#;+:/!,}*!:%&,#^+;}:,#^%:!&%#/+,};,:!#.}^_#%+;}^,:!:.$%}#^+:}/,^!;_&%#_=+!}&,/!:$%%:_#/}=.,%!+.^%}__/#$},!*!./%,_;/_$#,%&:.%%/_^+^$:^$=}./+#_//^$;;&=#;=%!_;/+$^^.=:.$*}_*/%$/^^=##/*#:}/!}&^/=,;;*}}^&}$!^%!$;^*.::&#=*^!=^;/*;:;&$##+}*&;%*.:^&_#:+}}};^*::/&:#;,&}#,=*!:,&/#:.%}:,#!}_.&%#++^};.$!#:%&!#/+/}.,;!:_=%}#++%},,^!:.:&%_=+!}^,/%!.;%__#+&}!,^&}.^%;_:^^$},*!%./%;_;/}$#^}!!.%%/_^;+$:,!=}.*%%_//^$;.+=#.%%!_///$^^;=:.^*}_!/%$+^^=;;:/!:}/!$%/}=#;;*::#+,$;&!+;#;_!.//%#}^!=%.$$,!}&},#:}*=;%*/:^&;#:+#%.#!,%:_&^#;+:$:&=,;:$_$*/+#/:.%!}:!&%_:*+/_;._&}:&/+}.^;_*_/^;:_,:;!}^.:%$:=;/&,:_!=,,/!^.;&/,%_+$}%&+=;:;$==&;&.::#$=:&^+.$+=&/:^!:=$#_:/;$:^#+=!!;+!!,+$;^:=#;}%!_%;**^#+=:;#*}_!/%./_:&;*;%/:}/!$%^!::}.=#&$^;_*$#=/$#*;::&#&+_;%=:%*#+:#^&$=,+$}:*;#;/*#&%}_%*^:!*+,}!%^:}$^&}!/;#;/+,^%%:+*:+&};,&=%^}#:+*$,/+#&&}_/}_^/$;/#}*^#}_^,#&/:$!&}_#&,:$}/+$$*/+=:^+}/^!.;%^_#=&,,}#,.!_;#=$&/_;%$_;+!#&/$_;$:^$=}.!%%*+&!$}^:=#;}:=:$#^$+.#$=__*}_!/%$/^^=;::+#:=/!$%^/=^;;*:=/,};_./=_;^*;::/.;!#;=&%_^$:}#;$%+}=!;%%;%}&$;/_%+#^:*#:/&^#;^#:;$&!=+,.*#;=;&^^;!=:!&%#/+^};,:/=$}_}##+/}^,;!=/;.+#!=,/%,;:/$$%%*:+/}%,/!^=:^_$!/$..,%!/.^%;_:/#}^_!.!.;%^_;/:}.*#^*.%+^_#/;$:^#;=*}%*;^#,.:+/==;}%!_%/}.;#.+:.;*}_!/%=*=#%=^.$,!&%/,}.:#;*=/%.^/&$!^%=/:!#^!!/&,+^/=;;/*^:;*/,/:&!#!}%%;#&}#:+#}}}%%$^_.=$#%}:/;%*!:%&/%,;;=#+}^::*&%#/+^/,$^*%.}&!#%_#&^_!*,..*!/}+;}/,^!;/&=!//^^$_:*^%..%:_#/}+!,^!..^%;_:^%;}#+!./%.._;/:$#,!/_.%%/_^/#$:^#=}:%/:_//^$;,==#;}%!_%//$^^;=:;#*}_!/%$/^^=;;_*#:}/!$%^/!;;;*::$&}}_^%=/;^%:::&##=^!*%;/*^:;^!##+}=*;%*$:^&.#:^%}};//#:/&^#;^&}#,=*!:^^}#^+;}:;^!}:*&%#/^!};,:!#.=&!#%+/};#&!:.$%}#&+%}/,^*:$&%#_=+!}#,/!^.;%:=./}}*,%!/.^%;_:+}=/,!!/./%__;/:$#,!/_.%%,_^/.$:^#=}.!,&_//:$;^_=#;}%!_%//$^^$=:;=*}_!/%}^^^=;.!*##*/!$%^/=^;;*:_*&}$%^%=^;^*}::&#$%^!/};/*,:;&=##^%%:;%*/:^./#:+$}};!+#:/&_#;+$}#,}*!_//;#^+}}:.;!}:!&%$^+^};;*!#:;&!#%+/=;,;!::/%}$}+%}/,^*:.:%##,+!==,/!^.;&#_#/}}:,%!$.^%;_:/#$},!!../&!_;/#$#^}!!.%%:_^/}$:,&=}.!%%_//_$;^#=#.!%!_;//$^^#=:};*}_*/%$.^^=##/*#:}/!%}^/=,;;*:=^&}$+^%=,;^*;::/}}%^!=;;/&%:;&:##,!=!;%*_:^/%#:+#}}.%*%:/&}#;,_}#,}*!_/&/#^^*}:;.!}:!&%$^+^};;/!#:^&!#%+/}^,;!::&%}#:+%}^,^!;.:%##/+!};,/!$.;%:_#/}}+,%!^.^%:_:+%$},!!^./;%_;/_$#,&!!.^+}_^/;$:#;=}.*%%_/.!$;^==#.*%!_%//$;_&=:.%*}_!/%$/^^=;:,*#_&/!$/^/=;;;%!#}&}$+^%/=;^*.::&##}^/%#;/*^:;.+##+==!;%+}:^&$#:+=}};!*%_^;;#;^!}#;!*!:%&/$;+;}:;&!}_:&%#/+^=:,:!#:^&!}++/}^,;!:.#%}#,+%}_,^*!.:&%_}+!}.,/&}.;%__#/}}!,^&}.^%;_:;/$},*!%.;^!_;/:$#:_!!.&%/#;;:$:,&=}.:%%_//^}:;!=#.^%!$*//$^^;!#:%*}_./%=^^^=;;:%}#//!$#^/!+;;*::#&}$$^%=_;^%%::&}#}^!&*;/*#:;/!##^+=!;;/;:^&}#:.$}};**%:+&^##./}#,}*!}&&/#,+;=#_}!}:^&%$++^};,:!#__&!#,+/};,;!#.#&/}!+%};,^^/.:%$_}++}%,;/!.;%:_#::}!,&!/.^,%_:+*$},&!%./%^#:+}$#,/!!./%/_^/;}#^#=}.,%%_}/^$;^:!};}%!_://}#^;=:;#&!_!/%$$^^=.;:*#:}+%$%^/!!;;%}:#&}$!^%=/;^*=::/^#}^%=%;/*^:;/!##^/=!;.*/:^&;#:^*}};%*%:^&^#}+:}#;%*!=}&/#,+;}=,#*%$:&%#/+^//,:!$.}&!!#+/}_,;!$.#%}#!^/%!,^!}.:%}_}+!}%;^!^.;&*_#+;}!,%!/:;%;_:+/$},,!%./%^#:/:$#,,!!:_%/_^/;}#^#=}.:%%#%/^$;^:=#;}%!_.//}!^;=#;#*}_!/%$:^^=};:%&:}/!$%^/=_;;*#:#/!$!^%=/;^*#::/*#}^!=%;;*^:;&:##_:=!;&*/:^&:#:^!}};!*%:/&^#;.,}#;%*!:&&/#^+;=!_!!}:/&%%&+^}.,:!$.}&/=#+/}^,;^..#%=#!+^*},^!;.:.&_}+*}%://^.;%=_#^+}!;%!/:;^*_:+*$},#!%./%^_;+/$#^}!!.&%/_^/;}#:}=}.+%%$;/^$;^:!%#/%!_;//$;^;=_;#*=_!/%%;^^=;;:*}:}/!$%^/&*;;*=:#/!$!^&=/;:+%::&##}#%=%;+*^_:,###^&=!.+*/:^&;$#^%}};^*%_#&^#;+:!#,}*!:;&/##+;}},#%!:!&%##+^=%,:!#.}/%#%+/}=,;*+.#%}#!^/}/,^*%.:&}_}+!}%;^!^.;&+_#+*}!,%!/.^%;_:+/$},_!%.^%^_;/:$#,/!!.:%/_^/;$:^#=}.+%%_//^$:^:=#;}%!_,//$,^;=_;#*}_:/%$/^^=.;:*#:}");local t=(0x138-202)local o=2 local d=n;local e={}e={[(34-0x21)]=function()local e,n,l,r=p(A,d,d+B);d=d+P;o=(o+(t*P))%a;return(((r+o-(t)+x*(P*_))%x)*((_*J)^_))+(((l+o-(t*_)+x*(_^B))%a)*(x*a))+(((n+o-(t*B)+J)%a)*x)+((e+o-(t*P)+J)%a);end,[(0x19c/206)]=function(e,e,e)local e=p(A,d,d);d=d+r;o=(o+(t))%a;return((e+o-(t)+J)%x);end,[(12/0x4)]=function()local e,l=p(A,d,d+_);o=(o+(t*_))%a;d=d+_;return(((l+o-(t)+x*(_*P))%x)*a)+((e+o-(t*_)+a*(_^B))%x);end,[((146328/0xb6)/0xc9)]=function(o,e,l)if l then local e=(o/_^(e-n))%_^((l-r)-(e-n)+r);return e-e%n;else local e=_^(e-r);return(o%(e+e)>=e)and n or g;end;end,[(0x429/213)]=function()local l=e[(207/0xcf)]();local o=e[(0x4b/(200-0x7d))]();local c=n;local d=(e[(0x48-68)](o,r,y+P)*(_^(y*_)))+l;local l=e[(0x21-29)](o,21,31);local e=((-n)^e[(54-0x32)](o,32));if(l==g)then if(d==j)then return e*g;else l=r;c=j;end;elseif(l==(x*(_^B))-r)then return(d==g)and(e*(r/j))or(e*(g/j));end;return E(e,l-((a*(P))-n))*(c+(d/(_^W)));end,[(0x63-93)]=function(l,_,_)local _;if(not l)then l=e[(-0x36+55)]();if(l==g)then return'';end;end;_=G(A,d,d+l-n);d=d+l;local e=''for l=r,#_ do e=K(e,Y((p(G(_,l,l))+o)%a))o=(o+t)%x end return e;end}local function J(...)return{...},V('#',...)end local function A()local w={};local d={};local l={};local h={w,d,nil,l};local o={}local O=(-0x5d+182)local l={[(0x16-20)]=(function(l)return not(#l==e[(81-0x4f)]())end),[(50-(138-0x59))]=(function(l)return e[(0x3a2/(0x74fa/161))]()end),[(0x0/177)]=(function(l)return e[(-47+0x35)]()end),[(115-0x6f)]=(function(l)local o=e[(84-0x4e)]()local l=''local e=1 for d=1,#o do e=(e+O)%a l=K(l,Y((p(o:sub(d,d))+e)%x))end return l end)};h[3]=e[(436/0xda)]();for e=r,e[(33/0x21)]()do d[e-r]=A();end;local d=e[(0x35+(-9-0x2b))]()for d=1,d do local e=e[(0x17e/191)]();local n;local e=l[e%(145-0x63)];o[d]=e and e({});end;for a=1,e[(238/(36890/0x9b))]()do local l=e[(0x74-114)]();if(e[(0x20-28)](l,n,r)==j)then local x=e[(0x6f+-107)](l,_,B);local d=e[(952/(558-0x140))](l,P,_+P);local l={e[(132-0x81)](),e[(29+-0x1a)](),nil,nil};local i={[(0x0/(0xb2+-24))]=function()l[i]=e[((-0x43+-38)+0x6c)]();l[L]=e[(-101+0x68)]();end,[(0x94/148)]=function()l[b]=e[(101+-0x64)]();end,[(0x67-101)]=function()l[u]=e[((122+-0x23)/0x57)]()-(_^y)end,[(109-0x6a)]=function()l[c]=e[(91+-0x5a)]()-(_^y)l[C]=e[(0x4c+(-9563/0x83))]();end};i[x]();if(e[(0x65-97)](d,r,n)==r)then l[U]=o[l[k]]end if(e[(320/0x50)](d,_,_)==n)then l[c]=o[l[c]]end if(e[(0x5d-89)](d,B,B)==r)then l[m]=o[l[L]]end w[a]=l;end end;return h;end;local function g(e,P,t)local a=e[_];local o=e[B];local e=e[n];return(function(...)local j={};local x=e;local d={};local A=V('#',...)-r;local y=a;local a=o;local o=n;local Y={};local p=J local J={...};local e=n e*=-1 local B=e;for e=0,A do if(e>=a)then Y[e-a]=J[e+r];else d[e]=J[e+n];end;end;local e=A-a+n local e;local a;while true do e=x[o];a=e[(0xd8/216)];l=(12373508)while a<=(0x7c-82)do l-= l l=(1385139)while(0xbb8/150)>=a do l-= l l=(7766010)while(0x29+(-6176/0xc1))>=a do l-= l l=(1322915)while(44-0x28)>=a do l-= l l=(5588569)while((0x169-225)/0x88)>=a do l-= l l=(11681365)while a>(0x73+-115)do l-= l if(d[e[k]]~=d[e[m]])then o=o+r;else o=e[u];end;break end while 4049==(l)/((-0x10+2901))do local e=e[O]d[e](d[e+r])break end;break;end while 2779==(l)/((4108-(0x8ae+-125)))do l=(75951)while a<=(134/0x43)do l-= l d[e[k]]=(e[c]~=0);o=o+r;break;end while 97==(l)/((0xd61a/70))do l=(8043924)while(100-0x61)<a do l-= l local D;local a;local u;local l;d[e[h]]=t[e[c]];o=o+n;e=x[o];d[e[k]]=d[e[b]][e[s]];o=o+n;e=x[o];l=e[f];u=d[e[b]];d[l+1]=u;d[l]=u[e[v]];o=o+n;e=x[o];d[e[h]]=d[e[i]];o=o+n;e=x[o];d[e[O]]=d[e[i]];o=o+n;e=x[o];l=e[U]d[l]=d[l](M(d,l+n,e[i]))o=o+n;e=x[o];l=e[w];u=d[e[c]];d[l+1]=u;d[l]=u[e[s]];o=o+n;e=x[o];l=e[f]d[l]=d[l](d[l+r])o=o+n;e=x[o];a={d,e};a[r][a[_][U]]=a[n][a[_][m]]+a[r][a[_][N]];o=o+n;e=x[o];d[e[h]]=d[e[b]]%e[L];o=o+n;e=x[o];l=e[O]d[l]=d[l](d[l+r])o=o+n;e=x[o];u=e[i];D=d[u]for e=u+1,e[s]do D=D..d[e];end;d[e[f]]=D;o=o+n;e=x[o];a={d,e};a[r][a[_][O]]=a[n][a[_][s]]+a[r][a[_][N]];o=o+n;e=x[o];d[e[w]]=d[e[b]]%e[s];break end while 2924==(l)/((-0x4e+(0x1633-2854)))do d[e[f]]=g(y[e[D]],nil,t);break end;break;end break;end break;end while(l)/((0x641-864))==1795 do l=(588336)while(0x6f-105)>=a do l-= l l=(111630)while a>(0x1a4/84)do l-= l local a;local c,_;local r;local l;d[e[U]]=t[e[D]];o=o+n;e=x[o];l=e[w];r=d[e[u]];d[l+1]=r;d[l]=r[e[v]];o=o+n;e=x[o];d[e[U]]=t[e[N]];o=o+n;e=x[o];d[e[h]]=e[u];o=o+n;e=x[o];d[e[w]]=e[N];o=o+n;e=x[o];d[e[U]]=e[D];o=o+n;e=x[o];l=e[U]d[l]=d[l](M(d,l+n,e[b]))o=o+n;e=x[o];l=e[w]c,_=p(d[l](M(d,l+1,e[N])))B=_+l-1 a=0;for e=l,B do a=a+n;d[e]=c[a];end;o=o+n;e=x[o];l=e[f]d[l]=d[l](M(d,l+n,B))o=o+n;e=x[o];d[e[h]]();break end while(l)/((-26+0x3ad))==122 do local l=d[e[L]];if not l then o=o+r;else d[e[f]]=l;o=e[b];end;break end;break;end while 476==(l)/((16068/0xd))do l=(14273445)while a<=(59-0x34)do l-= l d[e[O]]={};break;end while 3693==(l)/((0xf57+-62))do l=(2124500)while a>((-95+-0x3)+106)do l-= l local l=e[f]d[l]=d[l](M(d,l+n,e[N]))break end while 2428==(l)/((891+-0x10))do if(d[e[k]]==d[e[L]])then o=o+r;else o=e[b];end;break end;break;end break;end break;end break;end while 3522==(l)/((0x117b-2270))do l=(3612843)while(0xaf0/200)>=a do l-= l l=(10067400)while a<=((80520/0xb7)/0x28)do l-= l l=(624726)while(0x2c6/71)<a do l-= l local l=e[O];local a=d[l+2];local n=d[l]+a;d[l]=n;if(a>0)then if(n<=d[l+1])then o=e[u];d[l+3]=n;end elseif(n>=d[l+1])then o=e[N];d[l+3]=n;end break end while(l)/((0xc2d-1608))==414 do do return end;break end;break;end while(l)/((3612+-0x57))==2856 do l=(189230)while(0x750/156)>=a do l-= l d[e[w]]=P[e[D]];o=o+n;e=x[o];d[e[k]]=#d[e[b]];o=o+n;e=x[o];P[e[u]]=d[e[k]];o=o+n;e=x[o];d[e[U]]=P[e[D]];o=o+n;e=x[o];d[e[h]]=#d[e[b]];o=o+n;e=x[o];P[e[D]]=d[e[U]];o=o+n;e=x[o];do return end;break;end while(l)/((-18+0x28d))==298 do l=(610236)while a>(2639/0xcb)do l-= l if(d[e[U]]==e[m])then o=o+r;else o=e[c];end;break end while(l)/((0x25d-329))==2211 do local l=e[w]d[l]=d[l](M(d,l+n,e[b]))break end;break;end break;end break;end while 1053==(l)/((6899-0xd8c))do l=(2811081)while a<=(561/0x21)do l-= l l=(702834)while(0x6e-95)>=a do l-= l P[e[b]]=d[e[h]];break;end while 463==(l)/((-0x64+1618))do l=(3371984)while a>((0x22e0/93)-0x50)do l-= l local l=e[O];local n=d[l]local a=d[l+2];if(a>0)then if(n>d[l+1])then o=e[b];else d[l+3]=n;end elseif(n<d[l+1])then o=e[c];else d[l+3]=n;end break end while(l)/((541926/0xc6))==1232 do d[e[O]]();break end;break;end break;end while(l)/((2005+-0x5e))==1471 do l=(5069582)while a<=(2160/0x78)do l-= l d[e[h]]=d[e[c]][e[v]];break;end while(l)/((2897-0x5d0))==3598 do l=(7408710)while a>(0x4c+-57)do l-= l local a;local l;d[e[f]]=t[e[i]];o=o+n;e=x[o];d[e[U]]=t[e[c]];o=o+n;e=x[o];d[e[w]]=e[b];o=o+n;e=x[o];d[e[w]]=e[D];o=o+n;e=x[o];d[e[w]]=e[c];o=o+n;e=x[o];l=e[h]d[l]=d[l](M(d,l+n,e[c]))o=o+n;e=x[o];d[e[w]]=d[e[D]][d[e[C]]];o=o+n;e=x[o];l=e[O]d[l]=d[l](d[l+r])o=o+n;e=x[o];a=d[e[v]];if not a then o=o+r;else d[e[w]]=a;o=e[c];end;break end while(l)/((-80+0xfb9))==1878 do local e={d,e};e[r][e[_][k]]=e[n][e[_][S]]+e[r][e[_][D]];break end;break;end break;end break;end break;end break;end while 497==(l)/((0x1626-2883))do l=(2763200)while a<=(7905/0xff)do l-= l l=(121666)while(161-0x88)>=a do l-= l l=(1155264)while(1144/0x34)>=a do l-= l l=(1933424)while a>(0x849/101)do l-= l d[e[O]]=e[c];break end while 596==(l)/((535260/0xa5))do P[e[D]]=d[e[U]];break end;break;end while 547==(l)/((-126+0x8be))do l=(212577)while(-23+0x2e)>=a do l-= l d[e[k]]=d[e[i]]%e[v];break;end while 177==(l)/((-0x41+1266))do l=(498800)while(0x1080/(-0x4b+251))<a do l-= l d[e[w]]=d[e[i]][d[e[m]]];break end while 430==(l)/((2438-0x4fe))do d[e[w]]=e[c];break end;break;end break;end break;end while 958==(l)/((-0x48+199))do l=(184334)while a<=(182-(383-0xe5))do l-= l l=(1249250)while a<=(2938/0x71)do l-= l d[e[f]]=#d[e[b]];break;end while 2375==(l)/((-0x40+590))do l=(11582406)while(-0x33+78)<a do l-= l local l=e[h]local o,e=p(d[l](M(d,l+1,e[i])))B=e+l-1 local e=0;for l=l,B do e=e+n;d[l]=o[e];end;break end while 3366==(l)/((0x96603/179))do d[e[h]]=#d[e[i]];break end;break;end break;end while(l)/((57293/(0x1282/206)))==74 do l=(6154412)while a<=(2900/0x64)do l-= l local e=e[k]d[e]=d[e](d[e+r])break;end while 2293==(l)/((5449-0xacd))do l=(3790608)while a>(185-0x9b)do l-= l local o=e[N];local l=d[o]for e=o+1,e[m]do l=l..d[e];end;d[e[k]]=l;break end while 942==(l)/((0x1fdb-(714663/0xad)))do if(d[e[k]]==e[C])then o=o+r;else o=e[u];end;break end;break;end break;end break;end break;end while(l)/((3239-0x667))==1727 do l=(3077624)while a<=(648/0x12)do l-= l l=(967079)while(0x12f3/147)>=a do l-= l l=(2666973)while(74+-0x2a)<a do l-= l if(d[e[w]]~=d[e[C]])then o=o+r;else o=e[N];end;break end while(l)/((2091+-0x72))==1349 do local l=d[e[C]];if not l then o=o+r;else d[e[k]]=l;o=e[c];end;break end;break;end while(l)/((676124/0xf4))==349 do l=(905625)while(1768/0x34)>=a do l-= l if d[e[k]]then o=o+n;else o=e[u];end;break;end while(l)/((0x16cc-2961))==315 do l=(537999)while(0x222e/250)<a do l-= l local e=e[h]d[e]=d[e](d[e+r])break end while 3927==(l)/((23290/(400-0xe6)))do d[e[k]]=d[e[u]]-d[e[C]];break end;break;end break;end break;end while(l)/((0xd73+-31))==902 do l=(57597)while((0x6a0f5/47)/0xed)>=a do l-= l l=(3320763)while a<=(-114+0x97)do l-= l t[e[D]]=d[e[f]];break;end while 1173==(l)/((0x168d-2942))do l=(8732)while(3724/0x62)<a do l-= l d[e[O]]={};break end while 59==(l)/((237+-0x59))do d[e[h]]();break end;break;end break;end while(l)/((187-0x72))==789 do l=(3283830)while a<=((-0x5-15)+60)do l-= l t[e[i]]=d[e[w]];o=o+n;e=x[o];d[e[f]]={};o=o+n;e=x[o];d[e[k]]={};o=o+n;e=x[o];t[e[u]]=d[e[f]];o=o+n;e=x[o];d[e[O]]=t[e[b]];o=o+n;e=x[o];if(d[e[O]]==e[C])then o=o+r;else o=e[i];end;break;end while 1177==(l)/((-0x13+2809))do l=(15293217)while a>(0x9ee/62)do l-= l local a;local l;d[e[h]]=t[e[D]];o=o+n;e=x[o];d[e[h]]=t[e[c]];o=o+n;e=x[o];d[e[k]]=e[D];o=o+n;e=x[o];d[e[k]]=e[c];o=o+n;e=x[o];d[e[h]]=e[N];o=o+n;e=x[o];l=e[U]d[l]=d[l](M(d,l+n,e[u]))o=o+n;e=x[o];d[e[O]]=d[e[c]][d[e[v]]];o=o+n;e=x[o];l=e[f]d[l]=d[l](d[l+r])o=o+n;e=x[o];a=d[e[S]];if not a then o=o+r;else d[e[U]]=a;o=e[N];end;break end while(l)/((0x649f8/104))==3859 do local r;local a;local l;d[e[w]]=e[N];o=o+n;e=x[o];d[e[f]]=e[b];o=o+n;e=x[o];d[e[w]]=#d[e[i]];o=o+n;e=x[o];d[e[U]]=e[u];o=o+n;e=x[o];l=e[O];a=d[l]r=d[l+2];if(r>0)then if(a>d[l+1])then o=e[i];else d[l+3]=a;end elseif(a<d[l+1])then o=e[u];else d[l+3]=a;end break end;break;end break;end break;end break;end break;end break;end while(l)/((-30+0xe90))==3346 do l=(1249950)while(0x98+-88)>=a do l-= l l=(2534004)while(0x6c+-55)>=a do l-= l l=(6988092)while(9165/0xc3)>=a do l-= l l=(2066928)while a<=(0x318/18)do l-= l l=(7918535)while((16068/0x4e)-0xa3)<a do l-= l local e={d,e};e[r][e[_][w]]=e[n][e[_][S]]+e[r][e[_][D]];break end while(l)/((0x101d-(4302-0x8a2)))==3895 do do return d[e[U]]end break end;break;end while(l)/(((466151-0x38e9b)/92))==816 do l=(4917374)while(-44+0x59)>=a do l-= l local o=e[h];local l=d[e[c]];d[o+1]=l;d[o]=l[e[s]];break;end while 2849==(l)/((3479-0x6d9))do l=(621576)while a>(0x88+-90)do l-= l d[e[w]]=P[e[c]];break end while(l)/((0x1e81c/234))==1164 do local l=e[w];local n=d[l]local a=d[l+2];if(a>0)then if(n>d[l+1])then o=e[b];else d[l+3]=n;end elseif(n<d[l+1])then o=e[u];else d[l+3]=n;end break end;break;end break;end break;end while 2643==(l)/((2672+-0x1c))do l=(2689128)while(0xde-172)>=a do l-= l l=(1939065)while a<=(0x82-82)do l-= l local o=e[u];local l=d[o]for e=o+1,e[S]do l=l..d[e];end;d[e[f]]=l;break;end while 503==(l)/((3901+-0x2e))do l=(7111728)while a>(0x1386/102)do l-= l if(d[e[O]]==d[e[S]])then o=o+r;else o=e[c];end;break end while(l)/((0x41c28/129))==3406 do local e=e[O]d[e]=d[e](M(d,e+n,B))break end;break;end break;end while 2873==(l)/((1994-(0x497+-117)))do l=(4720576)while(0x10bc/84)>=a do l-= l d[e[w]]=d[e[b]][e[C]];break;end while(l)/((71960/0x28))==2624 do l=(1916235)while(0x8c-88)<a do l-= l if d[e[h]]then o=o+n;else o=e[b];end;break end while 1317==(l)/((0xbcd-1566))do if not d[e[O]]then o=o+r;else o=e[u];end;break end;break;end break;end break;end break;end while 1422==(l)/((3582-0x708))do l=(3320478)while(-0x5a+148)>=a do l-= l l=(9676041)while(0xb5-126)>=a do l-= l l=(961170)while((25213-0x3157)/0xe9)<a do l-= l local e={d,e};e[n][e[_][k]]=e[_][C]+e[_][u];break end while(l)/((-0x6a+796))==1393 do local a=y[e[b]];local n;local l={};n=Q({},{__index=function(o,e)local e=l[e];return e[1][e[2]];end,__newindex=function(d,e,o)local e=l[e]e[1][e[2]]=o;end;});for n=1,e[S]do o=o+r;local e=x[o];if e[(137/0x89)]==84 then l[n-1]={d,e[b]};else l[n-1]={P,e[D]};end;j[#j+1]=l;end;d[e[h]]=g(a,n,t);break end;break;end while(l)/((-50+(4145+-0x76)))==2433 do l=(7184360)while(-88+0x90)>=a do l-= l d[e[O]]=P[e[b]];break;end while 3065==(l)/((-0x2b+2387))do l=(6282080)while(191-0x86)<a do l-= l o=e[c];break end while 2485==(l)/((5102-0xa0e))do t[e[i]]=d[e[O]];break end;break;end break;end break;end while(l)/((5625-0xb23))==1197 do l=(5741488)while(179+-0x76)>=a do l-= l l=(8053642)while(0x28cb/177)>=a do l-= l local e=e[k]d[e](d[e+r])break;end while 2531==(l)/((117734/0x25))do l=(11968)while((375-0xd7)+-0x64)<a do l-= l d[e[h]]=(e[b]~=0);break end while(l)/((3168/0x48))==272 do local l;d[e[w]]=t[e[D]];o=o+n;e=x[o];d[e[w]]=t[e[D]];o=o+n;e=x[o];d[e[f]]=e[i];o=o+n;e=x[o];d[e[f]]=e[N];o=o+n;e=x[o];d[e[w]]=e[D];o=o+n;e=x[o];l=e[f]d[l]=d[l](M(d,l+n,e[i]))o=o+n;e=x[o];d[e[h]]=d[e[c]][d[e[C]]];o=o+n;e=x[o];l=e[U]d[l]=d[l](d[l+r])o=o+n;e=x[o];d[e[h]]=d[e[i]];o=o+n;e=x[o];o=e[u];break end;break;end break;end while 1567==(l)/((0xec8+-120))do l=(2155179)while((0x82f5/225)-0x57)>=a do l-= l if not d[e[O]]then o=o+r;else o=e[i];end;break;end while(l)/((0x3d4+-31))==2271 do l=(2134484)while a>((0x4-39)+0x62)do l-= l local e={d,e};e[n][e[_][U]]=e[_][s]+e[_][c];break end while(l)/((0x56fa1/233))==1396 do d[e[f]]=d[e[i]][d[e[C]]];break end;break;end break;end break;end break;end break;end while(l)/((77350/0x77))==1923 do l=(736074)while a<=(-28+0x67)do l-= l l=(10912604)while(-49+(0xd4+-94))>=a do l-= l l=(8118180)while a<=(5082/0x4d)do l-= l l=(3156888)while a>(0x79e/30)do l-= l d[e[f]]=t[e[i]];break end while 1032==(l)/((6174-(0x18c3-3224)))do local o=e[f];local l=d[e[c]];d[o+1]=l;d[o]=l[e[L]];break end;break;end while(l)/((7246-0xe5c))==2274 do l=(8227560)while a<=(9514/0x8e)do l-= l local a=y[e[i]];local n;local l={};n=Q({},{__index=function(o,e)local e=l[e];return e[1][e[2]];end,__newindex=function(d,e,o)local e=l[e]e[1][e[2]]=o;end;});for n=1,e[S]do o=o+r;local e=x[o];if e[(-0x48+73)]==84 then l[n-1]={d,e[D]};else l[n-1]={P,e[u]};end;j[#j+1]=l;end;d[e[h]]=g(a,n,t);break;end while(l)/((3911+-0x74))==2168 do l=(9740247)while(253-0xb9)<a do l-= l local l=e[f];local a=d[l+2];local n=d[l]+a;d[l]=n;if(a>0)then if(n<=d[l+1])then o=e[i];d[l+3]=n;end elseif(n>=d[l+1])then o=e[D];d[l+3]=n;end break end while 3443==(l)/(((42915930/0xcd)/74))do d[e[U]]=(e[c]~=0);o=o+r;break end;break;end break;end break;end while(l)/((450344/0xa4))==3974 do l=(6492800)while(0x43c8/241)>=a do l-= l l=(4339998)while a<=((0x166+-100)-188)do l-= l o=e[b];break;end while 1326==(l)/((-16+0xcd9))do l=(359973)while a>(-0x73+186)do l-= l d[e[h]]=d[e[c]]%e[v];break end while(l)/((0x201-306))==1739 do d[e[U]]=t[e[c]];break end;break;end break;end while 2029==(l)/((0x87280/173))do l=(11840202)while((0x10fb-2230)/0x1d)>=a do l-= l d[e[O]][d[e[c]]]=d[e[S]];break;end while 3069==(l)/((308640/0x50))do l=(2622573)while a>(168+-0x5e)do l-= l d[e[U]]=g(y[e[b]],nil,t);break end while(l)/((0x1b57c/108))==2529 do d[e[O]]=d[e[b]];break end;break;end break;end break;end break;end while 951==(l)/((1643-0x365))do l=(472842)while(4960/(0x80+-66))>=a do l-= l l=(1572896)while(0x107-186)>=a do l-= l l=(2008272)while a>(94+(73-0x5b))do l-= l local a;local l;d[e[U]]=t[e[i]];o=o+n;e=x[o];d[e[O]]=t[e[i]];o=o+n;e=x[o];d[e[h]]=e[i];o=o+n;e=x[o];d[e[f]]=e[N];o=o+n;e=x[o];d[e[k]]=e[c];o=o+n;e=x[o];l=e[w]d[l]=d[l](M(d,l+n,e[u]))o=o+n;e=x[o];d[e[k]]=d[e[u]][d[e[S]]];o=o+n;e=x[o];l=e[k]d[l]=d[l](d[l+r])o=o+n;e=x[o];a=d[e[m]];if not a then o=o+r;else d[e[h]]=a;o=e[i];end;break end while(l)/((3388-0x6b8))==1204 do do return end;break end;break;end while 1976==(l)/((-49+0x34d))do l=(3771625)while(0x4182/215)>=a do l-= l local l=e[U]local o,e=p(d[l](M(d,l+1,e[i])))B=e+l-1 local e=0;for l=l,B do e=e+n;d[l]=o[e];end;break;end while 1375==(l)/((-0x19+2768))do l=(6786790)while a>(0x67b/21)do l-= l local e=e[f]d[e]=d[e](M(d,e+n,B))break end while 1730==(l)/((-87+0xfaa))do d[e[f]][d[e[b]]]=d[e[C]];break end;break;end break;end break;end while(l)/((0x85f95/253))==218 do l=(1813215)while a<=(2324/0x1c)do l-= l l=(7083693)while(19278/0xee)>=a do l-= l local a;local l;d[e[h]]=(e[c]~=0);o=o+n;e=x[o];d[e[O]]=d[e[i]];o=o+n;e=x[o];d[e[k]]=t[e[u]];o=o+n;e=x[o];l=e[O]d[l]=d[l](d[l+r])o=o+n;e=x[o];a=d[e[L]];if not a then o=o+r;else d[e[U]]=a;o=e[i];end;break;end while 3321==(l)/(((-130+0xc)+0x8cb))do l=(504810)while a>(0x67+-21)do l-= l d[e[w]]=(e[i]~=0);break end while(l)/((2416-0x4cf))==426 do local l;local a;d[e[k]]=t[e[u]];o=o+n;e=x[o];d[e[O]]=e[b];o=o+n;e=x[o];d[e[w]]=e[b];o=o+n;e=x[o];a=e[D];l=d[a]for e=a+1,e[v]do l=l..d[e];end;d[e[h]]=l;o=o+n;e=x[o];if d[e[h]]then o=o+n;else o=e[D];end;break end;break;end break;end while(l)/((220691/0xc7))==1635 do l=(5417328)while a<=(197-0x71)do l-= l d[e[U]]=d[e[D]];break;end while 1402==(l)/((475272/0x7b))do l=(6009567)while a>(0x76+-33)do l-= l d[e[U]]=d[e[u]]-d[e[s]];break end while 3401==(l)/((3598-0x727))do do return d[e[k]]end break end;break;end break;end break;end break;end break;end break;end o+= r end;end);end;return g(A(),{},T())()end)_msec({[(9548/0x3e)]='\115\116'..(function(e)return(e and'(6900/0x45)')or'\114\105'or'\120\58'end)((59-(0x33ae/245))==(0xf6/41))..'\110g',[(763+-0x20)]='\108\100'..(function(e)return(e and'(0x13a-214)')or'\101\120'or'\119\111'end)((114+-0x6d)==(0x24-30))..'\112',[(-26+0x110)]=(function(e)return(e and'(-0x20+132)')and'\98\121'or'\100\120'end)(((87980/0x53)/0xd4)==(685/(382-0xf5)))..'\116\101',[(0xa90c/124)]='\99'..(function(e)return(e and'((-114+0x178)-162)')and'\90\19\157'or'\104\97'end)((745/0x95)==(101-0x62))..'\114',[((2702400/0x78)/0x28)]='\116\97'..(function(e)return(e and'(290-0xbe)')and'\64\113'or'\98\108'end)((0x4e0/208)==(-99+0x68))..'\101',[((0x33f7b/201)-0x24f)]=(function(e)return(e and'(0x3200/128)')or'\115\117'or'\78\107'end)((112-0x6d)==(0x65+-70))..'\98',[(0x277c6/193)]='\99\111'..(function(e)return(e and'(0x122-190)')and'\110\99'or'\110\105\103\97'end)((177-0x92)==(0xa1-130))..'\97\116',[(0x14f9a/129)]=(function(e,l)return(e and'(-126+0xe2)')and'\48\159\158\188\10'or'\109\97'end)((375/0x4b)==(77+-0x47))..'\116\104',[(2775-0x57e)]=(function(l,e)return((101-0x60)==(141/0x2f)and'\48'..'\195'or l..((not'\20\95\69'and'\90'..'\180'or e)))or'\199\203\95'end),[(89010/0x5a)]='\105\110'..(function(e,l)return(e and'(-127+0xe3)')and'\90\115\138\115\15'or'\115\101'end)((30+(0x0+-25))==((0x6600/192)-0x69))..'\114\116',[(2169-0x45f)]='\117\110'..(function(e,l)return(e and'(24000/0xf0)')or'\112\97'or'\20\38\154'end)((90+(-0x64+15))==((2+-0x29)+0x46))..'\99\107',[(2498-0x51b)]='\115\101'..(function(e)return(e and'(267-0xa7)')and'\110\112\99\104'or'\108\101'end)((-61+0x42)==(122-0x5b))..'\99\116',[(-53+0x541)]='\116\111\110'..(function(e,l)return(e and'(-124+0xe0)')and'\117\109\98'or'\100\97\120\122'end)((55-0x32)==(-68+0x49))..'\101\114'},{[(0xe6-131)]=((getfenv))},((getfenv))()) end)()
+
+
+   end,
+})
+    
     local Rag = Fun:CreateSection("Kinds Animations")
 
     local Button = Fun:CreateButton({
