@@ -3107,24 +3107,80 @@ Useful:CreateButton({
 local Combat = Useful:CreateSection("Combat")
 
 local Button = Useful:CreateButton({
-   Name = "Hitbox Expander (Bugged)",
+   Name = "Hitbox Expander (Not Mine)",
    Callback = function()
    		loadstring(game:HttpGet("https://raw.githubusercontent.com/Qwoqeex/Hitbox-Expander/refs/heads/main/Hitboxes"))()
    end,
 })
 
-    local Button = Useful:CreateButton({
-   Name = "Jason HitBox (buggy if walk or run when hit but op also works on forsaken but can work on ther games) ",
-   Callback = function()
-   
-local HitboxModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/nexeralt/ForsakenHitboxExtender/refs/heads/main/open%20source.luau"))()
 
-HitboxModule:StopExtendingHitbox() -- This stops extending hitboxes
+        --[[ Hitbox Extender con Toggle, Slider y Hitbox Visible ]]
+        local HitboxModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/nexeralt/ForsakenHitboxExtender/refs/heads/main/open%20source.luau"))()
+        local RunService = game:GetService("RunService")
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local extendPower = 2
+        local hitboxEnabled = false
 
-HitboxModule:ExtendHitbox(2, 9e9) -- First argument is power ( in studs ) and second argument is how long should hitbox extend be applied.
+        -- Mantener hitbox activo
+        RunService.RenderStepped:Connect(function()
+            if hitboxEnabled then
+                HitboxModule:ExtendHitbox(extendPower, 0.1)
+            end
+        end)
 
--- PS: i know that hitboxes dissapear into far when walking or running, fix that by yourself coder stealers ✌️
-   end,
+        -- Toggle para activar/desactivar hitbox
+        Useful:CreateToggle({
+            Name = "Enable Hitbox",
+            CurrentValue = false,
+            Callback = function(value)
+                hitboxEnabled = value
+                if not value then
+                    HitboxModule:StopExtendingHitbox()
+                end
+            end
+        })
+
+        -- Slider para cambiar potencia
+        Useful:CreateSlider({
+            Name = "Hitbox Power",
+            Min = 1,
+            Max = 100,
+            Default = 2,
+            Callback = function(value)
+                extendPower = value
+            end
+        })
+
+        -- Botón para mostrar hitbox visible
+        Useful:CreateButton({
+            Name = "Visible Hitbox",
+            Callback = function()
+                -- Crear un Part para el hitbox visible
+                local hitboxPart = Instance.new("Part")
+                hitboxPart.Size = Vector3.new(extendPower*2, 5, extendPower*2)
+                hitboxPart.Position = character:WaitForChild("HumanoidRootPart").Position
+                hitboxPart.Anchored = true
+                hitboxPart.CanCollide = false
+                hitboxPart.Transparency = 0.3
+                hitboxPart.BrickColor = BrickColor.new("Bright red")
+                hitboxPart.Parent = workspace
+
+                -- Actualizar posición en cada frame
+                local connection
+                connection = RunService.RenderStepped:Connect(function()
+                    if character and character:FindFirstChild("HumanoidRootPart") then
+                        hitboxPart.Position = character.HumanoidRootPart.Position
+                        hitboxPart.Size = Vector3.new(extendPower*2, 5, extendPower*2)
+                    else
+                        hitboxPart:Destroy()
+                        connection:Disconnect()
+                    end
+                end)
+            end
+        })
+    end
 })
 
     local Devs = Useful:CreateSection("Devs")
@@ -3500,9 +3556,9 @@ local FunExtras = Fun:CreateSection("Bluu Extras")
 local chatSpamConnection
 local spamMessages = {
     "BluuGui on top!", 
-    "Bluudud forever!", 
-    "Powered by BluuGui!", 
-    "Spin with Bluudanc!"
+    "I like ur smile!", 
+    "Hey Its me!", 
+    "Awww man!"
 }
 
 Fun:CreateToggle({
