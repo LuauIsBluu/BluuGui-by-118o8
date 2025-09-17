@@ -5279,4 +5279,45 @@ local Section = Useful:CreateSection("BackDoor Scaner")
    Callback = function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/its-LALOL/LALOL-Hub/main/Backdoor-Scanner/script"))()
    end,
-})                                                                                                                                     
+})           
+  local Button = Fun:CreateButton({
+   Name = "Jump Scare",
+   Callback = function()
+   -- Jump Scare Luau
+
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Crear el ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "JumpScareGui"
+screenGui.Parent = playerGui
+
+-- Crear la imagen
+local imageLabel = Instance.new("ImageLabel")
+imageLabel.Size = UDim2.new(1,0,1,0)
+imageLabel.Position = UDim2.new(0,0,0,0)
+imageLabel.Image = "rbxassetid://134659166665541" -- ID de la imagen
+imageLabel.BackgroundTransparency = 1
+imageLabel.Visible = false
+imageLabel.Parent = screenGui
+
+-- Crear el sonido
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://134659166665541" -- ID del sonido
+sound.Parent = imageLabel
+
+-- Función para mostrar el jump scare
+local function mostrarJumpScare()
+    imageLabel.Visible = true
+    sound:Play()
+    wait(3) -- Espera 3 segundos
+    imageLabel.Visible = false
+end
+
+-- Activar el jump scare al cargar
+wait(2) -- Espera 2 segundos antes de mostrar
+mostrarJumpScare()
+
+   end,
+})                                                                                                                  
