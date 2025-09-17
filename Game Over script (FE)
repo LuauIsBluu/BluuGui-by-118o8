@@ -1,10 +1,9 @@
---SUICIDE GUN reborn by bobhyuu
---edited my bobhyuu
+--SUICIDE GUN 
 
 function sadtalk()
-game:GetService("Chat"):chat(game.players.LocalPlayer.Character.Head,"Look what you have done to me!",Enum.ChatColor.Red)
+game:GetService("Chat"):chat(game.players.LocalPlayer.Character.Head,"Emhh,Awkward!",Enum.ChatColor.Red)
 wait(3)
-game:GetService("Chat"):chat(game.players.LocalPlayer.Character.Head,"Guys your fucked up now",Enum.ChatColor.Red)
+game:GetService("Chat"):chat(game.players.LocalPlayer.Character.Head,"Awwww Man!",Enum.ChatColor.Red)
 end
 
 o1 = Instance.new("Tool")
