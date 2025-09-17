@@ -1,3 +1,4 @@
+
 local StarterGui = game:GetService("StarterGui")
 
 -- first notify
@@ -5377,3 +5378,31 @@ mostrarJumpScare()
 
    end,
 })                                                                                                                  
+
+    local Button = Scripts:CreateButton({
+   Name = "Execute bluuGui server Scripts",
+   Callback = function()
+  loadstring(game:HttpGet("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-118o8/refs/heads/main/BluuGUi%20only%20server%20Scripts"))()
+
+   Rayfield:Notify({
+   Title = "BluuGui server scripts executed",
+   Content = "Good luck finding backdored games :3",
+   Duration = 4.3,
+   Image = 4483362458,
+})                                                                                                                                     
+   end,
+})     
+
+    local Button = Scripts:CreateButton({
+   Name = "226w6 moderator suite",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-118o8/refs/heads/main/226w6%20moderator%20suite.Lua"))()
+
+        Rayfield:Notify({
+   Title = "226w6 executed!",
+   Content = "Enjoy be a moderator :3",
+   Duration = 3.1,
+   Image = 4483362458,
+})                                                        
+   end,
+})
