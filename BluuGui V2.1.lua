@@ -5241,7 +5241,7 @@ local Community = Window:CreateTab("Community", 4483362458)
 local Section = Community:CreateSection("BluuNews & Updates")
 
 -- Permanent Pastebin raw link
-local newsLink = "https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-11808/refs/heads/main/BluuNews!!11!" -- replace with your real raw link
+local newsLink = "https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-118o8/refs/heads/main/BluuNews!!11!"--This is a link :P
 
 -- Fetch and show updates
 local function loadNews()
