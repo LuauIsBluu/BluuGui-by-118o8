@@ -4481,7 +4481,6 @@ script.Disabled=true;
     local Button = Fun:CreateButton({
    Name = ">:)",
    Callback = function()
-   --// Fully made by @sakupenny, comments are made by me too.
 
 --// define locally so they can't be changed mid usage
 local JerkOffSpeed = getgenv().JERK_OFF_SPEED
@@ -4628,7 +4627,7 @@ end)
     local Button = Fun:CreateButton({
    Name = "D: Esc+R",
    Callback = function()
-   loadstring(game:HttpGet("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-11808/refs/heads/main/Game%20Over%20script%20(FE)"))()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-118o8/refs/heads/main/Game%20Over%20script%20(FE)"))()
 
    end,
 })
