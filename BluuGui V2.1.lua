@@ -3616,7 +3616,30 @@ button6.MouseButton1Click:Connect(playAnimation5)
 
    end,
 })
-    
+
+local Button = Games:CreateButton({
+   Name = "XVC OP hub (keyless)"
+   Callback = function()
+   -- DO NOT USE CODE FROM THIS SCRIPT. PERMISSION IS NOT GRANTED
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fuckg1thub/NeptX/refs/heads/main/NeptZ/Forsaken/source.lua"))()
+   end,
+})
+
+        local Button = Games:CreateButton({
+   Name = "ESP",
+   Callback = function()
+  loadstring(game:HttpGet("https://raw.githubusercontent.com/PlutomasterAccount/Forsaken-ESP/refs/heads/main/Forsaken%20ESP%20Plutomaster.lua"))()
+
+Rayfield:Notify({
+   Title = "ESP executed >:D",
+   Content = "For killer and survivors",
+   Duration = 4,1
+   Image = 4483362458,
+})
+                    
+   end,
+})
+        
          -- 🟦 Field Trip Z
 elseif placeId == 5096191125 then
     local Section = Games:CreateSection("Field Trip Z")
