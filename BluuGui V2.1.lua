@@ -1954,6 +1954,7 @@ local supportedGames = {
     [17382280326] = "RobloxiaUntilDown", --classic
     [80238404781977] = "RobloxiaUntilDown", -- Chaos Mode
     [5096191125] = "Field Trip Z",
+    [18687417158] = "Forsaken",
     [99630341423433] = "Biast" 
 }
 
@@ -2881,6 +2882,503 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Pro666Pro/NexerHub-TR
    end,
 })
 
+                -- 🟦 Forsaken
+elseif placeId == 987654321 then
+    local Section = Games:CreateSection("Forsaken")
+
+ -- 1. Variables
+local generatorEnabled = false
+local delayTime = 1 -- seconds between triggers (initial)
+
+-- 2. Toggle
+Games:CreateToggle({
+    Name = "Auto Generator",
+    CurrentValue = false,
+    Flag = "AutoGen",
+    Callback = function(Value)
+        generatorEnabled = Value
+    end
+})
+
+-- 3. Slider to adjust delay
+Games:CreateSlider({
+    Name = "Delay Time",
+    Range = {0.1, 5},       -- Min and max seconds between triggers
+    Increment = 0.1,        -- Step size
+    Suffix = "seconds",     -- Show "seconds" after the number
+    CurrentValue = delayTime,
+    Flag = "DelaySlider",
+    Callback = function(Value)
+        delayTime = Value
+    end
+})
+
+-- 4. Loop to fire RemoteEvent
+task.spawn(function()
+    while task.wait() do
+        if generatorEnabled then
+            task.wait(delayTime) -- Wait delayTime seconds between fires
+            local success, RE = pcall(function()
+                return workspace:WaitForChild("Map")
+                    :WaitForChild("Ingame")
+                    :WaitForChild("Map")
+                    :WaitForChild("Generator")
+                    :WaitForChild("Remotes")
+                    :WaitForChild("RE")
+            end)
+
+            if success and RE then
+                RE:FireServer()
+            end
+        else
+            task.wait(0.1) -- short pause when disabled
+        end
+    end
+end)
+
+-- 1. Variables
+local staminaEnabled = false
+local restoreThreshold = 30 -- default threshold
+
+-- 2. Setup Remote/Module
+local rs = cloneref(game:GetService("ReplicatedStorage"))
+local sprint = rs.Systems.Character.Game.Sprinting
+local m = require(sprint)
+
+-- Optional: immediately set full stamina
+m.Stamina = 100
+
+-- 3. Toggle for infinite stamina
+local Toggle = Games:CreateToggle({
+    Name = "Infinite Stamina",
+    CurrentValue = false,
+    Flag = "InfiniteStamina",
+    Callback = function(Value)
+        staminaEnabled = Value
+    end
+})
+
+-- 4. Input Box to set threshold
+local Input = Games:CreateInput({
+    Name = "Restore Threshold",
+    PlaceholderText = "Enter number (default 30)",
+    KeyboardType = Enum.KeyboardType.NumberPad,
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Value)
+        local num = tonumber(Value)
+        if num then
+            restoreThreshold = num
+        else
+            warn("Invalid number entered!")
+        end
+    end
+})
+
+-- 5. Loop to restore stamina
+task.spawn(function()
+    while task.wait(0.1) do
+        if staminaEnabled and m.Stamina <= restoreThreshold then
+            m.Stamina = 100
+        end
+    end
+end)
+
+local Button = Games:CreateButton({
+   Name = "Spoof device",
+   Callback = function()
+   --[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+local UserInputService = game:GetService("UserInputService")
+local Network = require(game.ReplicatedStorage.Modules.Network)
+
+local DeviceSpoof = {}
+local ForcedDevice = "Console" -- change to "Mobile", "Console" or "PC"
+
+DeviceSpoof.Changed = Instance.new("BindableEvent").Event
+DeviceSpoof.Value = ForcedDevice
+
+local function ApplySpoof()
+    DeviceSpoof.Value = ForcedDevice
+    Network:FireServerConnection("SetDevice", "REMOTE_EVENT", ForcedDevice)
+end
+
+ApplySpoof()
+
+UserInputService.LastInputTypeChanged:Connect(ApplySpoof)
+
+while wait() do
+    ApplySpoof()
+end
+
+return DeviceSpoof
+   end,
+})
+
+local Button = Games:CreateButton({
+   Name = "KryOnion",
+   Callback = function()
+  
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ehrerlikesteto/KryOnionrep/refs/heads/main/OnionIsForsaken"))()
+                    Rayfield:Notify({
+   Title = "Executed",
+   Content = "BE carfully :3",
+   Duration = 3.1,
+   Image = 4483362458,
+})
+   end,
+})
+
+local Button = Games:CreateButton({
+   Name = "Execute VoidWare",
+   Callback = function()
+  
+if not game:IsLoaded() then return end
+local CheatEngineMode = false
+if (not getgenv) or (getgenv and type(getgenv) ~= "function") then CheatEngineMode = true end
+if getgenv and not getgenv().shared then CheatEngineMode = true; getgenv().shared = {}; end
+if getgenv and not getgenv().debug then CheatEngineMode = true; getgenv().debug = {traceback = function(string) return string end} end
+if getgenv and not getgenv().require then CheatEngineMode = true; end
+if getgenv and getgenv().require and type(getgenv().require) ~= "function" then CheatEngineMode = true end
+local debugChecks = {
+    Type = "table",
+    Functions = {
+        "getupvalue",
+        "getupvalues",
+        "getconstants",
+        "getproto"
+    }
+}
+local function checkExecutor()
+    if identifyexecutor ~= nil and type(identifyexecutor) == "function" then
+        local suc, res = pcall(function()
+            return identifyexecutor()
+        end)   
+        --local blacklist = {'appleware', 'cryptic', 'delta', 'wave', 'codex', 'swift', 'solara', 'vega'}
+        local blacklist = {'solara', 'cryptic', 'xeno', 'ember', 'ronix'}
+        local core_blacklist = {'solara', 'xeno'}
+        if suc then
+            for i,v in pairs(blacklist) do
+                if string.find(string.lower(tostring(res)), v) then CheatEngineMode = true end
+            end
+            for i,v in pairs(core_blacklist) do
+                if string.find(string.lower(tostring(res)), v) then
+                    pcall(function()
+                        getgenv().queue_on_teleport = function() warn('queue_on_teleport disabled!') end
+                    end)
+                end
+            end
+            if string.find(string.lower(tostring(res)), "delta") then
+                getgenv().isnetworkowner = function()
+                    return true
+                end
+            end
+        end
+    end
+end
+task.spawn(function() pcall(checkExecutor) end)
+local function checkDebug()
+    if CheatEngineMode then return end
+    if not getgenv().debug then 
+        CheatEngineMode = true 
+    else 
+        if type(debug) ~= debugChecks.Type then 
+            CheatEngineMode = true
+        else 
+            for i, v in pairs(debugChecks.Functions) do
+                if not debug[v] or (debug[v] and type(debug[v]) ~= "function") then 
+                    CheatEngineMode = true 
+                else
+                    local suc, res = pcall(debug[v]) 
+                    if tostring(res) == "Not Implemented" then 
+                        CheatEngineMode = true 
+                    end
+                end
+            end
+        end
+    end
+end
+--if (not CheatEngineMode) then checkDebug() end
+shared.CheatEngineMode = shared.CheatEngineMode or CheatEngineMode
+
+task.spawn(function()
+    pcall(function()
+        local Services = setmetatable({}, {
+            __index = function(self, key)
+                local suc, service = pcall(game.GetService, game, key)
+                if suc and service then
+                    self[key] = service
+                    return service
+                else
+                    warn(`[Services] Warning: "{key}" is not a valid Roblox service.`)
+                    return nil
+                end
+            end
+        })
+
+        local Players = Services.Players
+        local TextChatService = Services.TextChatService
+        local ChatService = Services.ChatService
+        repeat
+            task.wait()
+        until game:IsLoaded() and Players.LocalPlayer ~= nil
+        local chatVersion = TextChatService and TextChatService.ChatVersion or Enum.ChatVersion.LegacyChatService
+        local TagRegister = shared.TagRegister or {}
+        if not shared.CheatEngineMode then
+            if chatVersion == Enum.ChatVersion.TextChatService then
+                TextChatService.OnIncomingMessage = function(data)
+                    TagRegister = shared.TagRegister or {}
+                    local properties = Instance.new("TextChatMessageProperties", game:GetService("Workspace"))
+                    local TextSource = data.TextSource
+                    local PrefixText = data.PrefixText or ""
+                    if TextSource then
+                        local plr = Players:GetPlayerByUserId(TextSource.UserId)
+                        if plr then
+                            local prefix = ""
+                            if TagRegister[plr] then
+                                prefix = prefix .. TagRegister[plr]
+                            end
+                            if plr:GetAttribute("__OwnsVIPGamepass") and plr:GetAttribute("VIPChatTag") ~= false then
+                                prefix = prefix .. "<font color='rgb(255,210,75)'>[VIP]</font> "
+                            end
+                            local currentLevel = plr:GetAttribute("_CurrentLevel")
+                            if currentLevel then
+                                prefix = prefix .. string.format("<font color='rgb(173,216,230)'>[</font><font color='rgb(255,255,255)'>%s</font><font color='rgb(173,216,230)'>]</font> ", tostring(currentLevel))
+                            end
+                            local playerTagValue = plr:FindFirstChild("PlayerTagValue")
+                            if playerTagValue and playerTagValue.Value then
+                                prefix = prefix .. string.format("<font color='rgb(173,216,230)'>[</font><font color='rgb(255,255,255)'>#%s</font><font color='rgb(173,216,230)'>]</font> ", tostring(playerTagValue.Value))
+                            end
+                            prefix = prefix .. PrefixText
+                            properties.PrefixText = string.format("<font color='rgb(255,255,255)'>%s</font>", prefix)
+                        end
+                    end
+                    return properties
+                end
+            elseif chatVersion == Enum.ChatVersion.LegacyChatService then
+                ChatService:RegisterProcessCommandsFunction("CustomPrefix", function(speakerName, message)
+                    TagRegister = shared.TagRegister or {}
+                    local plr = Players:FindFirstChild(speakerName)
+                    if plr then
+                        local prefix = ""
+                        if TagRegister[plr] then
+                            prefix = prefix .. TagRegister[plr]
+                        end
+                        if plr:GetAttribute("__OwnsVIPGamepass") and plr:GetAttribute("VIPChatTag") ~= false then
+                            prefix = prefix .. "[VIP] "
+                        end
+                        local currentLevel = plr:GetAttribute("_CurrentLevel")
+                        if currentLevel then
+                            prefix = prefix .. string.format("[%s] ", tostring(currentLevel))
+                        end
+                        local playerTagValue = plr:FindFirstChild("PlayerTagValue")
+                        if playerTagValue and playerTagValue.Value then
+                            prefix = prefix .. string.format("[#%s] ", tostring(playerTagValue.Value))
+                        end
+                        prefix = prefix .. speakerName
+                        return prefix .. " " .. message
+                    end
+                    return message
+                end)
+            end
+        end
+    end)
+end)
+
+local commit = shared.CustomCommit and tostring(shared.CustomCommit) or shared.StagingMode and "staging" or "da0aeb15a18d3c8091ff1e3aab25970f40f53465"
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/VW-Add/"..tostring(commit).."/newforsaken.lua", true))()
+                    
+                    Rayfield:Notify({
+   Title = "Executed",
+   Content = "BE carfully :3",
+   Duration = 3.1,
+   Image = 4483362458,
+})
+   end,
+})
+
+ --[[ Hitbox Extender con Toggle, Slider y Hitbox Visible ]]
+        local HitboxModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/nexeralt/ForsakenHitboxExtender/refs/heads/main/open%20source.luau"))()
+        local RunService = game:GetService("RunService")
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local extendPower = 2
+        local hitboxEnabled = false
+
+        -- Mantener hitbox activo
+        RunService.RenderStepped:Connect(function()
+            if hitboxEnabled then
+                HitboxModule:ExtendHitbox(extendPower, 0.1)
+            end
+        end)
+
+        -- Toggle para activar/desactivar hitbox
+        Games:CreateToggle({
+            Name = "Enable Hitbox",
+            CurrentValue = false,
+            Callback = function(value)
+                hitboxEnabled = value
+                if not value then
+                    HitboxModule:StopExtendingHitbox()
+                end
+            end
+        })
+
+        -- Slider para cambiar potencia
+        Games:CreateSlider({
+            Name = "Hitbox Power",
+            Min = 1,
+            Max = 100,
+            Default = 2,
+            Callback = function(value)
+                extendPower = value
+            end
+        })
+
+local Button = Games:CreateButton({
+   Name = "Play Emotes as killer (beta)",
+   Callback = function()
+   --emote settings 
+local Solt1 = "StockDance"
+local Solt2 = "Brickbattler"
+local Solt3 = "Drumsticks"
+local Solt4 = "CaliforniaGirls"
+local Solt5 = "Hotdog"
+local Solt6 = "Wave"
+
+local function PlayEmote(Emote)
+    local args = {
+        [1] = "PlayEmote";
+        [2] = "Animations";
+        [3] = Emote;
+    }
+
+    game:GetService("ReplicatedStorage"):WaitForChild("Modules", 9e9):WaitForChild("Network", 9e9):WaitForChild("RemoteEvent", 9e9):FireServer(unpack(args))
+end
+
+local function createButton(ButtonName, parent, text, position, color, onClick)
+    local button = Instance.new("TextButton")
+    button.Name = ButtonName
+    button.Size = UDim2.new(0.8, 0, 0.12, 0)
+    button.Position = position
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.BackgroundColor3 = color
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 16
+    button.Parent = parent
+
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 5)
+    buttonCorner.Parent = button
+
+    button.MouseButton1Click:Connect(onClick)
+
+    return button
+end
+
+local function createEmoteButton(onClick)
+    local EmoteFrame = game:GetService("Players").LocalPlayer.PlayerGui.TemporaryUI.EmoteMenuHolder.RadialMenu.Attach["6"]
+    local button = Instance.new("TextButton", EmoteFrame)
+    button.Size = UDim2.new(0.705655515, 1, 0.705655217, 1)
+    button.Position = UDim2.new(0.153545171, 0, 0.356493711, 0)
+    button.Text = ""
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.BackgroundColor3 = Color3.new(1, 1, 1)
+    button.BackgroundTransparency = 1 -- Set transparency to 1 (fully transparent)
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 16
+
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 5)
+    buttonCorner.Parent = button
+
+    button.MouseButton1Down:Connect(onClick)
+
+    return button
+end
+
+local Playersgui = game:GetService("Players")
+local playergui = Playersgui.LocalPlayer
+-- Smaller GUI
+local screenGui = Instance.new("ScreenGui", playergui:WaitForChild("PlayerGui"))
+local mainFrame = Instance.new("Frame", screenGui)
+mainFrame.Size = UDim2.new(0, 200, 0, 280)
+mainFrame.Position = UDim2.new(0.5, -100, 0.5, -140)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+mainFrame.BackgroundTransparency = 0.2
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 10)
+uiCorner.Parent = mainFrame
+
+-- Close Button
+local closeButton = Instance.new("TextButton", mainFrame)
+closeButton.Name = "Close"
+closeButton.Size = UDim2.new(0, 25, 0, 25)
+closeButton.Position = UDim2.new(1, -30, 0, 5)
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 16
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 5)
+closeCorner.Parent = closeButton
+
+closeButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+    mainFrame:Destroy()
+    screenGui:Destroy()
+end)
+
+-- Create Buttons
+createButton("1", mainFrame, "1", UDim2.new(0.1, 0, 0.1, 0), Color3.fromRGB(30, 60, 90), function()
+    PlayEmote(Solt1)
+end)
+
+createButton("2", mainFrame, "2", UDim2.new(0.1, 0, 0.24, 0), Color3.fromRGB(0, 0, 255), function()
+    PlayEmote(Solt2)
+end)
+
+createButton("3", mainFrame, "3", UDim2.new(0.1, 0, 0.38, 0), Color3.fromRGB(255, 105, 180), function()
+    PlayEmote(Solt3)
+end)
+
+createButton("4", mainFrame, "4", UDim2.new(0.1, 0, 0.52, 0), Color3.fromRGB(255, 105, 180), function()
+    PlayEmote(Solt4)
+end)
+
+createButton("5", mainFrame, "5", UDim2.new(0.1, 0, 0.66, 0), Color3.fromRGB(255, 105, 180), function()
+    PlayEmote(Solt5)
+end)
+-- Last Button
+createButton("6", mainFrame, "6", UDim2.new(0.1, 0, 0.80, 0), Color3.fromRGB(255, 50, 50), function()
+    PlayEmote(Solt6)
+end)
+
+-- Restored "Made by: 118o8" Label
+local creditLabel = Instance.new("TextLabel", mainFrame)
+creditLabel.Size = UDim2.new(0.8, 0, 0.08, 0)
+creditLabel.Position = UDim2.new(0.1, 0, 0.92, 0)
+creditLabel.Text = "Emote As Killer"
+creditLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+creditLabel.BackgroundTransparency = 1
+creditLabel.Font = Enum.Font.GothamBold
+creditLabel.TextSize = 14
+creditLabel.TextXAlignment = Enum.TextXAlignment.Center
+
+local NotifyModule:NotifyModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/PeaPattern/notif-lib/main/main.lua"))()
+NotifyModule:Notify("Haxxed!!11!", 2)
+   end,
+})
+        
          -- 🟦 Field Trip Z
 elseif placeId == 5096191125 then
     local Section = Games:CreateSection("Field Trip Z")
