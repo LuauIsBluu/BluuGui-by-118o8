@@ -5905,6 +5905,128 @@ mostrarJumpScare()
    end,
 })
 
+local Button = Trolling:CreateButton({
+   Name = "Mafioso Fe",
+   Callback = function()
+   --[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+-- Create the tool
+local tool = Instance.new("Tool")
+tool.Name = "walkspeed override"
+tool.RequiresHandle = false
+tool.CanBeDropped = false
+
+-- Animation setup (replace the AnimationId with a valid one)
+local animation = Instance.new("Animation")
+animation.AnimationId = "rbxassetid://28440069"
+
+-- Walkspeed override settings
+local overrideSpeed = 50
+local overrideDuration = 10 -- Changed from 3 to 10 seconds
+local humanoid = nil
+local animTrack = nil
+
+-- Function to activate walkspeed override
+local function activateWalkspeedOverride()
+    if not humanoid then return end
+    local defaultWalkSpeed = humanoid.WalkSpeed
+    humanoid.WalkSpeed = overrideSpeed
+
+    local character = player.Character
+    local forwardDirection = character.PrimaryPart.CFrame.LookVector
+    local startTime = tick()
+    local connection
+
+    -- Play the animation
+    animTrack = humanoid:LoadAnimation(animation)
+    animTrack:Play()
+
+    -- Move forward and check for collisions
+    connection = RunService.Heartbeat:Connect(function()
+        if tick() - startTime > overrideDuration then
+            humanoid.WalkSpeed = defaultWalkSpeed
+            if animTrack then
+                animTrack:Stop() -- Stop the animation when override ends
+            end
+            connection:Disconnect()
+        end
+
+        character:TranslateBy(forwardDirection * 0.5) -- Moves forward
+    end)
+
+    -- Stop on collision
+    character.Touched:Connect(function(hit)
+        if hit and hit:IsA("BasePart") and hit.Parent ~= character then
+            humanoid.WalkSpeed = defaultWalkSpeed
+            if animTrack then
+                animTrack:Stop() -- Stop the animation on collision
+            end
+            connection:Disconnect()
+        end
+    end)
+end
+
+-- Tool activation logic
+tool.Activated:Connect(function()
+    print("Tool Activated")
+    humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        print("Humanoid Found")
+
+        -- Activate walkspeed override
+        activateWalkspeedOverride()
+    end
+end)
+
+-- Add tool to the player's backpack
+tool.Parent = backpack
+
+
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+local tool = Instance.new("Tool")
+tool.Name = "corrupt nature"
+tool.RequiresHandle = false
+tool.CanBeDropped = false
+
+local animation = Instance.new("Animation")
+animation.AnimationId = "rbxassetid://188853932"
+
+tool.Activated:Connect(function()
+    print("Tool Activated")
+    local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        print("Humanoid Found")
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+    end
+end)
+
+tool.Parent = backpack
+
+loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-TOUCH-FLING-30401"))()
+
+Rayfield:Notify({
+   Title = "You are Mine!",
+   Content = "This anims are FE and FOR R6 ONLY!",
+   Duration = 6.5,
+   Image = 4483362458,
+})
+
+   end,
+})
+
+
+
 --BluuGui by 118o8 This Rayfield Gui some day hopefully will be one of most Over powered tools on exploiting comunity i know this code was stealed but i have hop some day exploiting will be like 2009 we deserve this Roblox no...
 --If a user is reading this or a roblox admin i wanna roblox capt this , what are you doing? Why? If you dont stop right here you gonna hurt and we also do not stop...
 --We gonna take over client scripts and some day , in a future if you keep things like this we will dominate server scripts , piratery always find a way to bypass you security...
