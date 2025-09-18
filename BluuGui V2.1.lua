@@ -3639,6 +3639,14 @@ Rayfield:Notify({
                     
    end,
 })
+
+local Button = Games:CreateButton({
+   Name = "Farsaken key ---> FartsakenKey911",
+   Callback = function()
+   
+loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/9c9662102ff85aab4429555bd65633b4.lua"))()
+   end,
+})
         
          -- 🟦 Field Trip Z
 elseif placeId == 5096191125 then
