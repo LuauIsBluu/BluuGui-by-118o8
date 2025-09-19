@@ -101,6 +101,69 @@ setBlueSky()
    end,
 })
 
+
+local Button = Server:CreateButton({
+   Name = "Jump Scare (Very scary)",
+   Callback = function()
+   -- Jump Scare Luau
+
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Crear el ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "JumpScareGui"
+screenGui.Parent = playerGui
+
+-- Crear la imagen
+local imageLabel = Instance.new("ImageLabel")
+imageLabel.Size = UDim2.new(1,0,1,0)
+imageLabel.Position = UDim2.new(0,0,0,0)
+imageLabel.Image = "rbxassetid://7600505808" -- ID de la imagen
+imageLabel.BackgroundTransparency = 1
+imageLabel.Visible = false
+imageLabel.Parent = screenGui
+
+-- Crear el sonido
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://134659166665541" -- ID del sonido
+sound.Parent = imageLabel
+
+-- Función para mostrar el jump scare
+local function mostrarJumpScare()
+    imageLabel.Visible = true
+    sound:Play()
+    wait(3) -- Espera 3 segundos
+    imageLabel.Visible = false
+end
+
+-- Activar el jump scare al cargar
+wait(2) -- Espera 2 segundos antes de mostrar
+mostrarJumpScare()
+
+   end,
+})   
+
+local Button = Server:CreateButton({
+   Name = "Play music!",
+   Callback = function()
+   local SoundService = game:GetService("SoundService")
+
+-- Create the sound
+local music = Instance.new("Sound")
+music.SoundId = "rbxassetid://35930009" -- Replace with your music asset
+music.Volume = 5
+music.Looped = true -- Set to false if you want it to play once
+music.Playing = true
+music.Parent = SoundService
+
+-- Optional: adjust other properties
+music.MaxDistance = 1000
+music.EmitterSize = 50
+
+   end,
+})
+
 local Button = Server:CreateButton({
    Name = "Bluu Party!",
    Callback = function()
@@ -108,7 +171,7 @@ local Button = Server:CreateButton({
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Replace this with the Animation ID for "Monster Smash Go"
-local animationId = "rbxassetid://35654637a"
+local animationId = "rbxassetid://35654637"
 
 -- Function to play animation on a character
 local function playDance(character)
@@ -152,67 +215,62 @@ end
    end,
 })
 
-local Button = Server:CreateButton({
-   Name = "Jump Scare (Very scary)",
-   Callback = function()
-   -- Jump Scare Luau
 
-local player = game.Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+-- Dropdown list of Gear IDs
+local GearDropdown = Server:CreateDropdown({
+    Name = "Select Gear",
+    Options = {
+        "12345678", -- Replace with actual Gear IDs
+        "87654321",
+        "11223344"
+    },
+    CurrentOption = "12345678",
+    Flag = "SelectedGear",
+    Callback = function(option)
+        print("Selected Gear ID:", option)
+    end
+})
 
--- Crear el ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "JumpScareGui"
-screenGui.Parent = playerGui
+local InsertService = game:GetService("InsertService")
+local Players = game:GetService("Players")
 
--- Crear la imagen
-local imageLabel = Instance.new("ImageLabel")
-imageLabel.Size = UDim2.new(1,0,1,0)
-imageLabel.Position = UDim2.new(0,0,0,0)
-imageLabel.Image = "rbxassetid://134659166665541" -- ID de la imagen
-imageLabel.BackgroundTransparency = 1
-imageLabel.Visible = false
-imageLabel.Parent = screenGui
-
--- Crear el sonido
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://134659166665541" -- ID del sonido
-sound.Parent = imageLabel
-
--- Función para mostrar el jump scare
-local function mostrarJumpScare()
-    imageLabel.Visible = true
-    sound:Play()
-    wait(3) -- Espera 3 segundos
-    imageLabel.Visible = false
+-- Function to give gear to a player
+local function giveGear(player, gearId)
+    local success, asset = pcall(function()
+        return InsertService:LoadAsset(tonumber(gearId))
+    end)
+    
+    if success and asset then
+        for _, obj in pairs(asset:GetChildren()) do
+            if obj:IsA("Tool") then
+                obj.Parent = player:FindFirstChildOfClass("Backpack")
+                break
+            end
+        end
+    end
 end
 
--- Activar el jump scare al cargar
-wait(2) -- Espera 2 segundos antes de mostrar
-mostrarJumpScare()
-
-   end,
-})   
-
-local Button = Server:CreateButton({
-   Name = "Play music!",
-   Callback = function()
-   local SoundService = game:GetService("SoundService")
-
--- Create the sound
-local music = Instance.new("Sound")
-music.SoundId = "rbxassetid://114852233968189" -- Replace with your music asset
-music.Volume = 1
-music.Looped = true -- Set to false if you want it to play once
-music.Playing = true
-music.Parent = SoundService
-
--- Optional: adjust other properties
-music.MaxDistance = 1000
-music.EmitterSize = 50
-
-   end,
+-- Button to give gear to yourself
+Server:CreateButton({
+    Name = "Get Gear",
+    Callback = function()
+        local gearId = Rayfield.Flags.SelectedGear
+        giveGear(Players.LocalPlayer, gearId)
+    end
 })
+
+-- Button to give gear to all players
+Server:CreateButton({
+    Name = "Give Gear to All",
+    Callback = function()
+        local gearId = Rayfield.Flags.SelectedGear
+        for _, player in pairs(Players:GetPlayers()) do
+            giveGear(player, gearId)
+        end
+    end
+})
+
+
 
 local desc = Server:CreateSection("Server Destruction >:D")
 
@@ -257,85 +315,151 @@ loadstring(game:HttpGet("https://pastebin.com/raw/xuy7gHRj"))()
 })
 
 local Button = Server:CreateButton({
-   Name = "Stop time",
+   Name = "No gravity",
    Callback = function()
-   local Players = game:GetService("Players")
-local Lighting = game:GetService("Lighting")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+   -- No Gravity Server Script
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+-- Toggle for no gravity
+local noGravity = true
+local gravityValue = 0 -- Set to 0 for no gravity
+local normalGravity = workspace.Gravity
+
+-- Function to apply no gravity to a player's character
+local function disableGravity(character)
+    if not character then return end
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    local hum = character:FindFirstChildOfClass("Humanoid")
+    if hrp and hum then
+        -- Set platform stand so players float
+        hum.PlatformStand = true
+    end
+end
+
+-- Function to reset gravity for a character
+local function enableGravity(character)
+    if not character then return end
+    local hum = character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.PlatformStand = false
+    end
+end
+
+-- Apply no gravity to all players
+local function applyNoGravity()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Character then
+            disableGravity(player.Character)
+        end
+    end
+end
+
+-- Reset gravity for all players
+local function resetGravity()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Character then
+            enableGravity(player.Character)
+        end
+    end
+end
+
+-- Toggle handler
+RunService.Heartbeat:Connect(function()
+    if noGravity then
+        applyNoGravity()
+    else
+        resetGravity()
+    end
+end)
+
+-- Handle new players
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(char)
+        if noGravity then
+            disableGravity(char)
+        end
+    end)
+end)
+
+-- Optional: toggle gravity with a command
+game:GetService("ReplicatedStorage"):WaitForChild("ToggleNoGravityEvent").OnServerEvent:Connect(function()
+    noGravity = not noGravity
+    if noGravity then
+        print("🌌 No Gravity ENABLED!")
+    else
+        print("🌍 Gravity RESTORED!")
+    end
+end)
+
+   end,
+})
+
+local Button = Server:CreateButton({
+   Name = "Tp players to random point",
+   Callback = function()
+   -- Teleport all players to random positions
+local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
--- >>> SETTINGS <<<
-local executorUserName = "YourUserNameHere" -- Replace with the username of the player who can move
-local freezeDuration = 10 -- seconds
-local clockModelName = "ClockModel" -- a clock model stored in ReplicatedStorage
+-- Define the bounds for random teleport
+local minX, maxX = -100, 100
+local minY, maxY = 10, 50   -- Y should be above the ground
+local minZ, maxZ = -100, 100
 
--- >>> FREEZE PLAYERS <<<
-local function freezePlayer(player)
-	if player.Character then
-		local hum = player.Character:FindFirstChildOfClass("Humanoid")
-		if hum then
-			hum.WalkSpeed = 0
-			hum.JumpHeight = 0
-			hum.PlatformStand = true
-		end
-	end
+-- Function to teleport a single player
+local function teleportPlayer(player)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = player.Character.HumanoidRootPart
+        local randomPosition = Vector3.new(
+            math.random(minX, maxX),
+            math.random(minY, maxY),
+            math.random(minZ, maxZ)
+        )
+        hrp.CFrame = CFrame.new(randomPosition)
+    end
 end
 
-local function unfreezePlayer(player)
-	if player.Character then
-		local hum = player.Character:FindFirstChildOfClass("Humanoid")
-		if hum then
-			hum.WalkSpeed = 16
-			hum.JumpHeight = 7.2
-			hum.PlatformStand = false
-		end
-	end
-end
-
--- >>> SET MAP GREY <<<
-local originalAmbient = Lighting.Ambient
-local originalOutdoorAmbient = Lighting.OutdoorAmbient
-
-local function setMapGrey()
-	Lighting.Ambient = Color3.fromRGB(169, 169, 169)
-	Lighting.OutdoorAmbient = Color3.fromRGB(169, 169, 169)
-end
-
-local function resetMapColor()
-	Lighting.Ambient = originalAmbient
-	Lighting.OutdoorAmbient = originalOutdoorAmbient
-end
-
--- >>> CLOCK EFFECT <<<
-local function spawnClock()
-	local clockTemplate = ReplicatedStorage:FindFirstChild(clockModelName)
-	if clockTemplate then
-		local clock = clockTemplate:Clone()
-		clock.Parent = Workspace
-		clock:SetPrimaryPartCFrame(CFrame.new(0, 10, 0)) -- position it above the map
-		game.Debris:AddItem(clock, freezeDuration) -- automatically remove after freezeDuration
-	end
-end
-
--- >>> MAIN EVENT <<<
-spawnClock()        -- spawn the clock model
-setMapGrey()        -- make map grey
-
+-- Teleport all players
 for _, player in pairs(Players:GetPlayers()) do
-	if player.Name ~= executorUserName then
-		freezePlayer(player)
-	end
+    teleportPlayer(player)
 end
 
-task.wait(freezeDuration)
+print("🌪 All players have been teleported to random positions!")
 
-resetMapColor()
+   end,
+})
 
+local Button = Server:CreateButton({
+   Name = "Bring all",
+   Callback = function()
+   -- Bring all players to executor
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer  -- the executor
+local Workspace = game:GetService("Workspace")
+
+-- Get executor's position
+local executorCharacter = LocalPlayer.Character
+if not executorCharacter or not executorCharacter:FindFirstChild("HumanoidRootPart") then
+    warn("Executor character not found!")
+    return
+end
+local executorPos = executorCharacter.HumanoidRootPart.Position
+
+-- Function to bring a player
+local function bringPlayer(player)
+    if player == LocalPlayer then return end -- skip executor
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(executorPos)
+    end
+end
+
+-- Bring all players
 for _, player in pairs(Players:GetPlayers()) do
-	if player.Name ~= executorUserName then
-		unfreezePlayer(player)
-	end
+    bringPlayer(player)
 end
+
+print("📌 All players brought to executor!")
 
    end,
 })
