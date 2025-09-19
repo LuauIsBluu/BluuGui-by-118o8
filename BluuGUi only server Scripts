@@ -220,11 +220,11 @@ end
 local GearDropdown = Server:CreateDropdown({
     Name = "Select Gear",
     Options = {
-        "12345678", -- Replace with actual Gear IDs
-        "87654321",
-        "11223344"
+        "97885508", -- Replace with actual Gear IDs
+        "78730532",
+        "11450664"
     },
-    CurrentOption = "12345678",
+    CurrentOption = "97885508",
     Flag = "SelectedGear",
     Callback = function(option)
         print("Selected Gear ID:", option)
