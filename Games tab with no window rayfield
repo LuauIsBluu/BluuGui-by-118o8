@@ -1731,19 +1731,19 @@ Rayfield:Notify({
 })
         
 -- 🟥 Unsupported Games
-else
-    local Section = Games:CreateSection("Unsupported Game")
+local Section = Games:CreateSection("Unsupported Game")
 
-    -- Build a list of supported game names
-    local gameNames = {}
+    Games:CreateLabel("If dont load nothing is because you are on a unsuported game")
+
+    -- Make a list of all supported games dynamically
+    local supportedList = {}
     for _, name in pairs(supportedGames) do
-        table.insert(gameNames, "- " .. name)
+        table.insert(supportedList, name)
     end
 
-    -- Show message with supported games list
+    -- Show the supported games as text
     Games:CreateParagraph({
-        Title = "Oops!",
-        Content = "Looks like you are in an unsupported game.\n\nSupported Games:\n" ..
-            table.concat(gameNames, "\n")
+        Title = "Supported Games",
+        Content = table.concat(supportedList, "\n")
     })
 end
