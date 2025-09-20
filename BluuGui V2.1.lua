@@ -1,4 +1,3 @@
-
 local StarterGui = game:GetService("StarterGui")
 
 -- first notify
@@ -1939,27 +1938,7 @@ function noplsmesh(hat)
 -- 📌 Create Games Tab
 local Games = Window:CreateTab("Games", 4483362458)
 
--- Get current game PlaceId
-local placeId = game.PlaceId
-
--- Supported games list
-local supportedGames = {
-    [987654321] = "Guts & Blackpowder",
-    [13943975949] = "SharkBite 2",
-    [123456789] = "Break in 2",
-    [71895508397153] = "Die Of Death",
-    [81517697608629] = "Pwned by 14:00", 
-    [3851622790] = "Break In", 
-    [79546208627805] = "99 Nights in the Forest",
-    [17382280326] = "RobloxiaUntilDown", --classic
-    [80238404781977] = "RobloxiaUntilDown", -- Chaos Mode
-    [5096191125] = "Field Trip Z",
-    [18687417158] = "Forsaken",
-    [99630341423433] = "Biast" 
-}
-
 -- 🟦 99 Nights in the Forest
-    if placeId == 79546208627805 then
     local ForestTab = Games:CreateSection("99 Nights in the Forest")
     local Button = Games:CreateButton({
    Name = " See all hubs (not mine)",
@@ -1977,7 +1956,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/ref
 })
 
 -- 🟦 Guts & Blackpowder
-elseif placeId == 987654321 then
     local Section = Games:CreateSection("Guts & Blackpowder")
 
     Games:CreateButton({
@@ -2076,7 +2054,7 @@ end)
 
      end,
             
-})
+}) --Clean
 
     Games:CreateButton({
         Name = "Zombie ESP (T toggle)",
@@ -2168,7 +2146,6 @@ end)
     })
 
 -- 🟦 SharkBite 2
-elseif placeId == 13943975949 then
     local SharkTab = Games:CreateSection("SharkBite 2")
 
     local player = game.Players.LocalPlayer
@@ -2371,7 +2348,6 @@ elseif placeId == 13943975949 then
 end
 
 -- 🟦 Break In 2
-elseif placeId == 123456789 then
     local Section = Games:CreateSection("Break In 2")
     Games:CreateButton({
         Name = "BreaKing Blitz (very OP)",
@@ -2382,7 +2358,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/RScriptz/RobloxScript
     })
 
 -- 🟦 Break In
-elseif placeId == 3851622790 then
     local Section = Games:CreateSection("Break In")
     Games:CreateButton({
         Name = "Break In (very OP)",
@@ -2393,7 +2368,6 @@ elseif placeId == 3851622790 then
     })
 
 -- 🟦 Die of Death
-elseif placeId == 71895508397153 then
     local Section = Games:CreateSection("Die Of Death")
     Games:CreateButton({
         Name = "DoD Nexer Hub",
@@ -2474,7 +2448,6 @@ local Toggle = Games:CreateToggle({
 
 
 -- 🟦 Pwned by 14:00
-elseif placeId == 81517697608629 then
     local Section = Games:CreateSection("Pwned by 14:00")
     Games:CreateButton({
         Name = "Inf Stamina",
@@ -2484,7 +2457,6 @@ elseif placeId == 81517697608629 then
     })
 
 -- 🟦 Biast
-elseif placeId == 99630341423433 then
     local Section = Games:CreateSection("Biast")
 
     -- Dropdown example (your item teleporter stuff)
@@ -2871,7 +2843,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/nexeralt/Loaders/refs
 })
 
         -- 🟦 RobloxiaUntilDown
-elseif placeId == 987654321 or placeId == 80238404781977 then
     local Section = Games:CreateSection("RobloxiaUntilDown")
 
         local Button = Games:CreateButton({
@@ -2883,7 +2854,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Pro666Pro/NexerHub-TR
 })
 
                 -- 🟦 Forsaken
-elseif placeId == 987654321 then
     local Section = Games:CreateSection("Forsaken")
 
  -- 1. Variables
@@ -3641,15 +3611,20 @@ Rayfield:Notify({
 })
 
 local Button = Games:CreateButton({
-   Name = "Farsaken key ---> FartsakenKey911",
+   Name = "Farsaken Gui (Keyless)",
    Callback = function()
    
-loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/9c9662102ff85aab4429555bd65633b4.lua"))()
+if getgenv then
+    getgenv().DebugNotifications = "false"
+    getgenv().TrackMePlease = "true"
+end
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ivannetta/ShitScripts/main/forsaken.lua"))()
+
    end,
 })
         
          -- 🟦 Field Trip Z
-elseif placeId == 5096191125 then
     local Section = Games:CreateSection("Field Trip Z")
 
         local Button = Games:CreateButton({
@@ -3664,27 +3639,7 @@ Rayfield:Notify({
    Duration = 6.5,
    Image = 4483362458,
 })
-                    
-   end,
-})
-        
--- 🟥 Unsupported Games
-else
-    local Section = Games:CreateSection("Unsupported Game")
-
-    -- Build a list of supported game names
-    local gameNames = {}
-    for _, name in pairs(supportedGames) do
-        table.insert(gameNames, "- " .. name)
-    end
-
-    -- Show message with supported games list
-    Games:CreateParagraph({
-        Title = "Oops!",
-        Content = "Looks like you are in an unsupported game.\n\nSupported Games:\n" ..
-            table.concat(gameNames, "\n")
-    })
-end
+    
 
         -- Useful stuff down here
         -- TP TO NEAREST TOOL/MODEL WITH HANDLE + PROXIMITYPROMPT
@@ -5070,7 +5025,4 @@ loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/late
    end,
 })
 
---BluuGui by 118o8 This Rayfield Gui some day hopefully will be one of most Over powered tools on exploiting comunity i know this code was stealed but i have hop some day exploiting will be like 2009 we deserve this Roblox no...
---If a user is reading this or a roblox admin i wanna roblox capt this , what are you doing? Why? If you dont stop right here you gonna hurt and we also do not stop...
---We gonna take over client scripts and some day , in a future if you keep things like this we will dominate server scripts , piratery always find a way to bypass you security...
 --If a user is reading this Keep working o scripts like me get time and make , code , do scripts this is a bad time for roblox.
