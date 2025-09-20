@@ -3716,7 +3716,7 @@ end
 Misc:CreateButton({
     Name = "TP to Nearest Tool/Model",
     Callback = tpNearest
-})
+}) --Clean
 
 -- Sección Protection
 local Inmunity = Useful:CreateSection("Protection")
@@ -4043,7 +4043,6 @@ local function stopHighlighting()
     Adornments = {}
 end
 
--- Rayfield toggle
 Useful:CreateToggle({
     Name = "Show All Hitboxes",
     CurrentValue = false,
@@ -4053,7 +4052,7 @@ Useful:CreateToggle({
         else
             stopHighlighting()
         end
-    end,
+    end
 })
 
     local Fun = Window:CreateTab("Fun", 4483362458) -- Title, Image
