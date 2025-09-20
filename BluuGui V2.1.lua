@@ -5050,6 +5050,26 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/StrawberryRBLX/Strawb
    end,
 })
 
+local Button = Scripts:CreateButton({
+   Name = "QuirkyCMD",
+   Callback = function()
+   --[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+loadstring(game:HttpGet("https://gist.github.com/someunknowndude/38cecea5be9d75cb743eac8b1eaf6758/raw"))()
+   end,
+})
+
+local Button = Scripts:CreateButton({
+   Name = "Dex",
+   Callback = function()
+   --[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/latest/download/out.lua"))()
+   end,
+})
+
 --BluuGui by 118o8 This Rayfield Gui some day hopefully will be one of most Over powered tools on exploiting comunity i know this code was stealed but i have hop some day exploiting will be like 2009 we deserve this Roblox no...
 --If a user is reading this or a roblox admin i wanna roblox capt this , what are you doing? Why? If you dont stop right here you gonna hurt and we also do not stop...
 --We gonna take over client scripts and some day , in a future if you keep things like this we will dominate server scripts , piratery always find a way to bypass you security...
