@@ -3929,35 +3929,34 @@ local Button = Useful:CreateButton({
             end
         })
 
-        -- Botón para mostrar hitbox visible
-        Useful:CreateButton({
-            Name = "Visible Hitbox",
-            Callback = function()
-                -- Crear un Part para el hitbox visible
-                local hitboxPart = Instance.new("Part")
-                hitboxPart.Size = Vector3.new(extendPower*2, 5, extendPower*2)
-                hitboxPart.Position = character:WaitForChild("HumanoidRootPart").Position
-                hitboxPart.Anchored = true
-                hitboxPart.CanCollide = false
-                hitboxPart.Transparency = 0.3
-                hitboxPart.BrickColor = BrickColor.new("Bright red")
-                hitboxPart.Parent = workspace
+-- Botón para mostrar hitbox visible
+Useful:CreateButton({
+    Name = "Visible Hitbox",
+    Callback = function()
+        -- Crear un Part para el hitbox visible
+        local hitboxPart = Instance.new("Part")
+        hitboxPart.Size = Vector3.new(extendPower*2, 5, extendPower*2)
+        hitboxPart.Position = character:WaitForChild("HumanoidRootPart").Position
+        hitboxPart.Anchored = true
+        hitboxPart.CanCollide = false
+        hitboxPart.Transparency = 0.3
+        hitboxPart.BrickColor = BrickColor.new("Bright red")
+        hitboxPart.Parent = workspace
 
-                -- Actualizar posición en cada frame
-                local connection
-                connection = RunService.RenderStepped:Connect(function()
-                    if character and character:FindFirstChild("HumanoidRootPart") then
-                        hitboxPart.Position = character.HumanoidRootPart.Position
-                        hitboxPart.Size = Vector3.new(extendPower*2, 5, extendPower*2)
-                    else
-                        hitboxPart:Destroy()
-                        connection:Disconnect()
-                    end
-                end)
+        -- Actualizar posición en cada frame
+        local connection
+        connection = RunService.RenderStepped:Connect(function()
+            if character and character:FindFirstChild("HumanoidRootPart") then
+                hitboxPart.Position = character.HumanoidRootPart.Position
+                hitboxPart.Size = Vector3.new(extendPower*2, 5, extendPower*2)
+            else
+                hitboxPart:Destroy()
+                connection:Disconnect()
             end
-        })
+        end)
     end
 })
+
 
     local Devs = Useful:CreateSection("Devs")
 
@@ -4053,7 +4052,7 @@ Useful:CreateToggle({
             stopHighlighting()
         end
     end
-})
+}) --Clean
 
     local Fun = Window:CreateTab("Fun", 4483362458) -- Title, Image
     local Section = Fun:CreateSection("Animations")
