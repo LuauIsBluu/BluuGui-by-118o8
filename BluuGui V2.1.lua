@@ -2376,6 +2376,107 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/RScriptz/RobloxScript
         end,
     })
 
+
+-- Animation script (your existing code)
+local currentSetName = "Badware" -- default
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+local oldAnimator = humanoid:FindFirstChildOfClass("Animator")
+if oldAnimator then
+    oldAnimator:Destroy()
+end
+local animator = Instance.new("Animator")
+animator.Parent = humanoid
+
+local animationSets = {
+    Iquot = {Idle = "rbxassetid://129538723059546", Walk = "rbxassetid://111262064101049", Sprint = "rbxassetid://133764223100629"},
+    Pursuer = {Idle = "rbxassetid://80974060339218", Walk = "rbxassetid://80948338059832", Sprint = "rbxassetid://86509870627165"},
+    Classic = {Idle = "rbxassetid://98065949472006", Walk = "rbxassetid://86090280531902", Sprint = "rbxassetid://80622745059905"},
+    MROB = {Idle = "rbxassetid://128876353799791", Walk = "rbxassetid://84523208605356", Sprint = "rbxassetid://134893121838000"},
+    Killdroid = {Idle = "rbxassetid://90197302481794", Walk = "rbxassetid://125969711702313", Sprint = "rbxassetid://123837551946715"},
+    Harken = {Idle = "rbxassetid://104774777136783", Walk = "rbxassetid://135226521217628", Sprint = "rbxassetid://119463021776325"},
+    Badware = {Idle = "rbxassetid://136507569552573", Walk = "rbxassetid://83428305423587", Sprint = "rbxassetid://120893352730955"},
+    Artful = {Idle = "rbxassetid://94473571249263", Walk = "rbxassetid://102572617659889", Sprint = "rbxassetid://100948610539178"},
+    Mequot = {Idle = "rbxassetid://123989154628992", Walk = "rbxassetid://115493664585359", Sprint = "rbxassetid://130682734432079"},
+    Devesto = {Idle = "rbxassetid://75370292739676", Walk = "rbxassetid://70580402939971", Sprint = "rbxassetid://91726581626277"},
+    Cesus = {Idle = "rbxassetid://109980283233330", Walk = "rbxassetid://123324217013146", Sprint = "rbxassetid://94668334962235"}
+}
+
+local currentSet = animationSets[currentSetName]
+
+local function loadAnim(id)
+    local anim = Instance.new("Animation")
+    anim.AnimationId = id
+    return animator:LoadAnimation(anim)
+end
+
+local idleTrack = loadAnim(currentSet.Idle)
+local walkTrack = loadAnim(currentSet.Walk)
+local sprintTrack = loadAnim(currentSet.Sprint)
+idleTrack:Play()
+
+local function playOnly(trackToPlay)
+    for _, track in ipairs({idleTrack, walkTrack, sprintTrack}) do
+        if track == trackToPlay then
+            if not track.IsPlaying then
+                track:Play()
+            end
+        else
+            if track.IsPlaying then
+                track:Stop()
+            end
+        end
+    end
+end
+
+local function switchSet(setName)
+    if not animationSets[setName] then
+        warn("Animation set '" .. setName .. "' does not exist!")
+        return
+    end
+    currentSetName = setName
+    currentSet = animationSets[setName]
+
+    for _, track in ipairs({idleTrack, walkTrack, sprintTrack}) do
+        if track.IsPlaying then
+            track:Stop()
+        end
+    end
+
+    idleTrack = loadAnim(currentSet.Idle)
+    walkTrack = loadAnim(currentSet.Walk)
+    sprintTrack = loadAnim(currentSet.Sprint)
+    idleTrack:Play()
+end
+
+local function updateAnimation()
+    local speed = humanoid.MoveDirection.Magnitude * humanoid.WalkSpeed
+    if speed < 0.1 then
+        playOnly(idleTrack)
+    elseif speed <= 17 then
+        playOnly(walkTrack)
+    else
+        playOnly(sprintTrack)
+    end
+end
+
+RunService.RenderStepped:Connect(updateAnimation)
+
+-- Rayfield dropdown
+local animDropdown = Games:CreateDropdown({
+    Name = "Animation Set (NOT FE For now)",
+    Options = {"Iquot","Pursuer","Classic","MROB","Killdroid","Harken","Badware","Artful","Mequot","Devesto","Cesus"},
+    CurrentOption = currentSetName,
+    Flag = "AnimationSet",
+    Callback = function(option)
+        switchSet(option)
+    end
+})
+    
         local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
