@@ -5042,7 +5042,13 @@ Rayfield:Notify({
    end,
 }) --Clean
 
-
+local Button = Scripts:CreateButton({
+   Name = "StrawberryCMD",
+   Callback = function()
+   --https://discord.gg/bXQfb3QWa8
+loadstring(game:HttpGet("https://raw.githubusercontent.com/StrawberryRBLX/Strawberry-Scanner/refs/heads/main/release/scanner.lua"))()
+   end,
+})
 
 --BluuGui by 118o8 This Rayfield Gui some day hopefully will be one of most Over powered tools on exploiting comunity i know this code was stealed but i have hop some day exploiting will be like 2009 we deserve this Roblox no...
 --If a user is reading this or a roblox admin i wanna roblox capt this , what are you doing? Why? If you dont stop right here you gonna hurt and we also do not stop...
