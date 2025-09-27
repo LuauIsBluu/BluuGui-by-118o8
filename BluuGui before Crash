@@ -1,22 +1,3 @@
-local StarterGui = game:GetService("StarterGui")
-
--- first notify
-StarterGui:SetCore("SendNotification", {
-    Title = "BluuGui",
-    Text = "BluuGui is executing...",
-    Duration = 5
-})
-
--- wait 5 seconds
-task.wait(5)
-
--- second notify
-StarterGui:SetCore("SendNotification", {
-    Title = "BluuGui",
-    Text = "If it didn’t execute, it’s probably broken.",
-    Duration = 5
-})
-
 --Stars real BluuGui
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
