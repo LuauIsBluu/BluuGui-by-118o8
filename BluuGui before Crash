@@ -2119,46 +2119,6 @@ local Button = Useful:CreateButton({
    end,
 })
 
-
-        --[[ Hitbox Extender con Toggle, Slider y Hitbox Visible ]]
-        local HitboxModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/nexeralt/ForsakenHitboxExtender/refs/heads/main/open%20source.luau"))()
-        local RunService = game:GetService("RunService")
-        local Players = game:GetService("Players")
-        local player = Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local extendPower = 2
-        local hitboxEnabled = false
-
-        -- Mantener hitbox activo
-        RunService.RenderStepped:Connect(function()
-            if hitboxEnabled then
-                HitboxModule:ExtendHitbox(extendPower, 0.1)
-            end
-        end)
-
-        -- Toggle para activar/desactivar hitbox
-        Useful:CreateToggle({
-            Name = "Enable Hitbox",
-            CurrentValue = false,
-            Callback = function(value)
-                hitboxEnabled = value
-                if not value then
-                    HitboxModule:StopExtendingHitbox()
-                end
-            end
-        })
-
-        -- Slider para cambiar potencia
-        Useful:CreateSlider({
-            Name = "Hitbox Power",
-            Min = 1,
-            Max = 100,
-            Default = 2,
-            Callback = function(value)
-                extendPower = value
-            end
-        })
-
 -- Botón para mostrar hitbox visible
 Useful:CreateButton({
     Name = "Visible Hitbox",
@@ -3524,5 +3484,44 @@ lp.Chatted:Connect(function(msg)
 end)
    end,
 })
-                                                        
+
+--[[ Hitbox Extender con Toggle, Slider y Hitbox Visible ]]
+        local HitboxModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/nexeralt/ForsakenHitboxExtender/refs/heads/main/open%20source.luau"))()
+        local RunService = game:GetService("RunService")
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local extendPower = 2
+        local hitboxEnabled = false
+
+        -- Mantener hitbox activo
+        RunService.RenderStepped:Connect(function()
+            if hitboxEnabled then
+                HitboxModule:ExtendHitbox(extendPower, 0.1)
+            end
+        end)
+
+        -- Toggle para activar/desactivar hitbox
+        Useful:CreateToggle({
+            Name = "Enable Hitbox",
+            CurrentValue = false,
+            Callback = function(value)
+                hitboxEnabled = value
+                if not value then
+                    HitboxModule:StopExtendingHitbox()
+                end
+            end
+        })
+
+        -- Slider para cambiar potencia
+        Useful:CreateSlider({
+            Name = "Hitbox Power",
+            Min = 2,
+            Max = 50,
+            Default = 2,
+            Callback = function(value)
+                extendPower = value
+            end
+        })
+
 --If a user is reading this Keep working o scripts like me get time and make , code , do scripts this is a bad time for roblox.
