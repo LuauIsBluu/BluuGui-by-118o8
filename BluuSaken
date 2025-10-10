@@ -37,16 +37,14 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local Tab = Window:CreateTab("Hubs", 4483362458) -- Title, Image
+local Forsaken = Window:CreateTab("Forsaken", 4483362458) -- Title, Image
 
-local Section = Tab:CreateSection("KeyLess")
+local Section = Forsaken:CreateSection("KeyLess")
 
-local Button = Tab:CreateButton({
+local Button = Forsaken:CreateButton({
    Name = "Farsaken"
    Callback = function()
-   --[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
+
 if getgenv then
     getgenv().DebugNotifications = "false"
     getgenv().TrackMePlease = "true"
@@ -57,53 +55,259 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/ivannetta/ShitScripts
    end,
 })
 
-local Button = Tab:CreateButton({
+local Button = Forsaken:CreateButton({
    Name = "KryOnion",
    Callback = function()
-   --[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ehrerlikesteto/KryOnionrep/refs/heads/main/OnionIsForsaken"))()
+  loadstring(game:HttpGet("https://raw.githubusercontent.com/ehrerlikesteto/KryOnionrep/refs/heads/main/OnionIsForsaken"))()
    end,
 })
 
-local Button = Tab:CreateButton({
+local Button = Forsaken:CreateButton({
    Name = "SigmaSaken",
    Callback = function()
-   --[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
+
 loadstring(game:HttpGet("https://raw.githubusercontent.com/sigmaboy-sigma-boy/Sigmasaken/refs/heads/main/sigmasakenmain"))()
    end,
 })
 
-local Button = Tab:CreateButton({
-   Name = "Tp tool",
+local Button = Forsaken:CreateButton({
+   Name = "Voidsaken",
    Callback = function()
-   --[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
---credits to original poster (https://scriptblox.com/script/Universal-Script-Tp-tool-script-5767) this is a modded version to teleport in Forsaken(roblox)
 
-mouse = game.Players.LocalPlayer:GetMouse()
-tool = Instance.new("Tool")
-tool.RequiresHandle = false
-tool.Name = "[TP Tool]"
-tool.Activated:connect(function()
-local pos = mouse.Hit+Vector3.new(0,2.5,0)
-pos = CFrame.new(pos.X,pos.Y,pos.Z)
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
-end)
-tool.Parent = game:GetService("Workspace").Players.Survivors["007n7"] --modify the "007n7" to be your survivor(e.g shedletsky, Noob, )
+loadstring(game:HttpGet("https://raw.githubusercontent.com/voidsaken-script/Voidsaken-Loader/refs/heads/main/main"))()
    end,
 })
 
-local Button = Tab:CreateButton({
+local Section = Forsaken:CreateSection("Random stuff dude")
+
+local Button = Forsaken:CreateButton({
    Name = "FrontFlip",
+   Callback = function()
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/SHRTRYScriptMANhere/stolenahhfrotflip/refs/heads/main/Flip",true))()
+   end,
+})
+
+local Button = Forsaken:CreateButton({
+   Name = "Device Spoofer",
+   Callback = function()
+
+local UserInputService = game:GetService("UserInputService")
+local Network = require(game.ReplicatedStorage.Modules.Network)
+
+local DeviceSpoof = {}
+local ForcedDevice = "Console" -- change to "Mobile", "Console" or "PC"
+
+DeviceSpoof.Changed = Instance.new("BindableEvent").Event
+DeviceSpoof.Value = ForcedDevice
+
+local function ApplySpoof()
+    DeviceSpoof.Value = ForcedDevice
+    Network:FireServerConnection("SetDevice", "REMOTE_EVENT", ForcedDevice)
+end
+
+ApplySpoof()
+
+UserInputService.LastInputTypeChanged:Connect(ApplySpoof)
+
+while wait() do
+    ApplySpoof()
+end
+
+return DeviceSpoof
+   end,
+})
+
+local Button = Forsaken:CreateButton({
+   Name = "Fake block",
    Callback = function()
    --[[
 	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
 ]]
-loadstring(game:HttpGet("https://raw.githubusercontent.com/SHRTRYScriptMANhere/stolenahhfrotflip/refs/heads/main/Flip",true))()
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
+
+local currentKey = nil
+
+local function setupCharacter(character)
+    local humanoid = character:WaitForChild("Humanoid")
+    local animation = Instance.new("Animation")
+    animation.AnimationId = "rbxassetid://72722244508749"
+    local animator = humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", humanoid)
+    local animTrack = animator:LoadAnimation(animation)
+
+    screenGui:ClearAllChildren()
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 200, 0, 100)
+    frame.Position = UDim2.new(0.5, -100, 0.5, -50)
+    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
+    frame.Active = true
+    frame.Draggable = true
+
+    local playBtn = Instance.new("TextButton")
+    playBtn.Size = UDim2.new(0, 180, 0, 40)
+    playBtn.Position = UDim2.new(0, 10, 0, 10)
+    playBtn.Text = "Play Animation"
+    playBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+    playBtn.TextColor3 = Color3.new(1, 1, 1)
+    playBtn.Parent = frame
+
+    playBtn.MouseButton1Click:Connect(function()
+        animTrack:Play()
+    end)
+
+    local keybindBtn = Instance.new("TextButton")
+    keybindBtn.Size = UDim2.new(0, 180, 0, 40)
+    keybindBtn.Position = UDim2.new(0, 10, 0, 50)
+    keybindBtn.Text = currentKey and ("Set Keybind (Current: " .. tostring(currentKey) .. ")") or "Set Keybind (Current: none)"
+    keybindBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
+    keybindBtn.TextColor3 = Color3.new(1, 1, 1)
+    keybindBtn.TextScaled = true
+    keybindBtn.Parent = frame
+
+    local waitingForKey = false
+
+    keybindBtn.MouseButton1Click:Connect(function()
+        keybindBtn.Text = "Press a key..."
+        waitingForKey = true
+    end)
+
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if waitingForKey and input.UserInputType == Enum.UserInputType.Keyboard then
+            currentKey = input.KeyCode
+            keybindBtn.Text = "Set Keybind (Current: " .. tostring(currentKey) .. ")"
+            waitingForKey = false
+        elseif currentKey and input.KeyCode == currentKey and not gameProcessed then
+            animTrack:Play()
+        end
+    end)
+end
+
+if player.Character then
+    setupCharacter(player.Character)
+end
+
+player.CharacterAdded:Connect(function(char)
+    setupCharacter(char)
+end)
+
    end,
+})
+
+local Section = tp:CreateSection("Survivor tptool")
+
+local survivorsFolderPath = {"Players", "Survivors"} -- workspace.Players.Survivors
+local survivorsFolder = workspace
+for _, name in ipairs(survivorsFolderPath) do
+    survivorsFolder = survivorsFolder:FindFirstChild(name)
+    if not survivorsFolder then break end
+end
+
+-- Function to get all survivor names dynamically
+local function getSurvivorNames()
+    local names = {}
+    if survivorsFolder then
+        for _, obj in ipairs(survivorsFolder:GetChildren()) do
+            if obj:IsA("Model") then
+                table.insert(names, obj.Name)
+            end
+        end
+    end
+    return names
+end
+
+--// Store selected survivor
+local selectedSurvivor = nil
+
+--// Dropdown
+local Dropdown = Forsaken:CreateDropdown({
+    Name = "Select Survivor",
+    Options = getSurvivorNames(),
+    CurrentOption = nil,
+    MultipleOptions = false,
+    Callback = function(Value)
+        selectedSurvivor = Value
+        Rayfield:Notify({
+            Title = "Survivor Selected",
+            Content = "Chosen: " .. tostring(Value),
+            Duration = 3
+        })
+    end,
+})
+
+--// Refresh Button (if survivors spawn/despawn)
+local RefreshButton = Forsaken:CreateButton({
+    Name = "Refresh Survivor List",
+    Callback = function()
+        local updated = getSurvivorNames()
+        Dropdown:SetOptions(updated)
+        Rayfield:Notify({
+            Title = "Refreshed",
+            Content = "Updated survivor list loaded.",
+            Duration = 3
+        })
+    end,
+})
+
+--// Give TP Tool Button
+local Button = Forsaken:CreateButton({
+    Name = "Give TP Tool",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local mouse = player:GetMouse()
+
+        if not selectedSurvivor then
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "Select a survivor first!",
+                Duration = 3
+            })
+            return
+        end
+
+        if not survivorsFolder then
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "Couldn't find survivors folder in Workspace!",
+                Duration = 3
+            })
+            return
+        end
+
+        local survivor = survivorsFolder:FindFirstChild(selectedSurvivor)
+        if not survivor then
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "Survivor '" .. selectedSurvivor .. "' not found.",
+                Duration = 3
+            })
+            return
+        end
+
+        -- Create teleport tool
+        local tool = Instance.new("Tool")
+        tool.RequiresHandle = false
+        tool.Name = "[TP Tool]"
+
+        tool.Activated:Connect(function()
+            local pos = mouse.Hit.p + Vector3.new(0, 2.5, 0)
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(pos)
+        end)
+
+        tool.Parent = survivor
+
+        Rayfield:Notify({
+            Title = "Success",
+            Content = "Gave TP Tool to " .. selectedSurvivor,
+            Duration = 3
+        })
+    end,
 })
