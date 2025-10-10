@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Forsaken BluuguiHub",
+   Name = "Bluusaken",
    Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
    LoadingTitle = "BluuSaken",
    LoadingSubtitle = "by LuauIsBluu",
@@ -56,7 +56,14 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/ivannetta/ShitScripts
 })
 
 local Button = Forsaken:CreateButton({
-   Name = "KryOnion",
+   Name = "Nolsaken,
+   Callback = function()
+  loadstring(game:HttpGet("https://raw.githubusercontent.com/Syndromehsh/-/refs/heads/ISIS-%E8%A2%AB%E9%81%97%E5%BC%83/%E4%B8%8D%E8%A6%81%E5%91%8A%E8%AF%89%E4%BB%BB%E4%BD%95%E4%BA%BA%E5%93%9F%5B/%E5%B8%8C%E7%9A%AE%E7%AC%91%E8%84%B8%5D"))()
+   end,
+})
+
+local Button = Forsaken:CreateButton({
+   Name = "Kryonion",
    Callback = function()
   loadstring(game:HttpGet("https://raw.githubusercontent.com/ehrerlikesteto/KryOnionrep/refs/heads/main/OnionIsForsaken"))()
    end,
