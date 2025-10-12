@@ -39,7 +39,7 @@ local Window = Rayfield:CreateWindow({
 
 local Forsaken = Window:CreateTab("Forsaken", 4483362458) -- Title, Image
 
-local Section = Forsaken:CreateSection("KeyLess")
+local Section = Forsaken:CreateSection("Scripts (Keyless)")
 
 local Button = Forsaken:CreateButton({
    Name = "Farsaken",
@@ -66,6 +66,14 @@ local Button = Forsaken:CreateButton({
    Name = "Kryonion",
    Callback = function()
   loadstring(game:HttpGet("https://raw.githubusercontent.com/ehrerlikesteto/KryOnionrep/refs/heads/main/OnionIsForsaken"))()
+   end,
+})
+
+local Button = Forsaken:CreateButton({
+   Name = "Nullsaken V8",
+   Callback = function()
+   
+loadstring(game:HttpGet("https://raw.githubusercontent.com/wefwef127382/forsakenloader.github.io/refs/heads/main/RINGTABUBLIK.lua"))()
    end,
 })
 
