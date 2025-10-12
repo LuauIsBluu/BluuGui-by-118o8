@@ -42,7 +42,7 @@ local Forsaken = Window:CreateTab("Forsaken", 4483362458) -- Title, Image
 local Section = Forsaken:CreateSection("KeyLess")
 
 local Button = Forsaken:CreateButton({
-   Name = "Farsaken"
+   Name = "Farsaken",
    Callback = function()
 
 if getgenv then
@@ -56,7 +56,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/ivannetta/ShitScripts
 })
 
 local Button = Forsaken:CreateButton({
-   Name = "Nolsaken,
+   Name = "Nolsaken",
    Callback = function()
   loadstring(game:HttpGet("https://raw.githubusercontent.com/Syndromehsh/-/refs/heads/ISIS-%E8%A2%AB%E9%81%97%E5%BC%83/%E4%B8%8D%E8%A6%81%E5%91%8A%E8%AF%89%E4%BB%BB%E4%BD%95%E4%BA%BA%E5%93%9F%5B/%E5%B8%8C%E7%9A%AE%E7%AC%91%E8%84%B8%5D"))()
    end,
@@ -128,9 +128,7 @@ return DeviceSpoof
 local Button = Forsaken:CreateButton({
    Name = "Fake block",
    Callback = function()
-   --[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
+   
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
@@ -209,7 +207,7 @@ end)
    end,
 })
 
-local Section = tp:CreateSection("Survivor tptool")
+local Section = Forsaken:CreateSection("Survivor tptool")
 
 local survivorsFolderPath = {"Players", "Survivors"} -- workspace.Players.Survivors
 local survivorsFolder = workspace
