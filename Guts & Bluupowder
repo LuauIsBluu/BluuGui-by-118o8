@@ -1,0 +1,457 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "Guts & Bluupowder",
+   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "They're coming!",
+   LoadingSubtitle = "by luauisbluu",
+   ShowText = "G&B", -- for mobile users to unhide rayfield, change if you'd like
+   Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+   ToggleUIKeybind = "B", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Big Hub"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+
+   KeySystem = true, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Verification",
+      Subtitle = "No one of these hubs are mine",
+      Note = "Type (No) To verificate", -- Use this to tell the user how to get a key
+      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"No"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
+
+local Main = Window:CreateTab("Thingz", 4483362458) -- Title, Image
+
+local Section = Main:CreateSection("Hubs")
+
+local Button = Tab:CreateButton({
+   Name = "Chaos Hub V1 (Recomended)",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/cjbbth1-crypto/Chaos-Hub-GB/refs/heads/main/Chaos%20Hub"))()
+   end,
+})
+
+local Button = Main:CreateButton({
+   Name = "Chaos Hub V2",
+   Callback = function()
+   loadstring(game:HttpGet("https://api.junkie-development.de/api/v1/luascripts/public/e20fed92529744b979e43c6bddcc0bb1ce5da193a3ce944ca92fedf1d7c23f2e/download"))() 
+
+   end,
+})
+
+local Button = Tab:CreateButton({
+   Name = "Katchi Hub (KeySistem)",
+   Callback = function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/milkywiffle-netizen/Katchi-hub/refs/heads/main/KeysyGandB"))()
+  
+    end,
+})
+
+local Button = Tab:CreateButton({
+   Name = "Zac kill aura and esp",
+   Callback = function()
+   local SetLag = 9.5 -- You can set this number to reduce lag. Minimum = 0 & Maximum = 10 
+
+local player = game:GetService("Players").LocalPlayer
+local RunService = game:GetService("RunService")
+
+-- Check if the script is already running
+if _G.CombatSystemRunning then
+    warn("The system has already been activated before")
+
+    return
+end
+_G.CombatSystemRunning = true
+
+-- System configuration
+local ATTACK_COOLDOWN = 1
+local lastAttackTime = 0
+local currentMode = 2 -- 1: Stop, 2: Normal, 3: Clear Zombie
+local highlightEnabled = true -- Always keep highlight on
+local WaitTime = 0
+ 
+-- Cache common functions
+local GetDescendants = workspace.GetDescendants
+local osClock = os.clock
+local mathRandom = math.random
+local Vector3New = Vector3.new
+local ipairs = ipairs
+local unpack = unpack
+
+-- List of zombie types
+local ZOMBIE_TYPES = {"Agent", "Slim"}
+
+-- Create a simple UI with a mode switch button
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CombatSystemUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player.PlayerGui
+
+local mainFrame1 = Instance.new("Frame")
+mainFrame1.Size = UDim2.new(0, 250, 0, 80)
+mainFrame1.Position = UDim2.new(0.5, -125, 0, 10)
+mainFrame1.BackgroundTransparency = 0.8
+mainFrame1.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+mainFrame1.Parent = screenGui
+
+local autoAttackLabel = Instance.new("TextLabel")
+autoAttackLabel.Size = UDim2.new(1, 0, 0.5, 0)
+autoAttackLabel.Position = UDim2.new(0, 0, 0, 0)
+autoAttackLabel.Text = "⚔️ AUTO ATTACK: ENABLED"
+autoAttackLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+autoAttackLabel.BackgroundTransparency = 1
+autoAttackLabel.Font = Enum.Font.SourceSansBold
+autoAttackLabel.TextSize = 14
+autoAttackLabel.Parent = mainFrame1
+
+local highlightLabel = Instance.new("TextLabel")
+highlightLabel.Size = UDim2.new(1, 0, 0.5, 0)
+highlightLabel.Position = UDim2.new(0, 0, 0.5, 0)
+highlightLabel.Text = "🔍 ZOMBIE HIGHLIGHT: ENABLED"
+highlightLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+highlightLabel.BackgroundTransparency = 1
+highlightLabel.Font = Enum.Font.SourceSansBold
+highlightLabel.TextSize = 14
+highlightLabel.Parent = mainFrame1
+
+local mainFrame2 = Instance.new("Frame")
+mainFrame2.Size = UDim2.new(0, 250, 0, 60)
+mainFrame2.Position = UDim2.new(0.5, -125, 0, 100)
+mainFrame2.BackgroundTransparency = 0.8
+mainFrame2.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+mainFrame2.Parent = screenGui
+
+local modeButton = Instance.new("TextButton")
+modeButton.Size = UDim2.new(0.9, 0, 0.8, 0)
+modeButton.Position = UDim2.new(0.05, 0, 0.1, 0)
+modeButton.Text = "Mode: Normal"
+modeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+modeButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+modeButton.Parent = mainFrame2
+
+-- Reduce lag by making it run slower
+WaitTime = SetLag * 0.4
+if SetLag > 10 then 
+    WaitTime = 1.5
+elseif SetLag <= 1 then 
+    WaitTime = 0
+end
+
+-- Function to update mode display
+local function updateModeDisplay()
+    if currentMode == 1 then
+        modeButton.Text = "Mode: Stop"
+        modeButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+    elseif currentMode == 2 then
+        modeButton.Text = "Mode: Normal"
+        modeButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+    elseif currentMode == 3 then
+        modeButton.Text = "Mode: Clear Zombie"
+        modeButton.BackgroundColor3 = Color3.fromRGB(170, 170, 0)
+    end
+end
+
+-- Button to switch modes
+modeButton.MouseButton1Click:Connect(function()
+    currentMode = currentMode + 1
+    if currentMode > 3 then
+        currentMode = 1
+    end
+    updateModeDisplay()
+    
+    -- Notification when changing mode
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "MODE CHANGED",
+        Text = modeButton.Text,
+        Duration = 3
+    })
+end)
+
+wait(0.1)
+game.StarterGui:SetCore("SendNotification", {
+    Title = "SYSTEM STARTING",
+    Text = "⚔️ ═════════════🔍",
+    Duration = 5
+})
+
+wait(0.1)
+game.StarterGui:SetCore("SendNotification", {
+    Title = "🔄️PROCESSING AUTOKILL....",
+    Text = "⚔️ Automatically attacking zombies!",
+    Duration = 5
+})
+
+-- Attack system
+local function executeAttack()
+    if currentMode == 1 then return end -- Stop mode
+    
+    local currentTime = osClock()
+    if currentTime - lastAttackTime < ATTACK_COOLDOWN then return end
+    
+    local character = player.Character
+    if not character then return end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
+    
+    local weapon = character:FindFirstChildWhichIsA("Tool")
+    if not weapon then return end
+    
+    local remoteEvent = weapon:FindFirstChildWhichIsA("RemoteEvent") or
+                       weapon:FindFirstChild("MeleeBase") and weapon.MeleeBase:FindFirstChildWhichIsA("RemoteEvent")
+    if not remoteEvent then return end
+
+    -- Find zombies in workspace
+    local zombiesInRange = {}
+    local rootPos = humanoidRootPart.Position
+    
+    for _, agent in ipairs(workspace:GetDescendants()) do
+        for _, zombieType in ipairs(ZOMBIE_TYPES) do
+            if agent.Name == zombieType then
+                local head = agent:FindFirstChild("Head")
+                if head then
+                    local humanoid = agent:FindFirstChildOfClass("Humanoid")
+                    if humanoid and humanoid.Health > 0 then
+                        local dist = (head.Position - rootPos).Magnitude
+                        if dist <= 19 then
+                            table.insert(zombiesInRange, {
+                                model = agent,
+                                head = head
+                            })
+                            break
+                        end
+                    end
+                end
+                break
+            end
+        end
+    end
+
+    if #zombiesInRange > 0 then
+        for _, zombie in ipairs(zombiesInRange) do
+            local hitPos = zombie.head.Position
+            local dir = (hitPos - rootPos).Unit
+            local knockback = dir * 15
+            
+            -- Send Swing + Hit event once
+            remoteEvent:FireServer("Swing", "Thrust")
+            remoteEvent:FireServer(
+                "HitZombie",
+                zombie.model,
+                hitPos,
+                true,
+                knockback,
+                "Head",
+                Vector3New(mathRandom(), mathRandom(), mathRandom()).Unit
+            )
+            
+            -- Clear Zombie mode: send 4 extra hits (total 5)
+            if currentMode == 3 then
+                for i = 1, 4 do
+                    task.wait(0.05)
+                    remoteEvent:FireServer("Swing", "Thrust")
+                    remoteEvent:FireServer(
+                        "HitZombie",
+                        zombie.model,
+                        hitPos + Vector3New(0, 0.2 * i, 0),
+                        true,
+                        knockback * (1 + i * 0.1),
+                        "Head",
+                        Vector3New(mathRandom(), mathRandom(), mathRandom()).Unit * (1 + i * 0.2)
+                    )
+                end
+            end
+        end
+        
+        lastAttackTime = currentTime
+    end
+end
+
+game.StarterGui:SetCore("SendNotification", {
+    Title = "✅ AUTOKILL PROCESSED SUCCESSFULLY",
+    Text = "⚔️ Auto attacking zombies!",
+    Duration = 5
+})
+
+wait(0.1)
+game.StarterGui:SetCore("SendNotification", {
+    Title = "🔄️PROCESSING HIGHLIGHT....",
+    Text = "🔍 Auto highlighting zombies",
+    Duration = 5
+})
+
+-- Highlight configuration
+local highlightConfig = {
+    Torch = {Color = Color3.fromRGB(100, 255, 100), Transparency = 0.2},
+    Axe = {Color = Color3.fromRGB(255, 100, 100), Transparency = 0.2},
+    Default = {Color = Color3.fromRGB(240, 240, 240), Transparency = 0.2}
+}
+
+local player = game.Players.LocalPlayer
+local zombieModelName = "m_Zombie"
+local cameraFolder = workspace:WaitForChild("Camera")
+
+local function applyGuaranteedHighlight(model)
+    -- Fix 1: Ensure PrimaryPart exists
+    if not model.PrimaryPart then
+        model.PrimaryPart = model:FindFirstChildWhichIsA("BasePart") or model:WaitForChild("HumanoidRootPart", 2)
+        if not model.PrimaryPart then return end
+    end
+
+    -- Fix 5: Only highlight if visible
+    local camera = workspace.CurrentCamera
+    local screenPoint = camera:WorldToViewportPoint(model.PrimaryPart.Position)
+    if screenPoint.Z <= 0 then return end
+
+    -- Delete old highlights
+    for _,v in ipairs(model:GetDescendants()) do
+        if v.Name:sub(1,4) == "ZHL_" then
+            v:Destroy()
+        end
+    end
+
+    -- Create new highlight
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "ZHL_"..math.random(1,9999)
+    highlight.Adornee = model
+    highlight.FillTransparency = highlightConfig.Default.Transparency
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+
+    -- Choose color
+    if model:FindFirstChild("Torch", true) then
+        highlight.FillColor = highlightConfig.Torch.Color
+    elseif model:FindFirstChild("Axe", true) then
+        highlight.FillColor = highlightConfig.Axe.Color
+    else
+        highlight.FillColor = highlightConfig.Default.Color
+    end
+
+    highlight.Parent = model
+end
+
+-- Fix 3: Distance limit
+local function updateHighlights()
+    local char = player.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+
+    for _, model in ipairs(cameraFolder:GetDescendants()) do
+        if model:IsA("Model") and model.Name == zombieModelName and model.PrimaryPart then
+            local distance = (char.HumanoidRootPart.Position - model.PrimaryPart.Position).Magnitude
+            if distance < 80 then
+                applyGuaranteedHighlight(model)
+            end
+        end
+    end
+end
+
+wait(2)
+game.StarterGui:SetCore("SendNotification", {
+    Title = "✅ HIGHLIGHT SUCCESSFULLY PROCESSED",
+    Text = "🔍 Auto highlight zombies",
+    Duration = 5
+})
+wait(0.1)
+game.StarterGui:SetCore("SendNotification", {
+    Title = "🎨 Highlight System",
+    Text = "🔧 New color rules:",
+    Duration = 5
+})
+wait(0.1)
+game.StarterGui:SetCore("SendNotification", {
+    Title = "----------------------",
+    Text = "🟢 Torch ➡️ Green; 🔴 Axe ➡️ Red",  
+   Duration = 5
+})
+
+-- Connect to Heartbeat
+RunService.Heartbeat:Connect(function()
+    wait(WaitTime) 
+    pcall(executeAttack)
+    wait(WaitTime)
+    pcall(updateHighlights)
+end)
+
+-- Initialize display
+updateModeDisplay()
+
+-- Startup notification
+game.StarterGui:SetCore("SendNotification", {
+    Title = "SYSTEM READY",
+    Text = "⚔️ ═════════════🔍 ",
+    Duration = 5
+})
+
+
+   end,
+})
+
+local CombatTab = Window:CreateTab("⚔️ Combat", 4483362458)
+local HighlightTab = Window:CreateTab("🔍 Highlight", 4483362458)
+
+local lagSlider = CombatTab:CreateSlider({
+   Name = "Set Lag",
+   Range = {0, 10},
+   Increment = 0.5,
+   CurrentValue = 9.5,
+   Flag = "SetLag",
+   Callback = function(Value)
+       SetLag = Value
+       if SetLag > 10 then 
+           WaitTime = 1.5
+       elseif SetLag <= 1 then 
+           WaitTime = 0
+       else
+           WaitTime = SetLag * 0.4
+       end
+   end,
+})
+
+local modeButton = CombatTab:CreateButton({
+   Name = "Switch Mode (Stop / Normal / Clear)",
+   Callback = function()
+       currentMode = currentMode + 1
+       if currentMode > 3 then
+           currentMode = 1
+       end
+       Rayfield:Notify({
+           Title = "Mode Changed",
+           Content = (currentMode == 1 and "Stop") or (currentMode == 2 and "Normal") or "Clear Zombie",
+           Duration = 3,
+       })
+   end,
+})
+
+local autoAttackToggle = CombatTab:CreateToggle({
+   Name = "Auto Attack",
+   CurrentValue = true,
+   Flag = "AutoAttack",
+   Callback = function(Value)
+       autoAttackEnabled = Value
+   end,
+})
+
+local highlightToggle = HighlightTab:CreateToggle({
+   Name = "Enable Highlight",
+   CurrentValue = true,
+   Flag = "Highlight",
+   Callback = function(Value)
+       highlightEnabled = Value
+   end,
+})
