@@ -2150,99 +2150,7 @@ Useful:CreateButton({
 
     local Devs = Useful:CreateSection("Devs")
 
-    local Adornments = {}
-local HighlightConnection
-
--- Create a BoxHandleAdornment for a part
-local function createAdornment(part, color)
-    if not Adornments[part] and part:IsA("BasePart") then
-        local adorn = Instance.new("BoxHandleAdornment")
-        adorn.Adornee = part
-        adorn.AlwaysOnTop = true
-        adorn.ZIndex = 0
-        adorn.Size = part.Size
-        adorn.Color3 = color
-        adorn.Transparency = 0.3  -- as requested
-        adorn.Name = "HitboxHighlight"
-        adorn.Parent = game.CoreGui
-        Adornments[part] = adorn
-    elseif Adornments[part] then
-        -- update color/size if it changed
-        Adornments[part].Color3 = color
-        Adornments[part].Size = part.Size
-    end
-end
-
-local function removeAdornment(part)
-    if Adornments[part] then
-        Adornments[part]:Destroy()
-        Adornments[part] = nil
-    end
-end
-
--- Helper to decide if part belongs to a player character
-local Players = game:GetService("Players")
-local function isPlayerPart(part)
-    local model = part:FindFirstAncestorOfClass("Model")
-    if model and model:FindFirstChild("Humanoid") then
-        return true
-    end
-    return false
-end
-
--- Start highlighting loop
-local function startHighlighting()
-    HighlightConnection = game:GetService("RunService").Heartbeat:Connect(function()
-        -- Throttle to every 0.5 sec
-        if not HighlightConnection.LastRun or tick() - HighlightConnection.LastRun >= 0.5 then
-            HighlightConnection.LastRun = tick()
-
-            -- Clean adornments for parts that no longer exist
-            for part, adorn in pairs(Adornments) do
-                if not part or not part.Parent then
-                    removeAdornment(part)
-                end
-            end
-
-            -- Scan all parts in workspace
-            for _, part in ipairs(workspace:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    if isPlayerPart(part) then
-                        -- Player parts in blue
-                        createAdornment(part, Color3.fromRGB(0, 0, 255))
-                    else
-                        -- Non-player parts (guns/tools) in red
-                        createAdornment(part, Color3.fromRGB(255, 0, 0))
-                    end
-                end
-            end
-        end
-    end)
-end
-
--- Stop highlighting loop
-local function stopHighlighting()
-    if HighlightConnection then
-        HighlightConnection:Disconnect()
-        HighlightConnection = nil
-    end
-    for part, adorn in pairs(Adornments) do
-        adorn:Destroy()
-    end
-    Adornments = {}
-end
-
-Useful:CreateToggle({
-    Name = "Show All Hitboxes",
-    CurrentValue = false,
-    Callback = function(Value)
-        if Value then
-            startHighlighting()
-        else
-            stopHighlighting()
-        end
-    end
-}) --Clean
+   
 
     local Fun = Window:CreateTab("Fun", 4483362458) -- Title, Image
     local Section = Fun:CreateSection("Animations")
@@ -2317,7 +2225,7 @@ Fun:CreateInput({
 })
 
 Fun:CreateButton({
-    Name = "▶ Play Custom Animation",
+    Name = "Play Custom Animation",
     Callback = function()
         if userAnimId ~= "" then
             playAnim(userAnimId, "CustomAnim")
@@ -2327,289 +2235,7 @@ Fun:CreateButton({
     end,
 })
 
--- UI: Preset Animations Dropdown
-Fun:CreateDropdown({
-    Name = "Preset Animations",
-    Options = table.keys(presetAnims),
-    CurrentOption = {},
-    MultipleOptions = false,
-    Callback = function(opt)
-        local name = opt[1]
-        playAnim(presetAnims[name], name)
-    end,
-})
 
--- UI: Stop Animation
-Fun:CreateButton({
-    Name = "⏹ Stop Animation",
-    Callback = function()
-        if currentTrack then
-            currentTrack:Stop()
-            currentTrack = nil
-            warn("Animation stopped.")
-        else
-            warn("No animation playing.")
-        end
-    end,
-})
-
---  Movement Animations Replacer
-local defaultTypes = { "Idle", "Walk", "Run", "Jump", "Swim" }
-for _, animType in ipairs(defaultTypes) do
-    Fun:CreateInput({
-        Name = animType .. " Animation ID",
-        PlaceholderText = "Enter animation ID",
-        RemoveTextAfterFocusLost = false,
-        Callback = function(id)
-            movementAnims[animType] = id
-            local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-            local humanoid = char:WaitForChild("Humanoid")
-            local animate = char:FindFirstChild("Animate")
-
-            if animate and id ~= "" then
-                local animObj
-                if animType == "Idle" then
-                    animObj = animate:FindFirstChild("idle") and animate.idle:FindFirstChild("Animation1")
-                else
-                    animObj = animate:FindFirstChild(animType:lower())
-                end
-
-                if animObj and animObj:IsA("Animation") then
-                    animObj.AnimationId = "rbxassetid://" .. id
-                end
-            end
-        end,
-    })
-end
-
--- 🎵 Fun Section: Music Player
-
-local MusicSection = Fun:CreateSection("Music Player (No FE)")
-
--- Sound holder
-local sound = Instance.new("Sound")
-sound.Parent = game:GetService("SoundService")
-sound.Looped = true
-sound.Volume = 1 -- default volume
-
--- Premade tracks
-local premadeTracks = {
-    ["It's Raining Tacos"] = "142376088", -- classic meme song
-    ["Bluudanc"] = "9121645091", -- placeholder, replace with your track
-    ["Random Meme 1"] = "184735242", -- Darude Sandstorm
-    ["Random Meme 2"] = "458726741", -- Crab Rave
-}
-
--- Input for custom music
-Fun:CreateInput({
-    Name = "Custom SoundId",
-    PlaceholderText = "Enter SoundId here",
-    RemoveTextAfterFocusLost = false,
-    Callback = function(value)
-        if tonumber(value) then
-            sound.SoundId = "rbxassetid://" .. value
-            sound:Play()
-        else
-            warn("Invalid SoundId")
-        end
-    end,
-})
-
--- Dropdown for premade tracks
-Fun:CreateDropdown({
-    Name = "Premade Songs",
-    Options = {"It's Raining Tacos", "Bluudanc", "Random Meme 1", "Random Meme 2"},
-    CurrentOption = {},
-    MultipleOptions = false,
-    Callback = function(option)
-        local id = premadeTracks[option[1]]
-        if id then
-            sound.SoundId = "rbxassetid://" .. id
-            sound:Play()
-        end
-    end,
-})
-
--- Buttons
-Fun:CreateButton({
-    Name = "▶️ Play",
-    Callback = function()
-        if sound.SoundId ~= "" then
-            sound:Play()
-        end
-    end,
-})
-
-Fun:CreateButton({
-    Name = "⏹ Stop",
-    Callback = function()
-        sound:Stop()
-    end,
-})
-
--- Volume Slider
-Fun:CreateSlider({
-    Name = "🔊 Volume",
-    Range = {0, 10},
-    Increment = 1,
-    CurrentValue = 5,
-    Callback = function(value)
-        sound.Volume = value / 10 -- scale 0–10 slider to 0–1 volume
-    end,
-})
-
--- Loop Toggle
-Fun:CreateToggle({
-    Name = "🔁 Loop Song",
-    CurrentValue = true,
-    Callback = function(val)
-        sound.Looped = val
-    end,
-})
-
--- 🎡 SpinBot Section
-local SpinSection = Fun:CreateSection("SpinBot")
-
-local spinning = false
-local spinConnection
-local spinVelocity = 10 -- default spin speed
-
--- Spin Toggle
-Fun:CreateToggle({
-    Name = "🌀 Enable SpinBot",
-    CurrentValue = false,
-    Callback = function(val)
-        local player = game.Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-        local hrp = char:WaitForChild("HumanoidRootPart")
-
-        if val then
-            spinning = true
-            spinConnection = game:GetService("RunService").Heartbeat:Connect(function()
-                if hrp and spinning then
-                    hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(spinVelocity), 0)
-                end
-            end)
-        else
-            spinning = false
-            if spinConnection then
-                spinConnection:Disconnect()
-                spinConnection = nil
-            end
-        end
-    end,
-})
-
--- Velocity Slider
-Fun:CreateSlider({
-    Name = "⚡ Spin Speed",
-    Range = {1, 100},
-    Increment = 1,
-    CurrentValue = 10,
-    Callback = function(value)
-        spinVelocity = value
-    end,
-})
-
--- 🌀 Fun Tab Extras
-
--- 🌐 Section
-local FunExtras = Fun:CreateSection("Bluu Extras")
-
--- ⚡ Chat Spammer
-local chatSpamConnection
-local spamMessages = {
-    "BluuGui on top!", 
-    "I like ur smile!", 
-    "Hey Its me!", 
-    "Awww man!"
-}
-
-Fun:CreateToggle({
-    Name = "Chat spamer (trash talk)",
-    CurrentValue = false,
-    Callback = function(val)
-        local ReplicatedStorage = game:GetService("ReplicatedStorage")
-        local chatEvent = ReplicatedStorage:WaitForChild("DefaultChatSystemChatEvents"):WaitForChild("SayMessageRequest")
-
-        if val then
-            chatSpamConnection = task.spawn(function()
-                while task.wait(3) do -- every 3 seconds
-                    if not chatSpamConnection then break end
-                    local msg = spamMessages[math.random(1, #spamMessages)]
-                    chatEvent:FireServer(msg, "All")
-                end
-            end)
-        else
-            chatSpamConnection = nil
-        end
-    end,
-})
-
--- 🐢 Fake Lag
-local fakeLag = false
-local lagConnection
-
-Fun:CreateToggle({
-    Name = "Fake Lag",
-    CurrentValue = false,
-    Callback = function(val)
-        local RunService = game:GetService("RunService")
-        local player = game.Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-        local hrp = char:WaitForChild("HumanoidRootPart")
-
-        if val then
-            fakeLag = true
-            lagConnection = RunService.Heartbeat:Connect(function()
-                if fakeLag and hrp then
-                    hrp.Anchored = true
-                    task.wait(1) -- "freeze" for 1 second
-                    hrp.Anchored = false
-                end
-            end)
-        else
-            fakeLag = false
-            if lagConnection then
-                lagConnection:Disconnect()
-                lagConnection = nil
-            end
-        end
-    end,
-})
-
--- 🌊 Wow Thingz are geting a whole Bluu (World Recolor)
-local bluuEnabled = false
-local bluuConnection
-
-Fun:CreateToggle({
-    Name = "Wow Thingz are geting a whole Bluu",
-    CurrentValue = false,
-    Callback = function(val)
-        bluuEnabled = val
-        local player = game.Players.LocalPlayer
-
-        if bluuEnabled then
-            -- Apply blue filter loop
-            bluuConnection = game:GetService("RunService").Heartbeat:Connect(function()
-                for _, obj in ipairs(workspace:GetDescendants()) do
-                    if obj:IsA("BasePart") and obj:IsDescendantOf(player.Character) == false then
-                        obj.Color = Color3.fromRGB(0, 162, 255) -- Roblox Blue tone
-                        obj.Material = Enum.Material.SmoothPlastic -- smooth look
-                    elseif obj:IsA("Decal") or obj:IsA("Texture") then
-                        obj.Color3 = Color3.fromRGB(0, 162, 255)
-                    end
-                end
-            end)
-        else
-            -- Disable effect and restore (optional reset)
-            if bluuConnection then
-                bluuConnection:Disconnect()
-                bluuConnection = nil
-            end
-        end
-    end,
-})
 
     local Tools = Fun:CreateSection("Tools")
 
@@ -2801,7 +2427,7 @@ local MAIN_ANIMATIONS = {
     CLOSER_HANDS = "rbxassetid://168086975",
 }
 
---// this is a boolean named "JerkingOff"🤯
+--// this is a boolean named "JerkingOff"
 local JerkingOff = false
 
 --// making the tool in 
@@ -2945,7 +2571,7 @@ loadstring(game:HttpGet('https://raw.githubusercontent.com/shakk-code/fe-ragdoll
 local Button = Fun:CreateButton({
    Name = "RagRoll (R6)",
    Callback = function()
---[[ 📜 AUTHOR: @4zx16 || TOOL-BASED RAGDOLL (R6) ]]--
+
 wait(0.3)
 local Player = game.Players:FindFirstChild(script.Parent.Name)
 
@@ -3115,9 +2741,7 @@ tool.Activated:Connect(ragdollify)
 local Button = Trolling:CreateButton({
    Name = "Mafioso Fe",
    Callback = function()
-   --[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
@@ -3235,7 +2859,7 @@ Rayfield:Notify({
 local Button = Scripts:CreateButton({
    Name = "StrawberryCMD",
    Callback = function()
-   --https://discord.gg/bXQfb3QWa8
+   
 loadstring(game:HttpGet("https://raw.githubusercontent.com/StrawberryRBLX/Strawberry-Scanner/refs/heads/main/release/scanner.lua"))()
    end,
 })
@@ -3484,44 +3108,3 @@ lp.Chatted:Connect(function(msg)
 end)
    end,
 })
-
---[[ Hitbox Extender con Toggle, Slider y Hitbox Visible ]]
-        local HitboxModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/nexeralt/ForsakenHitboxExtender/refs/heads/main/open%20source.luau"))()
-        local RunService = game:GetService("RunService")
-        local Players = game:GetService("Players")
-        local player = Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local extendPower = 2
-        local hitboxEnabled = false
-
-        -- Mantener hitbox activo
-        RunService.RenderStepped:Connect(function()
-            if hitboxEnabled then
-                HitboxModule:ExtendHitbox(extendPower, 0.1)
-            end
-        end)
-
-        -- Toggle para activar/desactivar hitbox
-        Useful:CreateToggle({
-            Name = "Enable Hitbox",
-            CurrentValue = false,
-            Callback = function(value)
-                hitboxEnabled = value
-                if not value then
-                    HitboxModule:StopExtendingHitbox()
-                end
-            end
-        })
-
-        -- Slider para cambiar potencia
-        Useful:CreateSlider({
-            Name = "Hitbox Power",
-            Min = 2,
-            Max = 50,
-            Default = 2,
-            Callback = function(value)
-                extendPower = value
-            end
-        })
-
---If a user is reading this Keep working o scripts like me get time and make , code , do scripts this is a bad time for roblox.
