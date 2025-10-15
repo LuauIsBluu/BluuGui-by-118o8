@@ -215,111 +215,94 @@ end)
    end,
 })
 
-local Section = Forsaken:CreateSection("Survivor tptool")
+local Section = Forsaken:CreateSection("TP tool")
 
-local survivorsFolderPath = {"Players", "Survivors"} -- workspace.Players.Survivors
-local survivorsFolder = workspace
-for _, name in ipairs(survivorsFolderPath) do
-    survivorsFolder = survivorsFolder:FindFirstChild(name)
-    if not survivorsFolder then break end
+--// TP Tool with Input Example
+local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
+
+-- Find survivors folder (workspace.Players.Survivors)
+local survivorsFolder = workspace:FindFirstChild("Players")
+    and workspace.Players:FindFirstChild("Survivors")
+
+if not survivorsFolder then
+    Rayfield:Notify({
+        Title = "Error",
+        Content = "Couldn't find workspace.Players.Survivors!",
+        Duration = 4
+    })
+    return
 end
 
--- Function to get all survivor names dynamically
-local function getSurvivorNames()
-    local names = {}
-    if survivorsFolder then
-        for _, obj in ipairs(survivorsFolder:GetChildren()) do
-            if obj:IsA("Model") then
-                table.insert(names, obj.Name)
-            end
+-- Store typed survivor name
+local survivorName = nil
+local survivor = nil
+
+--// Input Box
+local Input = Forsaken:CreateInput({
+    Name = "Enter Survivor Name",
+    CurrentValue = "",
+    PlaceholderText = "Example: Guest1337, Noob, 007n7",
+    RemoveTextAfterFocusLost = false,
+    Flag = "SurvivorInput",
+    Callback = function(Text)
+        survivorName = Text
+        survivor = survivorsFolder:FindFirstChild(Text)
+
+        if survivor then
+            Rayfield:Notify({
+                Title = "✅ Survivor Found",
+                Content = "Found survivor: " .. Text,
+                Duration = 3
+            })
+        else
+            Rayfield:Notify({
+                Title = "❌ Not Found",
+                Content = "No survivor named '" .. Text .. "' found.",
+                Duration = 3
+            })
         end
-    end
-    return names
-end
-
---// Store selected survivor
-local selectedSurvivor = nil
-
---// Dropdown
-local Dropdown = Forsaken:CreateDropdown({
-    Name = "Select Survivor",
-    Options = getSurvivorNames(),
-    CurrentOption = nil,
-    MultipleOptions = false,
-    Callback = function(Value)
-        selectedSurvivor = Value
-        Rayfield:Notify({
-            Title = "Survivor Selected",
-            Content = "Chosen: " .. tostring(Value),
-            Duration = 3
-        })
     end,
 })
 
---// Refresh Button (if survivors spawn/despawn)
-local RefreshButton = Forsaken:CreateButton({
-    Name = "Refresh Survivor List",
-    Callback = function()
-        local updated = getSurvivorNames()
-        Dropdown:SetOptions(updated)
-        Rayfield:Notify({
-            Title = "Refreshed",
-            Content = "Updated survivor list loaded.",
-            Duration = 3
-        })
-    end,
-})
-
---// Give TP Tool Button
-local Button = Forsaken:CreateButton({
+--// Button to give TP Tool
+local GiveToolButton = Forsaken:CreateButton({
     Name = "Give TP Tool",
     Callback = function()
-        local player = game.Players.LocalPlayer
-        local mouse = player:GetMouse()
-
-        if not selectedSurvivor then
+        if not survivor or not survivorName then
             Rayfield:Notify({
                 Title = "Error",
-                Content = "Select a survivor first!",
+                Content = "Enter a valid survivor name first!",
                 Duration = 3
             })
             return
         end
 
-        if not survivorsFolder then
-            Rayfield:Notify({
-                Title = "Error",
-                Content = "Couldn't find survivors folder in Workspace!",
-                Duration = 3
-            })
-            return
-        end
-
-        local survivor = survivorsFolder:FindFirstChild(selectedSurvivor)
-        if not survivor then
-            Rayfield:Notify({
-                Title = "Error",
-                Content = "Survivor '" .. selectedSurvivor .. "' not found.",
-                Duration = 3
-            })
-            return
-        end
-
-        -- Create teleport tool
+        -- Create TP Tool (teleports survivor to mouse like classic tool)
         local tool = Instance.new("Tool")
         tool.RequiresHandle = false
         tool.Name = "[TP Tool]"
 
+        -- Teleport the survivor when tool is activated
         tool.Activated:Connect(function()
-            local pos = mouse.Hit.p + Vector3.new(0, 2.5, 0)
-            player.Character.HumanoidRootPart.CFrame = CFrame.new(pos)
+            if survivor and survivor:FindFirstChild("HumanoidRootPart") then
+                local pos = mouse.Hit + Vector3.new(0, 2.5, 0)
+                survivor.HumanoidRootPart.CFrame = CFrame.new(pos.X, pos.Y, pos.Z)
+            else
+                Rayfield:Notify({
+                    Title = "Error",
+                    Content = "Survivor not valid anymore.",
+                    Duration = 3
+                })
+            end
         end)
 
-        tool.Parent = survivor
+        -- Give the tool to the player
+        tool.Parent = player.Backpack
 
         Rayfield:Notify({
             Title = "Success",
-            Content = "Gave TP Tool to " .. selectedSurvivor,
+            Content = "TP Tool added for survivor: " .. survivorName,
             Duration = 3
         })
     end,
