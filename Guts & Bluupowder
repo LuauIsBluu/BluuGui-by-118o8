@@ -41,7 +41,7 @@ local Main = Window:CreateTab("Thingz", 4483362458) -- Title, Image
 
 local Section = Main:CreateSection("Hubs")
 
-local Button = Tab:CreateButton({
+local Button = Main:CreateButton({
    Name = "Chaos Hub V1 (Recomended)",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/cjbbth1-crypto/Chaos-Hub-GB/refs/heads/main/Chaos%20Hub"))()
@@ -56,7 +56,7 @@ local Button = Main:CreateButton({
    end,
 })
 
-local Button = Tab:CreateButton({
+local Button = Main:CreateButton({
    Name = "Katchi Hub (KeySistem)",
    Callback = function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/milkywiffle-netizen/Katchi-hub/refs/heads/main/KeysyGandB"))()
@@ -64,7 +64,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/milkywiffle-netizen/K
     end,
 })
 
-local Button = Tab:CreateButton({
+local Button = Main:CreateButton({
    Name = "Zac kill aura and esp",
    Callback = function()
    local SetLag = 9.5 -- You can set this number to reduce lag. Minimum = 0 & Maximum = 10 
@@ -455,3 +455,4 @@ local highlightToggle = HighlightTab:CreateToggle({
        highlightEnabled = Value
    end,
 })
+
