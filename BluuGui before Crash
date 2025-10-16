@@ -2119,34 +2119,6 @@ local Button = Useful:CreateButton({
    end,
 })
 
--- Botón para mostrar hitbox visible
-Useful:CreateButton({
-    Name = "Visible Hitbox",
-    Callback = function()
-        -- Crear un Part para el hitbox visible
-        local hitboxPart = Instance.new("Part")
-        hitboxPart.Size = Vector3.new(extendPower*2, 5, extendPower*2)
-        hitboxPart.Position = character:WaitForChild("HumanoidRootPart").Position
-        hitboxPart.Anchored = true
-        hitboxPart.CanCollide = false
-        hitboxPart.Transparency = 0.3
-        hitboxPart.BrickColor = BrickColor.new("Bright red")
-        hitboxPart.Parent = workspace
-
-        -- Actualizar posición en cada frame
-        local connection
-        connection = RunService.RenderStepped:Connect(function()
-            if character and character:FindFirstChild("HumanoidRootPart") then
-                hitboxPart.Position = character.HumanoidRootPart.Position
-                hitboxPart.Size = Vector3.new(extendPower*2, 5, extendPower*2)
-            else
-                hitboxPart:Destroy()
-                connection:Disconnect()
-            end
-        end)
-    end
-})
-
 
     local Devs = Useful:CreateSection("Devs")
 
@@ -2301,6 +2273,243 @@ end
    end,
 })
 
+local Button = Fun:CreateButton({
+   Name = "Delete tool (Not FE)",
+   Callback = function()
+   --[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+-- Source Code Skidds
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local lp = Players.LocalPlayer
+local Mouse = lp:GetMouse()
+
+local history = {}
+local uiVisible = true
+
+-- UI Creation
+local gui = Instance.new("ScreenGui", lp:WaitForChild("PlayerGui"))
+gui.Name = "DeleteUndoGUI"
+gui.ResetOnSpawn = false
+
+local main = Instance.new("Frame", gui)
+main.Name = "MainUI"
+main.Size = UDim2.new(0, 200, 0, 130)
+main.Position = UDim2.new(0.02, 0, 0.2, 0)
+main.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+main.BorderSizePixel = 0
+main.BackgroundTransparency = 0.1
+main.Visible = true
+main.Active = true
+main.Draggable = true
+
+local UIStroke = Instance.new("UIStroke", main)
+UIStroke.Thickness = 2
+UIStroke.Color = Color3.fromRGB(100, 255, 255)
+UIStroke.Transparency = 0.3
+
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, 0, 0, 25)
+title.BackgroundTransparency = 1
+title.Text = "🧱 Delete / Undo"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+
+local deleteToggle = Instance.new("TextButton", main)
+deleteToggle.Size = UDim2.new(1, -20, 0, 30)
+deleteToggle.Position = UDim2.new(0, 10, 0, 35)
+deleteToggle.Text = "Delete: ON"
+deleteToggle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+deleteToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+deleteToggle.Font = Enum.Font.Gotham
+deleteToggle.TextSize = 14
+
+local undoBtn = Instance.new("TextButton", main)
+undoBtn.Size = UDim2.new(1, -20, 0, 30)
+undoBtn.Position = UDim2.new(0, 10, 0, 70)
+undoBtn.Text = "Undo"
+undoBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+undoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+undoBtn.Font = Enum.Font.Gotham
+undoBtn.TextSize = 14
+
+local toggleBtn = Instance.new("TextButton", gui)
+toggleBtn.Size = UDim2.new(0, 40, 0, 40)
+toggleBtn.Position = UDim2.new(0, 10, 0.8, 0)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
+toggleBtn.Text = "⛶"
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextSize = 20
+toggleBtn.BorderSizePixel = 0
+
+-- Functionality
+local deleting = true
+
+deleteToggle.MouseButton1Click:Connect(function()
+	deleting = not deleting
+	deleteToggle.Text = "Delete: " .. (deleting and "ON" or "OFF")
+	deleteToggle.BackgroundColor3 = deleting and Color3.fromRGB(50, 50, 50) or Color3.fromRGB(80, 20, 20)
+end)
+
+Mouse.Button1Down:Connect(function()
+	if not deleting then return end
+	local target = Mouse.Target
+	if target and target:IsA("BasePart") and not target:IsDescendantOf(lp.Character) then
+		local clone = target:Clone()
+		local props = {
+			Parent = target.Parent,
+			Material = target.Material,
+			Color = target.Color,
+			Size = target.Size,
+			CFrame = target.CFrame,
+			Anchored = target.Anchored,
+			Transparency = target.Transparency,
+			CanCollide = target.CanCollide,
+			Name = target.Name
+		}
+		table.insert(history, {props = props, clone = clone})
+		target:Destroy()
+	end
+end)
+
+undoBtn.MouseButton1Click:Connect(function()
+	if #history == 0 then return end
+	local data = table.remove(history)
+	local newPart = data.clone:Clone()
+	for prop, val in pairs(data.props) do
+		newPart[prop] = val
+	end
+	newPart.Parent = data.props.Parent
+end)
+
+toggleBtn.MouseButton1Click:Connect(function()
+	uiVisible = not uiVisible
+	main.Visible = uiVisible
+end)
+   end,
+})
+
+local Button = Tab:CreateButton({
+   Name = "Tp tool",
+   Callback = function()
+   --// Simple TP Tool (persists after death)
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local camera = Workspace.CurrentCamera
+
+local tp_height = 3
+local cooldown = 0.3
+local last_tp = 0
+
+--// Create the TP Tool
+local function createTPTool()
+	local tool = Instance.new("Tool")
+	tool.Name = "TP Tool"
+	tool.RequiresHandle = false
+	tool.ToolTip = "Click to teleport"
+	
+	local function canTeleport()
+		local now = tick()
+		if now - last_tp < cooldown then
+			return false
+		end
+
+		local char = player.Character
+		if not char then return false end
+
+		local hum = char:FindFirstChild("Humanoid")
+		local root = char:FindFirstChild("HumanoidRootPart")
+		if not hum or not root or hum.Health <= 0 then
+			return false
+		end
+
+		return true
+	end
+
+	local function teleportTo(pos)
+		if not canTeleport() then return end
+		last_tp = tick()
+
+		local char = player.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart")
+		if root then
+			root.CFrame = CFrame.new(pos + Vector3.new(0, tp_height, 0))
+		end
+	end
+
+	-- PC: click to teleport
+	tool.Activated:Connect(function()
+		if not UserInputService.TouchEnabled then
+			local mouse = player:GetMouse()
+			if mouse and mouse.Hit then
+				teleportTo(mouse.Hit.Position)
+			end
+		end
+	end)
+
+	-- Mobile: tap to teleport
+	local touchConnection
+	tool.Equipped:Connect(function()
+		if UserInputService.TouchEnabled then
+			touchConnection = UserInputService.InputEnded:Connect(function(input, processed)
+				if input.UserInputType == Enum.UserInputType.Touch and not processed then
+					local ray = camera:ScreenPointToRay(input.Position.X, input.Position.Y)
+					local result = Workspace:Raycast(ray.Origin, ray.Direction * 1000)
+					if result then
+						teleportTo(result.Position)
+					else
+						teleportTo(ray.Origin + ray.Direction * 20)
+					end
+				end
+			end)
+		end
+	end)
+
+	tool.Unequipped:Connect(function()
+		if touchConnection then
+			touchConnection:Disconnect()
+			touchConnection = nil
+		end
+	end)
+
+	return tool
+end
+
+--// Give the TP tool every spawn
+local function giveTPTool()
+	local backpack = player:WaitForChild("Backpack")
+	local tpTool = createTPTool()
+	tpTool.Parent = backpack
+end
+
+-- Give when the player spawns
+if player.Character then
+	giveTPTool()
+end
+
+player.CharacterAdded:Connect(function()
+	task.wait(1)
+	giveTPTool()
+end)
+
+   end,
+})
+        
+local Button = Useful:CreateButton({
+   Name = "Free private server",
+   Callback = function()
+   
+loadstring(game:HttpGet("https://gist.githubusercontent.com/Tesker-103/ed48b3ae8120b0c040584b661cbda063/raw/210408b3f107dc740a4c9b832bfa647f92aa25d1/FreePrivateServerGUI"))()
+   end,
+})
+        
     local Button = Fun:CreateButton({
    Name = "$:) F3X (NOT FE)",
    Callback = function()
@@ -2308,10 +2517,10 @@ end
    end,
 }) --Clean
 
-    local Jerk = Fun:CreateSection("Just A Normal animation(Dont tell mom!)")
+    local Jerk = Fun:CreateSection("SUS")
 
     local Button = Fun:CreateButton({
-   Name = ">:)",
+   Name = "Sus anim",
    Callback = function()
 
 --// define locally so they can't be changed mid usage
@@ -2773,7 +2982,7 @@ Rayfield:Notify({
    end,
 }) --Clean
 
-local Button = Scripts:CreateButton({
+local Button = UsefulCreateButton({
    Name = "StrawberryCMD",
    Callback = function()
    
@@ -2781,17 +2990,15 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/StrawberryRBLX/Strawb
    end,
 })
 
-local Button = Scripts:CreateButton({
+local Button = Useful:CreateButton({
    Name = "QuirkyCMD",
    Callback = function()
-   --[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
+   
 loadstring(game:HttpGet("https://gist.github.com/someunknowndude/38cecea5be9d75cb743eac8b1eaf6758/raw"))()
    end,
 })
 
-local Button = Scripts:CreateButton({
+local Button = Useful:CreateButton({
    Name = "Dex",
    Callback = function()
    
@@ -2802,9 +3009,7 @@ loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/late
 local VB = Useful:CreateButton({
    Name = "Visible backpack of others",
    Callback = function()
-   --[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
+   
 --// services
 local ts = game:GetService("TweenService")
 local rs = game:GetService("RunService")
@@ -3023,5 +3228,122 @@ lp.Chatted:Connect(function(msg)
 		_G.BillboardState.uis = {}
 	end
 end)
+   end,
+})
+
+  local Button = Trolling:CreateButton({
+   Name = "Touch fling",
+   Callback = function()
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local TextButton = Instance.new("TextButton")
+local TextLabel = Instance.new("TextLabel")
+
+--Properties:
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = false
+
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+Frame.BorderSizePixel = 2
+Frame.Position = UDim2.new(0.341826946, 0, 0.367763907, 0)
+Frame.Size = UDim2.new(0, 148, 0, 106)
+
+TextButton.Parent = Frame
+TextButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TextButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+TextButton.BorderSizePixel = 2
+TextButton.Position = UDim2.new(0.0835492909, 0, 0.552504063, 0)
+TextButton.Size = UDim2.new(0, 124, 0, 37)
+TextButton.Font = Enum.Font.SourceSans
+TextButton.Text = "OFF"
+TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton.TextSize = 41.000
+
+TextLabel.Parent = Frame
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BackgroundTransparency = 1.000
+TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.BorderSizePixel = 0
+TextLabel.Position = UDim2.new(0.0649713054, 0, 0.0727680102, 0)
+TextLabel.Size = UDim2.new(0, 128, 0, 39)
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.Text = "Touch Fling"
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextSize = 34.000
+
+-- Scripts:
+
+local function CTIKC_fake_script() -- TextButton.LocalScript 
+	local script = Instance.new('LocalScript', TextButton)
+
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	local RunService = game:GetService("RunService")
+	local Players = game:GetService("Players")
+	
+	local toggleButton = script.Parent
+	local hiddenfling = false
+	
+	
+	if not ReplicatedStorage:FindFirstChild("juisdfj0i32i0eidsuf0iok") then
+		local detection = Instance.new("Decal")
+		detection.Name = "juisdfj0i32i0eidsuf0iok"
+		detection.Parent = ReplicatedStorage
+	end
+	
+	local function fling()
+		local hrp, c, vel, movel = nil, nil, nil, 0.1
+		local lp = Players.LocalPlayer
+	
+		while true do
+			RunService.Heartbeat:Wait()
+			if hiddenfling then
+				while hiddenfling and not (c and c.Parent and hrp and hrp.Parent) do
+					RunService.Heartbeat:Wait()
+					c = lp.Character
+					hrp = c and c:FindFirstChild("HumanoidRootPart")
+				end
+	
+				if hiddenfling then
+					vel = hrp.Velocity
+					hrp.Velocity = vel * 10000 + Vector3.new(0, 10000, 0)
+					RunService.RenderStepped:Wait()
+					if c and c.Parent and hrp and hrp.Parent then
+						hrp.Velocity = vel
+					end
+					RunService.Stepped:Wait()
+					if c and c.Parent and hrp and hrp.Parent then
+						hrp.Velocity = vel + Vector3.new(0, movel, 0)
+						movel = movel * -1
+					end
+				end
+			end
+		end
+	end
+	
+	toggleButton.MouseButton1Click:Connect(function()
+		hiddenfling = not hiddenfling
+		if hiddenfling then
+			toggleButton.Text = "ON"
+		else
+			toggleButton.Text = "OFF"
+		end
+	end)
+	
+	fling()
+	
+end
+coroutine.wrap(CTIKC_fake_script)()
+local function FFJFK_fake_script() -- Frame.LocalScript 
+	local script = Instance.new('LocalScript', Frame)
+
+	script.Parent.Active = true
+	script.Parent.Draggable = true
+end
+coroutine.wrap(FFJFK_fake_script)()
+                                                            
    end,
 })
