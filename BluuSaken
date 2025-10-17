@@ -104,6 +104,109 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/SHRTRYScriptMANhere/s
 })
 
 local Button = Forsaken:CreateButton({
+   Name = "Fe mafioso old skin (Killer)",
+   Callback = function()
+            
+   Rayfield:Notify({
+   Title = "Old Mafioso",
+   Content = "Running FE Mafioso old skin (execute before round starts!)",
+   Duration = 4
+})
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ImBluuSaken/MafiosoRework/main/script.lua"))()
+
+   end,
+})
+
+local Button = Forsaken:CreateButton({
+   Name = "Deleted emotes Gui",
+   Callback = function()
+
+            Rayfield:Notify({
+   Title = "Deleted Emotes",
+   Content = "FE Emote hub loaded!",
+   Duration = 3
+})
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- Animations
+local animations = {
+   ["Breakdance"] = "rbxassetid://13817547409",
+   ["Ninja Dance"] = "rbxassetid://13817555883",
+   ["Lifelight"] = "rbxassetid://13817537342",
+   ["Creepy"] = "rbxassetid://13817528591",
+   ["Zombie"] = "rbxassetid://13817518794"
+}
+
+-- Sounds
+local sounds = {
+   ["Breakdance"] = "rbxassetid://9135834140",
+   ["Ninja Dance"] = "rbxassetid://1837306447",
+   ["Lifelight"] = "rbxassetid://9135834441",
+   ["Creepy"] = "rbxassetid://9135834989",
+   ["Zombie"] = "rbxassetid://9135835263"
+}
+
+-- GUI Setup
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "DeletedEmotesGUI"
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 250, 0, 330)
+frame.Position = UDim2.new(0.5, -125, 0.5, -165)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.Active = true
+frame.Draggable = true
+frame.BorderSizePixel = 0
+frame.BackgroundTransparency = 0.15
+
+local layout = Instance.new("UIListLayout", frame)
+layout.Padding = UDim.new(0, 4)
+
+for name, animId in pairs(animations) do
+   local btn = Instance.new("TextButton", frame)
+   btn.Text = "▶ " .. name
+   btn.Size = UDim2.new(1, 0, 0, 30)
+   btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+   btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+   btn.Font = Enum.Font.GothamBold
+   btn.TextSize = 14
+   btn.MouseButton1Click:Connect(function()
+       local anim = Instance.new("Animation")
+       anim.AnimationId = animId
+       local track = humanoid:LoadAnimation(anim)
+       track:Play()
+
+       local sound = Instance.new("Sound", character)
+       sound.SoundId = sounds[name]
+       sound:Play()
+   end)
+end
+
+-- Stop button
+local stopBtn = Instance.new("TextButton", frame)
+stopBtn.Text = "⛔ Stop All"
+stopBtn.Size = UDim2.new(1, 0, 0, 30)
+stopBtn.BackgroundColor3 = Color3.fromRGB(120, 40, 40)
+stopBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+stopBtn.Font = Enum.Font.GothamBold
+stopBtn.TextSize = 14
+stopBtn.MouseButton1Click:Connect(function()
+   for _, sound in pairs(character:GetChildren()) do
+       if sound:IsA("Sound") then sound:Stop() end
+   end
+   for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+       track:Stop()
+   end
+end)
+
+   end,
+})
+
+local Button = Forsaken:CreateButton({
    Name = "Device Spoofer",
    Callback = function()
 
