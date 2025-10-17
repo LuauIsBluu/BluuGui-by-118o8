@@ -318,7 +318,7 @@ end)
    end,
 })
 
-local Section = Forsaken:CreateSection("TP tool")
+local Section = Forsaken:CreateSection("tp tool")
 
 --// TP Tool with Input Example
 local player = game.Players.LocalPlayer
@@ -370,7 +370,7 @@ local Input = Forsaken:CreateInput({
 
 --// Button to give TP Tool
 local GiveToolButton = Forsaken:CreateButton({
-    Name = "Give TP Tool",
+    Name = "Give tp Tool",
     Callback = function()
         if not survivor or not survivorName then
             Rayfield:Notify({
@@ -381,16 +381,16 @@ local GiveToolButton = Forsaken:CreateButton({
             return
         end
 
-        -- Create TP Tool (teleports survivor to mouse like classic tool)
+        -- Create tp Tool
         local tool = Instance.new("Tool")
         tool.RequiresHandle = false
-        tool.Name = "[TP Tool]"
+        tool.Name = "[click 2 tp]"
 
         -- Teleport the survivor when tool is activated
-        tool.Activated:Connect(function()
+        tool.Activated:connect(function()  -- <-- use connect like old version
             if survivor and survivor:FindFirstChild("HumanoidRootPart") then
-                local pos = mouse.Hit + Vector3.new(0, 2.5, 0)
-                survivor.HumanoidRootPart.CFrame = CFrame.new(pos.X, pos.Y, pos.Z)
+                local pos = mouse.Hit.Position + Vector3.new(0, 2.5, 0)
+                survivor.HumanoidRootPart.CFrame = CFrame.new(pos)
             else
                 Rayfield:Notify({
                     Title = "Error",
@@ -400,13 +400,101 @@ local GiveToolButton = Forsaken:CreateButton({
             end
         end)
 
-        -- Give the tool to the player
-        tool.Parent = player.Backpack
+        -- Parent the tool directly to the survivor
+        tool.Parent = survivor
 
         Rayfield:Notify({
             Title = "Success",
-            Content = "TP Tool added for survivor: " .. survivorName,
+            Content = "TP Tool attached to survivor: " .. survivorName,
             Duration = 3
         })
     end,
 })
+
+local Section = Forsaken:CreateSection("tp gui")
+
+local Button = Forsaken:CreateButton({
+   Name = "tp gui",
+   Callback = function()
+   local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
+
+-- Colors
+local bluuColor = Color3.fromRGB(121,156,208) -- #799cd0
+local blackColor = Color3.fromRGB(0,0,0)
+
+-- Create mini GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MiniTPGUI"
+screenGui.Parent = game.CoreGui
+
+-- Notification function
+local function notify(title, text, duration)
+    local notif = Instance.new("TextLabel")
+    notif.Size = UDim2.new(0,250,0,50)
+    notif.Position = UDim2.new(0.5,-125,0.05,0)
+    notif.BackgroundColor3 = blackColor
+    notif.TextColor3 = bluuColor
+    notif.TextScaled = true
+    notif.Text = title.."\n"..text
+    notif.Parent = screenGui
+
+    delay(duration, function()
+        notif:Destroy()
+    end)
+end
+
+notify("Mini TP", "Loaded! Drag and click TP ON/OFF", 3)
+
+-- Main frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,160,0,80)
+frame.Position = UDim2.new(0.85,0,0.05,0) -- corner
+frame.BackgroundColor3 = blackColor
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = screenGui
+
+-- TP toggle button
+local tpToggle = Instance.new("TextButton")
+tpToggle.Size = UDim2.new(1, -10, 0, 50)
+tpToggle.Position = UDim2.new(0,5,0,15)
+tpToggle.Text = "TP: OFF"
+tpToggle.BackgroundColor3 = blackColor
+tpToggle.TextColor3 = bluuColor
+tpToggle.TextScaled = true
+tpToggle.Parent = frame
+
+-- Close button
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0,25,0,25)
+closeBtn.Position = UDim2.new(1,-30,0,5)
+closeBtn.Text = "X"
+closeBtn.BackgroundColor3 = blackColor
+closeBtn.TextColor3 = bluuColor
+closeBtn.TextScaled = true
+closeBtn.Parent = frame
+
+local tpOn = false
+
+tpToggle.MouseButton1Click:Connect(function()
+    tpOn = not tpOn
+    tpToggle.Text = tpOn and "TP: ON" or "TP: OFF"
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+-- Teleport logic
+mouse.Button1Down:Connect(function()
+    if tpOn and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local pos = mouse.Hit.Position + Vector3.new(0,2.5,0)
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(pos)
+    end
+end)
+
+   end,
+})
+
