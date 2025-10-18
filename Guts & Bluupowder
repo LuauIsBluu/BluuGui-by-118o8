@@ -37,7 +37,9 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local Main = Window:CreateTab("Thingz", 4483362458) -- Title, Image
+local MainTab = Window:CreateTab("Main", 4483362458) -- Title, Image
+
+local Main = Window:CreateTab("Scripts", 4483362458) -- Title, Image
 
 local Section = Main:CreateSection("Hubs")
 
@@ -254,4 +256,879 @@ local Button = Main:CreateButton({
       })
 
    end,
+})
+
+local Section = MainTab:CreateSection("Combat")
+
+local killAuraEnabled = false
+
+MainTab:CreateToggle({
+    Name = "Kill Aura",
+    CurrentValue = false,
+    Callback = function(Value)
+        killAuraEnabled = Value
+        task.spawn(function()
+            while killAuraEnabled do
+                local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Heavy Sabre")
+                if tool then
+                    for _, enemy in pairs(Workspace:GetChildren()) do
+                        if enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Zombie") then
+                            local distance = (enemy.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+                            if distance <= 13 then
+                                game:GetService("ReplicatedStorage").Remotes.Gib:FireServer(enemy)
+                            end
+                        end
+                    end
+                end
+                task.wait(0.3)
+            end
+        end)
+    end,
+})
+
+--====================================================
+-- AUTO HEADSHOT SECTION
+--====================================================
+local headshotEnabled = false
+
+MainTab:CreateToggle({
+    Name = "Auto Headshot (Meele)",
+    CurrentValue = false,
+    Callback = function(Value)
+        headshotEnabled = Value
+
+        if headshotEnabled then
+            -- Patch melee & bayonet modules to always aim for head
+            local Modules = {
+                Workspace:FindFirstChild("Flintlock") and Workspace.Flintlock:FindFirstChild("BayonetHitCheck"),
+                Workspace:FindFirstChild("MeleeBase") and Workspace.MeleeBase:FindFirstChild("MeleeHitCheck")
+            }
+
+            for _, module in pairs(Modules) do
+                if module and module:IsA("ModuleScript") then
+                    local old = require(module)
+                    old.Check = function(_, target)
+                        local char = target.Parent
+                        local head = char and char:FindFirstChild("Head")
+                        return head or target
+                    end
+                end
+            end
+        end
+    end,
+})
+
+local Section = Maintab:CreateSection("Walkspeed")
+
+
+--====================================================
+--// WALK SPEED SECTION
+--====================================================
+local freezeWalkSpeed = false
+local customSpeed = 16
+
+MainTab:CreateInput({
+    Name = "WalkSpeed",
+    PlaceholderText = "Enter speed (e.g. 50)",
+    RemoveTextAfterFocusLost = true,
+    Callback = function(Value)
+        local num = tonumber(Value)
+        if num then
+            customSpeed = num
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                LocalPlayer.Character.Humanoid.WalkSpeed = num
+            end
+        end
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Freeze WalkSpeed",
+    CurrentValue = false,
+    Callback = function(Value)
+        freezeWalkSpeed = Value
+        task.spawn(function()
+            while freezeWalkSpeed do
+                local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+                if hum then
+                    hum.WalkSpeed = customSpeed
+                end
+                task.wait(0.2)
+            end
+        end)
+    end,
+})
+
+local Section = Main:CreateSection("ESP")
+
+--====================================================
+--// ESP SECTION (Separate Toggles per Zombie Type)
+--====================================================
+local espToggles = {
+    Runner = false,
+    Bomber = false,
+    Igniter = false,
+    Cuirassier = false
+}
+
+local colors = {
+    Runner = Color3.fromRGB(0, 255, 0),
+    Bomber = Color3.fromRGB(0, 0, 255),
+    Igniter = Color3.fromRGB(255, 255, 0),
+    Cuirassier = Color3.fromRGB(255, 0, 0)
+}
+
+--// Utility function
+local function createHighlight(enemy, color)
+    if enemy:FindFirstChild("ESP_Highlight") then return end
+    local hl = Instance.new("Highlight")
+    hl.Name = "ESP_Highlight"
+    hl.Adornee = enemy
+    hl.FillColor = color
+    hl.OutlineColor = Color3.fromRGB(0, 0, 0)
+    hl.Parent = enemy
+end
+
+--// Clean Highlights
+local function clearHighlights()
+    for _, v in pairs(Workspace:GetDescendants()) do
+        if v.Name == "ESP_Highlight" then
+            v:Destroy()
+        end
+    end
+end
+
+--// Master ESP loop
+task.spawn(function()
+    while task.wait(1) do
+        clearHighlights()
+
+        for _, enemy in pairs(Workspace:GetChildren()) do
+            if not enemy:FindFirstChild("Zombie") then continue end
+
+            if espToggles.Bomber and enemy:FindFirstChild("Barrel") then
+                createHighlight(enemy, colors.Bomber)
+            elseif espToggles.Igniter and enemy:FindFirstChild("Whale Oil Lantern") then
+                createHighlight(enemy, colors.Igniter)
+            elseif espToggles.Cuirassier and enemy:FindFirstChild("Sword") then
+                createHighlight(enemy, colors.Cuirassier)
+            elseif espToggles.Runner and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.WalkSpeed > 16 then
+                createHighlight(enemy, colors.Runner)
+            end
+        end
+    end
+end)
+
+--// Create toggles in Rayfield
+MainTab:CreateToggle({
+    Name = "Runner ESP (Green)",
+    CurrentValue = false,
+    Callback = function(Value)
+        espToggles.Runner = Value
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Bomber ESP (Blue)",
+    CurrentValue = false,
+    Callback = function(Value)
+        espToggles.Bomber = Value
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Igniter ESP (Yellow)",
+    CurrentValue = false,
+    Callback = function(Value)
+        espToggles.Igniter = Value
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Cuirassier ESP (Red)",
+    CurrentValue = false,
+    Callback = function(Value)
+        espToggles.Cuirassier = Value
+    end,
+})
+
+local Section = MainTab:CreateSection("Misc")
+
+local Button = MainTab:CreateButton({
+   Name = "Anti-Cheat bypass",
+   Callback = function()
+   -- Services
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+-- Local Player
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart", 5)
+local humanoid = character:WaitForChild("Humanoid", 5)
+
+-- Validate character
+if not humanoidRootPart or not humanoid then
+    warn("Character not found. Walking...")
+    player.CharacterAdded:Wait()
+    character = player.Character
+    humanoidRootPart = character:WaitForChild("HumanoidRootPart", 5)
+    humanoid = character:WaitForChild("Humanoid", 5)
+    if not humanoidRootPart or not humanoid then
+        warn("Character load failed. Script terminated.")
+        return
+    end
+end
+
+-- Variables
+local flying = false
+local noclipping = false
+local speed = 50
+local mobileMovement = {x = 0, y = 0}
+local control = {forward = 0, backward = 0, left = 0, right = 0, up = 0, down = 0}
+
+local flyConnection
+local noclipConnection
+local antiPullbackConnection
+
+-- Position tracking
+local lastPosition = humanoidRootPart.Position
+local positionHistory = {}
+local maxHistorySize = 30
+local pullbackThreshold = 1.5
+local stuckCounter = 0
+local lastSafePosition = humanoidRootPart.CFrame
+
+-- Mobile detection
+local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+local mobileFrame = nil
+local mobileVisible = false
+local MobileToggle = nil
+
+-- GUI Creation
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "NoclipFlyGUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = player:WaitForChild("PlayerGui", 5)
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 160, 0, 180)
+Frame.Position = UDim2.new(1, -170, 0, 10)
+Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = true
+Frame.Parent = ScreenGui
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.BackgroundTransparency = 1
+Title.Text = "Fly & Noclip Bypass"
+Title.TextColor3 = Color3.fromRGB(200, 200, 200)
+Title.TextSize = 11
+Title.Font = Enum.Font.GothamBold
+Title.TextWrapped = true
+Title.Parent = Frame
+
+-- Fly Button
+local FlyButton = Instance.new("TextButton")
+FlyButton.Size = UDim2.new(0.85, 0, 0, 28)
+FlyButton.Position = UDim2.new(0.075, 0, 0.2, 0)
+FlyButton.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
+FlyButton.Text = "Fly: OFF"
+FlyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+FlyButton.TextSize = 11
+FlyButton.Font = Enum.Font.GothamBold
+FlyButton.Parent = Frame
+
+-- Noclip Button
+local NoclipButton = Instance.new("TextButton")
+NoclipButton.Size = UDim2.new(0.85, 0, 0, 28)
+NoclipButton.Position = UDim2.new(0.075, 0, 0.4, 0)
+NoclipButton.BackgroundColor3 = Color3.fromRGB(100, 50, 255)
+NoclipButton.Text = "Noclip: OFF"
+NoclipButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+NoclipButton.TextSize = 11
+NoclipButton.Font = Enum.Font.GothamBold
+NoclipButton.Parent = Frame
+
+-- Status Label
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(0.85, 0, 0, 25)
+StatusLabel.Position = UDim2.new(0.075, 0, 0.82, 0)
+StatusLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+StatusLabel.Text = "Status: Ready"
+StatusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+StatusLabel.TextSize = 9
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.Parent = Frame
+
+-- Mobile Toggle Button (if mobile)
+if isMobile then
+    MobileToggle = Instance.new("TextButton")
+    MobileToggle.Size = UDim2.new(0.85, 0, 0, 28)
+    MobileToggle.Position = UDim2.new(0.075, 0, 0.6, 0)
+    MobileToggle.BackgroundColor3 = Color3.fromRGB(255, 100, 50)
+    MobileToggle.Text = "Mobile Controls: OFF"
+    MobileToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    MobileToggle.TextSize = 11
+    MobileToggle.Font = Enum.Font.GothamBold
+    MobileToggle.Parent = Frame
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = MobileToggle
+end
+
+-- Styling
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 6)
+corner.Parent = Frame
+for _, btn in pairs({FlyButton, NoclipButton}) do
+    corner:Clone().Parent = btn
+end
+if MobileToggle then
+    corner:Clone().Parent = MobileToggle
+end
+corner:Clone().Parent = StatusLabel
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(70, 70, 70)
+stroke.Thickness = 1
+stroke.Parent = Frame
+
+-- Function to create mobile controls
+local function createMobileControls()
+    if mobileFrame then return end
+    
+    mobileFrame = Instance.new("Frame")
+    mobileFrame.Name = "MobileControls"
+    mobileFrame.Size = UDim2.new(0, 170, 0, 200)
+    mobileFrame.Position = UDim2.new(0, 10, 1, -210)
+    mobileFrame.BackgroundTransparency = 1
+    mobileFrame.Visible = false
+    mobileFrame.Parent = ScreenGui
+    
+    local buttonData = {
+        {name = "E", pos = UDim2.new(0, 55, 0, 0), text = "E"},
+        {name = "W", pos = UDim2.new(0, 55, 0, 50), text = "W"},
+        {name = "A", pos = UDim2.new(0, 10, 0, 100), text = "A"},
+        {name = "S", pos = UDim2.new(0, 55, 0, 100), text = "S"},
+        {name = "D", pos = UDim2.new(0, 100, 0, 100), text = "D"},
+        {name = "Q", pos = UDim2.new(0, 55, 0, 150), text = "Q"},
+    }
+    
+    for _, data in ipairs(buttonData) do
+        local btn = Instance.new("TextButton")
+        btn.Name = data.name
+        btn.Position = data.pos
+        btn.Size = UDim2.new(0, 40, 0, 40)
+        btn.Text = data.text
+        btn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.TextSize = 20
+        btn.Font = Enum.Font.GothamBold
+        btn.Parent = mobileFrame
+        
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 20)
+        btnCorner.Parent = btn
+        
+        local btnStroke = Instance.new("UIStroke")
+        btnStroke.Color = Color3.fromRGB(100, 100, 100)
+        btnStroke.Thickness = 2
+        btnStroke.Parent = btn
+        
+        btn.MouseButton1Down:Connect(function()
+            if data.name == "W" then
+                control.forward = 1
+            elseif data.name == "A" then
+                control.left = 1
+            elseif data.name == "S" then
+                control.backward = 1
+            elseif data.name == "D" then
+                control.right = 1
+            elseif data.name == "E" then
+                control.up = 1
+            elseif data.name == "Q" then
+                control.down = 1
+            end
+        end)
+        
+        btn.MouseButton1Up:Connect(function()
+            if data.name == "W" then
+                control.forward = 0
+            elseif data.name == "A" then
+                control.left = 0
+            elseif data.name == "S" then
+                control.backward = 0
+            elseif data.name == "D" then
+                control.right = 0
+            elseif data.name == "E" then
+                control.up = 0
+            elseif data.name == "Q" then
+                control.down = 0
+            end
+        end)
+    end
+    
+    -- Close button for mobile controls
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0, 30, 0, 30)
+    closeBtn.Position = UDim2.new(1, -40, 0, 10)
+    closeBtn.Text = "✕"
+    closeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeBtn.TextSize = 16
+    closeBtn.Font = Enum.Font.GothamBold
+    closeBtn.Parent = mobileFrame
+    
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(0, 15)
+    closeCorner.Parent = closeBtn
+    
+    closeBtn.MouseButton1Click:Connect(function()
+        mobileVisible = false
+        if mobileFrame then
+            mobileFrame.Visible = false
+        end
+        if MobileToggle then
+            MobileToggle.Text = "Mobile Controls: OFF"
+            MobileToggle.BackgroundColor3 = Color3.fromRGB(255, 100, 50)
+        end
+    end)
+end
+
+-- Create mobile controls if mobile
+if isMobile then
+    createMobileControls()
+end
+
+-- Mobile Toggle Event
+if MobileToggle then
+    MobileToggle.MouseButton1Click:Connect(function()
+        mobileVisible = not mobileVisible
+        if mobileFrame then
+            mobileFrame.Visible = mobileVisible
+        end
+        MobileToggle.Text = mobileVisible and "Mobile Controls: ON" or "Mobile Controls: OFF"
+        MobileToggle.BackgroundColor3 = mobileVisible and Color3.fromRGB(50, 255, 50) or Color3.fromRGB(255, 100, 50)
+    end)
+end
+
+-- ฟังก์ชันตรวจสอบว่าอยู่ในกำแพงหรือไม่
+local function isInWall()
+    if not humanoidRootPart then return false end
+    
+    local region = Region3.new(
+        humanoidRootPart.Position - Vector3.new(3.5, 3.5, 3.5),
+        humanoidRootPart.Position + Vector3.new(3.5, 3.5, 3.5)
+    )
+    region = region:ExpandToGrid(4)
+    
+    local parts = workspace:FindPartsInRegion3(region, character, 100)
+    for _, part in pairs(parts) do
+        if part.CanCollide and not part:IsDescendantOf(character) then
+            return true
+        end
+    end
+    return false
+end
+
+-- ฟังก์ชันตรวจสอบการดึงกลับ
+local function detectPullback()
+    if not humanoidRootPart then return false end
+    
+    local currentPos = humanoidRootPart.Position
+    local distance = (currentPos - lastPosition).Magnitude
+    
+    -- ตรวจหาการเคลื่อนที่ที่ผิดปกติ
+    if distance > pullbackThreshold then
+        return true
+    end
+    
+    local moveDir = humanoid.MoveDirection + Vector3.new(mobileMovement.x, 0, mobileMovement.y)
+    
+    -- ถ้ากำลังเคลื่อนที่แต่ไม่มีความเร็ว = ติด
+    if distance < 0.02 and moveDir.Magnitude > 0.5 then
+        stuckCounter = stuckCounter + 1
+        if stuckCounter > 2 then
+            return true
+        end
+    else
+        stuckCounter = 0
+    end
+    
+    lastPosition = currentPos
+    return false
+end
+
+-- ฟังก์ชันรีเซ็ต Humanoid State
+local function resetHumanoidState()
+    if not humanoid or not humanoidRootPart then return end
+    
+    humanoid.PlatformStand = false
+    humanoid.Sit = false
+    
+    humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+    task.wait(0.05)
+    humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+    task.wait(0.05)
+    humanoid:ChangeState(Enum.HumanoidStateType.Running)
+    
+    humanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+    humanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
+    humanoidRootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+    humanoidRootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    
+    task.wait(0.1)
+    humanoid.PlatformStand = false
+end
+
+-- ฟังก์ชัน Fly
+local function startFly()
+    if flying or not humanoidRootPart or humanoid.Health <= 0 then return end
+    flying = true
+    FlyButton.Text = "Fly: ON"
+    FlyButton.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
+    
+    StatusLabel.Text = noclipping and "Status: Fly + Noclip" or "Status: Flying"
+    StatusLabel.TextColor3 = noclipping and Color3.fromRGB(255, 255, 100) or Color3.fromRGB(100, 200, 255)
+    
+    local bodyGyro = Instance.new("BodyGyro")
+    bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+    bodyGyro.P = 3000
+    bodyGyro.D = 500
+    bodyGyro.Parent = humanoidRootPart
+    
+    local bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+    bodyVelocity.P = 1250
+    bodyVelocity.Parent = humanoidRootPart
+
+    flyConnection = RunService.Heartbeat:Connect(function(deltaTime)
+        if not flying or not humanoidRootPart or humanoid.Health <= 0 then
+            stopFly()
+            return
+        end
+
+        local camera = workspace.CurrentCamera
+        if not camera then return end
+        
+        bodyGyro.CFrame = camera.CFrame
+
+        local moveVector = Vector3.new(
+            (control.right - control.left) + mobileMovement.x,
+            control.up - control.down,
+            (control.forward - control.backward) + mobileMovement.y
+        )
+
+        if moveVector.Magnitude > 0 then
+            moveVector = moveVector.Unit
+            
+            local lookDirection = camera.CFrame.LookVector
+            local rightDirection = camera.CFrame.RightVector
+            local upDirection = Vector3.new(0, 1, 0)
+            
+            local direction = (lookDirection * moveVector.Z + rightDirection * moveVector.X + upDirection * moveVector.Y).Unit
+            
+            local targetVelocity = direction * speed
+            bodyVelocity.Velocity = targetVelocity
+        else
+            bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+        end
+    end)
+end
+
+local function stopFly()
+    if not flying then return end
+    flying = false
+    FlyButton.Text = "Fly: OFF"
+    FlyButton.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
+    
+    StatusLabel.Text = noclipping and "Status: Noclip Active" or "Status: Ready"
+    StatusLabel.TextColor3 = noclipping and Color3.fromRGB(255, 150, 255) or Color3.fromRGB(100, 255, 100)
+    
+    if humanoidRootPart then
+        for _, child in pairs(humanoidRootPart:GetChildren()) do
+            if child:IsA("BodyGyro") or child:IsA("BodyVelocity") then
+                child:Destroy()
+            end
+        end
+    end
+    
+    resetHumanoidState()
+    
+    if flyConnection then
+        flyConnection:Disconnect()
+        flyConnection = nil
+    end
+end
+
+-- ฟังก์ชัน Noclip
+local function startNoclip()
+    if noclipping then return end
+    noclipping = true
+    NoclipButton.Text = "Noclip: ON"
+    NoclipButton.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
+    
+    StatusLabel.Text = flying and "Status: Fly + Noclip" or "Status: Noclip Active"
+    StatusLabel.TextColor3 = flying and Color3.fromRGB(255, 255, 100) or Color3.fromRGB(255, 150, 255)
+    
+    print("Noclip ON")
+    
+    pcall(function()
+        humanoidRootPart:SetNetworkOwner(player)
+    end)
+    
+    positionHistory = {}
+    lastPosition = humanoidRootPart.Position
+    
+    -- Noclip Loop - ปิด CanCollide ทั้งหมด
+    noclipConnection = RunService.Stepped:Connect(function()
+        if not noclipping or not character or not humanoidRootPart then return end
+        
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+        
+        if humanoidRootPart then
+            humanoidRootPart.AssemblyLinearVelocity = humanoidRootPart.Velocity
+        end
+    end)
+    
+    -- Anti-Pullback Loop - เก็บตำแหน่งปลอดภัยทุกวินาที
+    antiPullbackConnection = RunService.Heartbeat:Connect(function(deltaTime)
+        if not noclipping or not humanoidRootPart then return end
+        
+        local moveDir = humanoid.MoveDirection + Vector3.new(mobileMovement.x, 0, mobileMovement.y)
+        local isMoving = moveDir.Magnitude > 0
+        
+        -- บันทึกตำแหน่งปลอดภัย - ทุก frame เมื่อมีการเคลื่อนที่
+        if isMoving then
+            lastSafePosition = humanoidRootPart.CFrame
+            table.insert(positionHistory, humanoidRootPart.CFrame)
+            if #positionHistory > maxHistorySize then
+                table.remove(positionHistory, 1)
+            end
+        end
+        
+        -- ตรวจสอบการดึงกลับอย่างอยวาไพ
+        if detectPullback() and isMoving then
+            -- วิธีที่ 1: กระโดดกลับตำแหน่งล่าสุด
+            humanoidRootPart.CFrame = lastSafePosition
+            
+            -- วิธีที่ 2: รีเซ็ต velocity เสียสนิท
+            humanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+            humanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
+            humanoidRootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+            humanoidRootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+            
+            -- วิธีที่ 3: บังคับอัพเดท network
+            for _ = 1, 3 do
+                pcall(function()
+                    humanoidRootPart:SetNetworkOwner(player)
+                end)
+            end
+            
+            -- วิธีที่ 4: ผลักตัวออกจากจุดปัญหา
+            if moveDir.Magnitude > 0 then
+                moveDir = moveDir.Unit
+                humanoidRootPart.CFrame = humanoidRootPart.CFrame + (moveDir * 0.5)
+            end
+        end
+        
+        -- ผลักตัวไปข้างหน้า (ความเร็วปกติ 16 แต่ลดแรง)
+        if isMoving and not flying then
+            moveDir = moveDir.Unit
+            
+            local bodyVel = humanoidRootPart:FindFirstChild("NoclipPush")
+            if not bodyVel then
+                bodyVel = Instance.new("BodyVelocity")
+                bodyVel.Name = "NoclipPush"
+                bodyVel.MaxForce = Vector3.new(50000, 50000, 50000)
+                bodyVel.P = 3000
+                bodyVel.Parent = humanoidRootPart
+            end
+            bodyVel.Velocity = moveDir * 16
+            
+            -- ลด nudge เพื่อให้นิ่มนวล
+            humanoidRootPart.CFrame = humanoidRootPart.CFrame + (moveDir * 0.05)
+        else
+            local bodyVel = humanoidRootPart:FindFirstChild("NoclipPush")
+            if bodyVel then
+                bodyVel:Destroy()
+            end
+        end
+        
+        humanoidRootPart.AssemblyLinearVelocity = humanoidRootPart.Velocity
+    end)
+end
+
+local function stopNoclip()
+    if not noclipping then return end
+    noclipping = false
+    NoclipButton.Text = "Noclip: OFF"
+    NoclipButton.BackgroundColor3 = Color3.fromRGB(100, 50, 255)
+    
+    StatusLabel.Text = flying and "Status: Flying" or "Status: Ready"
+    StatusLabel.TextColor3 = flying and Color3.fromRGB(100, 200, 255) or Color3.fromRGB(100, 255, 100)
+    
+    if noclipConnection then
+        noclipConnection:Disconnect()
+        noclipConnection = nil
+    end
+    
+    if antiPullbackConnection then
+        antiPullbackConnection:Disconnect()
+        antiPullbackConnection = nil
+    end
+    
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") and part:IsDescendantOf(character) then
+            if part.Name == "Head" or part.Name == "Torso" or part.Name == "HumanoidRootPart" 
+                or part.Name:match("Arm") or part.Name:match("Leg") 
+                or part.Parent.Name == "UpperTorso" or part.Parent.Name == "LowerTorso" then
+                part.CanCollide = true
+            end
+        end
+    end
+    
+    if humanoidRootPart then
+        local noclipPush = humanoidRootPart:FindFirstChild("NoclipPush")
+        if noclipPush then
+            noclipPush:Destroy()
+        end
+    end
+    
+    task.wait(0.15)
+    
+    if humanoidRootPart and not flying then
+        local camera = workspace.CurrentCamera
+        local nudgeAmount = 2
+        local nudgeDirection = (camera.CFrame.LookVector + Vector3.new(0, 1, 0)).Unit * nudgeAmount
+        humanoidRootPart.CFrame = humanoidRootPart.CFrame + nudgeDirection
+        
+        pcall(function()
+            humanoidRootPart:SetNetworkOwner(player)
+        end)
+    end
+    
+    if not flying then
+        task.wait(0.2)
+        resetHumanoidState()
+        
+        if humanoid then
+            humanoid.Jump = true
+            task.wait(0.1)
+            humanoid.Jump = false
+        end
+    end
+    
+    if humanoid then
+        humanoid.WalkSpeed = 16
+    end
+end
+
+-- Button Events
+FlyButton.MouseButton1Click:Connect(function()
+    if flying then stopFly() else startFly() end
+end)
+
+NoclipButton.MouseButton1Click:Connect(function()
+    if noclipping then stopNoclip() else startNoclip() end
+end)
+
+-- Keyboard Controls
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    local key = input.KeyCode
+    if key == Enum.KeyCode.W then control.forward = 1
+    elseif key == Enum.KeyCode.S then control.backward = 1
+    elseif key == Enum.KeyCode.A then control.left = 1
+    elseif key == Enum.KeyCode.D then control.right = 1
+    elseif key == Enum.KeyCode.E then control.up = 1
+    elseif key == Enum.KeyCode.Q then control.down = 1
+    elseif key == Enum.KeyCode.Space then control.up = 1
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input, processed)
+    if processed then return end
+    local key = input.KeyCode
+    if key == Enum.KeyCode.W then control.forward = 0
+    elseif key == Enum.KeyCode.S then control.backward = 0
+    elseif key == Enum.KeyCode.A then control.left = 0
+    elseif key == Enum.KeyCode.D then control.right = 0
+    elseif key == Enum.KeyCode.E then control.up = 0
+    elseif key == Enum.KeyCode.Q then control.down = 0
+    elseif key == Enum.KeyCode.Space then control.up = 0
+    end
+end)
+
+-- Mobile Support (Joystick - disabled when mobile buttons visible)
+UserInputService.TouchMoved:Connect(function(touch, processed)
+    if UserInputService:GetFocusedTextBox() or mobileVisible then return end
+    
+    local touchPos = touch.Position
+    local screenSize = ScreenGui.Parent.AbsoluteSize
+    
+    local deadzoneRadius = 40
+    local centerLeft = Vector2.new(screenSize.X * 0.15, screenSize.Y * 0.85)
+    
+    local diff = touchPos - centerLeft
+    if diff.Magnitude > deadzoneRadius then
+        local dir = diff.Unit
+        mobileMovement.x = math.min(1, dir.X)
+        mobileMovement.y = math.min(1, -dir.Y)
+    else
+        mobileMovement.x = 0
+        mobileMovement.y = 0
+    end
+end)
+
+UserInputService.TouchEnded:Connect(function(touch, processed)
+    mobileMovement.x = 0
+    mobileMovement.y = 0
+end)
+
+-- Respawn Handling
+player.CharacterAdded:Connect(function(newChar)
+    character = newChar
+    humanoidRootPart = character:WaitForChild("HumanoidRootPart", 5)
+    humanoid = character:WaitForChild("Humanoid", 5)
+    positionHistory = {}
+    lastPosition = humanoidRootPart.Position
+    
+    local wasFlying = flying
+    local wasNoclipping = noclipping
+    
+    if wasFlying or wasNoclipping then
+        task.wait(0.5)
+        if wasNoclipping then startNoclip() end
+        if wasFlying then startFly() end
+    end
+end)
+
+-- Initialize
+humanoid.WalkSpeed = 16
+humanoid.JumpPower = 50
+
+pcall(function()
+    humanoidRootPart:SetNetworkOwner(player)
+end)
+
+print("Fly & Noclip System loaded!")
+   end,
+})
+
+Rayfield:Notify({
+   Title = "Guts & Bluupowder",
+   Content = "Loaded sucefuly",
+   Duration = 3.1,
+   Image = 4483362458,
 })
