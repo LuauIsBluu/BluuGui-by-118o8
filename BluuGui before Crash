@@ -47,13 +47,6 @@ local Useful = Window:CreateTab("Useful", 4483362458) -- Título y icono
   local Misc = Window:CreateTab("Misc", 4483362458) -- Title, Image
 
 local MainSection = MainTab:CreateSection("Movility managament")
- 
-Rayfield:Notify({
-   Title = "Notification",
-   Content = "BluuGui executed,Enjoy my gang >:D.",
-   Duration = 3,
-   Image = 4483362458,
-})
 
 -- 🎵 dead sounds
 local Players = game:GetService("Players")
@@ -1800,5 +1793,10 @@ end)
 })
 
 
-    
-print("BluuGui fully loaded!")
+
+Rayfield:Notify({
+   Title = "Notification",
+   Content = "BluuGui executed!",
+   Duration = 3,
+   Image = 4483362458,
+})
