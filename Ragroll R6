@@ -1,0 +1,148 @@
+wait(0.3)
+local Player = game.Players:FindFirstChild(script.Parent.Name)
+
+-- Set up mouse and input service (from original)
+local Mouse,mouse,UserInputService,ContextActionService
+do
+    script.Parent = Player.Character
+    local CAS = {Actions={}}
+    local Event = Instance.new("RemoteEvent")
+    Event.Name = "UserInput_Event"
+    Event.Parent = Player.Character
+    local fakeEvent = function()
+        local t = {_fakeEvent=true}
+        t.Connect = function(self,f) self.Function=f end
+        t.connect = t.Connect
+        return t
+    end
+    local m = {Target=nil,Hit=CFrame.new(),KeyUp=fakeEvent(),KeyDown=fakeEvent(),Button1Up=fakeEvent(),Button1Down=fakeEvent()}
+    local UIS = {InputBegan=fakeEvent(),InputEnded=fakeEvent()}
+    function CAS:BindAction(name,fun,touch,...) CAS.Actions[name] = {Name=name,Function=fun,Keys={...}} end
+    function CAS:UnbindAction(name) CAS.Actions[name] = nil end
+    local function te(self,ev,...) local t = m[ev]; if t and t._fakeEvent and t.Function then t.Function(...) end end
+    m.TrigEvent = te
+    UIS.TrigEvent = te
+    Event.OnServerEvent:Connect(function(plr,io)
+        if plr~=Player then return end
+        if io.isMouse then
+            m.Target = io.Target
+            m.Hit = io.Hit
+        elseif io.UserInputType == Enum.UserInputType.MouseButton1 then
+            if io.UserInputState == Enum.UserInputState.Begin then
+                m:TrigEvent("Button1Down")
+            else
+                m:TrigEvent("Button1Up")
+            end
+        else
+            for n,t in pairs(CAS.Actions) do
+                for _,k in pairs(t.Keys) do
+                    if k==io.KeyCode then t.Function(t.Name,io.UserInputState,io) end
+                end
+            end
+            if io.UserInputState == Enum.UserInputState.Begin then
+                m:TrigEvent("KeyDown",io.KeyCode.Name:lower())
+                UIS:TrigEvent("InputBegan",io,false)
+            else
+                m:TrigEvent("KeyUp",io.KeyCode.Name:lower())
+                UIS:TrigEvent("InputEnded",io,false)
+            end
+        end
+    end)
+    Mouse,mouse,UserInputService,ContextActionService = m,m,UIS,CAS
+end
+
+-- Sounds
+local sounds = {}
+local soundIds = {"260430060","138087186","131237241","278062209","429400881"}
+for i,id in ipairs(soundIds) do
+    local s = Instance.new("Sound", Player.Character.Torso)
+    s.SoundId = "rbxassetid://"..id
+    s.Volume = 5
+    if i==4 then s.TimePosition = 0.33 end
+    sounds[i] = s
+end
+
+local using = false
+local ragdolling = false
+
+-- Function to handle ragdoll
+local function ragdollify()
+    if ragdolling then return end
+    ragdolling = true
+
+    local light = Instance.new("SpotLight", Player.Character.Torso)
+    Player.Character.Humanoid.PlatformStand = true
+
+    -- Clone joints
+    local lshclone = Player.Character.Torso["Left Shoulder"]:Clone()
+    local rshclone = Player.Character.Torso["Right Shoulder"]:Clone()
+    local lhclone = Player.Character.Torso["Left Hip"]:Clone()
+    local rhclone = Player.Character.Torso["Right Hip"]:Clone()
+
+    -- Get limbs
+    local leftarm = Player.Character["Left Arm"]
+    local rightrm = Player.Character["Right Arm"]
+    local leftleg = Player.Character["Left Leg"]
+    local rightleg = Player.Character["Right Leg"]
+
+    -- Destroy joints
+    Player.Character.Torso["Left Hip"]:Destroy()
+    Player.Character.Torso["Right Hip"]:Destroy()
+    Player.Character.Torso["Left Shoulder"]:Destroy()
+    Player.Character.Torso["Right Shoulder"]:Destroy()
+
+    -- Glue limbs (simplified, full original logic can be copied here)
+    local function glueLimb(torso, limb, name, x, y, z)
+        local glue = Instance.new("Glue", torso)
+        glue.Part0 = torso
+        glue.Part1 = limb
+        glue.Name = name
+        local collider = Instance.new("Part", limb)
+        collider.Position = Vector3.new(0,9999,0)
+        collider.Size = Vector3.new(1.5,1,1)
+        collider.Shape = "Cylinder"
+        local weld = Instance.new("Weld", collider)
+        weld.Part0 = limb
+        weld.Part1 = collider
+        weld.C0 = CFrame.new(0,-0.2,0) * CFrame.fromEulerAnglesXYZ(0,0,math.pi/2)
+        collider.TopSurface = "Smooth"
+        collider.BottomSurface = "Smooth"
+        collider.FormFactor = "Symmetric"
+        glue.C0 = CFrame.new(x,y,z)
+        glue.C1 = CFrame.new(0,1,0)
+        collider.Transparency = 1
+    end
+
+    glueLimb(Player.Character.Torso,leftleg,"Left leg",-0.5,-1,0)
+    glueLimb(Player.Character.Torso,rightleg,"Right leg",0.5,-1,0)
+    glueLimb(Player.Character.Torso,rightrm,"Right shoulder",1.5,0.5,0)
+    glueLimb(Player.Character.Torso,leftarm,"Left shoulder",-1.5,0.5,0)
+
+    -- Sensors to play sounds
+    local function addSensor(pos)
+        local sensor = Instance.new("Part", Player.Character.Torso)
+        sensor.Size = Vector3.new(1.2,1.1,0.8)
+        sensor.CanCollide = false
+        sensor.Position = Player.Character.Torso.Position
+        local welder = Instance.new("Weld", sensor)
+        welder.Part0 = Player.Character.Torso
+        welder.Part1 = sensor
+        welder.C0 = welder.C0 * CFrame.new(pos)
+        sensor.Transparency = 1
+        sensor.Touched:Connect(function()
+            if not using then
+                using = true
+                sounds[math.random(1,4)]:Play()
+                wait(0.1)
+                using = false
+            end
+        end)
+    end
+
+    addSensor(Vector3.new(0,0,1.05))
+    addSensor(Vector3.new(0,0,-1.05))
+end
+
+-- Attach ragdoll to tool
+local tool = script.Parent
+tool.Activated:Connect(ragdollify)
