@@ -1515,7 +1515,131 @@ local Button = Useful:CreateButton({
 loadstring(game:HttpGet("https://gist.githubusercontent.com/Tesker-103/ed48b3ae8120b0c040584b661cbda063/raw/210408b3f107dc740a4c9b832bfa647f92aa25d1/FreePrivateServerGUI"))()
    end,
 })
-        
+
+local Button = Tab:CreateButton({
+   Name = "Delete gui",
+   Callback = function()
+
+--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+-- Source Code Skidds
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local lp = Players.LocalPlayer
+local Mouse = lp:GetMouse()
+
+local history = {}
+local uiVisible = true
+
+-- UI Creation
+local gui = Instance.new("ScreenGui", lp:WaitForChild("PlayerGui"))
+gui.Name = "DeleteUndoGUI"
+gui.ResetOnSpawn = false
+
+local main = Instance.new("Frame", gui)
+main.Name = "MainUI"
+main.Size = UDim2.new(0, 200, 0, 130)
+main.Position = UDim2.new(0.02, 0, 0.2, 0)
+main.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+main.BorderSizePixel = 0
+main.BackgroundTransparency = 0.1
+main.Visible = true
+main.Active = true
+main.Draggable = true
+
+local UIStroke = Instance.new("UIStroke", main)
+UIStroke.Thickness = 2
+UIStroke.Color = Color3.fromRGB(100, 255, 255)
+UIStroke.Transparency = 0.3
+
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, 0, 0, 25)
+title.BackgroundTransparency = 1
+title.Text = "🧱 Delete / Undo"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+
+local deleteToggle = Instance.new("TextButton", main)
+deleteToggle.Size = UDim2.new(1, -20, 0, 30)
+deleteToggle.Position = UDim2.new(0, 10, 0, 35)
+deleteToggle.Text = "Delete: ON"
+deleteToggle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+deleteToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+deleteToggle.Font = Enum.Font.Gotham
+deleteToggle.TextSize = 14
+
+local undoBtn = Instance.new("TextButton", main)
+undoBtn.Size = UDim2.new(1, -20, 0, 30)
+undoBtn.Position = UDim2.new(0, 10, 0, 70)
+undoBtn.Text = "Undo"
+undoBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+undoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+undoBtn.Font = Enum.Font.Gotham
+undoBtn.TextSize = 14
+
+local toggleBtn = Instance.new("TextButton", gui)
+toggleBtn.Size = UDim2.new(0, 40, 0, 40)
+toggleBtn.Position = UDim2.new(0, 10, 0.8, 0)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
+toggleBtn.Text = "⛶"
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextSize = 20
+toggleBtn.BorderSizePixel = 0
+
+-- Functionality
+local deleting = true
+
+deleteToggle.MouseButton1Click:Connect(function()
+	deleting = not deleting
+	deleteToggle.Text = "Delete: " .. (deleting and "ON" or "OFF")
+	deleteToggle.BackgroundColor3 = deleting and Color3.fromRGB(50, 50, 50) or Color3.fromRGB(80, 20, 20)
+end)
+
+Mouse.Button1Down:Connect(function()
+	if not deleting then return end
+	local target = Mouse.Target
+	if target and target:IsA("BasePart") and not target:IsDescendantOf(lp.Character) then
+		local clone = target:Clone()
+		local props = {
+			Parent = target.Parent,
+			Material = target.Material,
+			Color = target.Color,
+			Size = target.Size,
+			CFrame = target.CFrame,
+			Anchored = target.Anchored,
+			Transparency = target.Transparency,
+			CanCollide = target.CanCollide,
+			Name = target.Name
+		}
+		table.insert(history, {props = props, clone = clone})
+		target:Destroy()
+	end
+end)
+
+undoBtn.MouseButton1Click:Connect(function()
+	if #history == 0 then return end
+	local data = table.remove(history)
+	local newPart = data.clone:Clone()
+	for prop, val in pairs(data.props) do
+		newPart[prop] = val
+	end
+	newPart.Parent = data.props.Parent
+end)
+
+toggleBtn.MouseButton1Click:Connect(function()
+	uiVisible = not uiVisible
+	main.Visible = uiVisible
+end)
+            
+   end,
+})
+
+
+
     local Button = Fun:CreateButton({
    Name = "F3X tool (NOT FE)",
    Callback = function()
@@ -1526,7 +1650,7 @@ loadstring(game:HttpGet("https://gist.githubusercontent.com/Tesker-103/ed48b3ae8
     local Jerk = Fun:CreateSection("SUS")
 
     local Button = Fun:CreateButton({
-   Name = "Sus anim",
+   Name = "Sus anim (r6)",
    Callback = function()
 
 
@@ -1535,35 +1659,16 @@ loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/LuauIsBluu/BluuG
     end,
 })
 
-    local Button = Fun:CreateButton({
-   Name = "D: Esc+R",
-   Callback = function()
-   loadstring(game:HttpGet("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-118o8/refs/heads/main/Game%20Over%20script%20(FE)"))()
-
-   end,
-})
-
-    
-    local Rag = Fun:CreateSection("Kinds Animations")
-
-    local Button = Fun:CreateButton({
-   Name = "RagRoll (R15)",
-   Callback = function()
-loadstring(game:HttpGet('https://raw.githubusercontent.com/shakk-code/fe-ragdoll-script/refs/heads/main/script.lua', true))()
-   end,
-})
-
 local Button = Fun:CreateButton({
-   Name = "RagRoll (R6)",
+   Name = "Sus anim (r15)",
    Callback = function()
 
 
-loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-118o8/refs/heads/main/Ragroll%20R6"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-118o8/refs/heads/main/Sus%20anim%20(r15)"))()
 
-   end,
+   
+    end,
 })
-
-
 
 local Button = UsefulCreateButton({
    Name = "StrawberryCMD",
@@ -1792,7 +1897,104 @@ end)
    end,
 })
 
+local Button = Useful:CreateButton({
+   Name = "Debug tools",
+   Callback = function()
+            
+loadstring(game:HttpGet("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-118o8/refs/heads/main/Debuger"))()
+  
+    end,
+})
 
+local Section = Useful:CreateSection("Byapass")
+
+local Button = Tab:CreateButton({
+   Name = "Try to delete ani-cheat",
+   Callback = function()
+
+-- Long list of AC keywords
+local ACS = {
+    "anti", "ac", "anti-cheat", "anticheat", "antifly", "antispeed", "antitp", "antiteleport",
+    "antidex", "antiflight", "anti remote", "client", "anti remote manipulation",
+    "antihack", "antigrief", "antijump", "antifreeze", "antigravity", "antiteleportation",
+    "antibot", "antispawn", "antidetect", "antithief", "antiwall", "antiscript", "anticlone",
+    "antiexploit", "antitamper", "antitampering", "antisabotage", "antimalware", "antivirus",
+    "acscript", "acmodule", "aclua", "anticheater", "antihacker", "antiplayer", "anticheatsystem",
+    "clientguard", "clientprotect", "securitymodule", "safescript", "antiforce", "antiautofarm",
+    "antispam", "antiremote", "aclocal", "acserver"
+}
+
+-- Scripts to ignore
+local ignore = {"animate", "animation", "attacks", "bite", "ability", "abilities"}
+
+-- Convert all keywords to lowercase
+for i,v in ipairs(ACS) do ACS[i] = v:lower() end
+for i,v in ipairs(ignore) do ignore[i] = v:lower() end
+
+-- Helper function
+local function containsKeyword(name, keywords)
+    name = name:lower()
+    for _, kw in ipairs(keywords) do
+        if string.find(name, kw) then
+            return true
+        end
+    end
+    return false
+end
+
+-- Single scan of Workspace
+for _, v in ipairs(game.Workspace:GetDescendants()) do
+    if v:IsA("LocalScript") and not containsKeyword(v.Name, ignore) then
+        if containsKeyword(v.Name, ACS) then
+            -- Print parent hierarchy
+            local directory = v.Name
+            local parent = v.Parent
+            while parent do
+                directory = parent.Name .. "/" .. directory
+                parent = parent.Parent
+            end
+
+            print("AC Detected and Destroyed: " .. directory .. " | Type = LocalScript")
+
+            -- Rayfield notification
+            if Rayfield then
+                Rayfield:Notify({
+                    Title = "Bluugui",
+                    Content = "Eliminated: "..v.Name,
+                    Duration = 6.5,
+                    Image = 4483362458,
+                })
+            end
+
+            -- Destroy the script
+            v:Destroy()
+        end
+    end
+end
+
+            
+   end,
+})
+
+local Button = Useful:CreateButton({
+   Name = "Bypass adonis",
+   Callback = function()
+ 
+for k, v in pairs(getgc(true)) do
+	if pcall(function()
+		return rawget(v, "indexInstance")
+	end) and type(rawget(v, "indexInstance")) == "table" and (rawget(v, "indexInstance"))[1] == "kick" then
+		setreadonly(v, false)
+		v.tvk = {
+			"kick",
+			function()
+				return game.Workspace:WaitForChild("")
+			end
+		}
+	end
+end
+   end,
+})
 
 Rayfield:Notify({
    Title = "Notification",
