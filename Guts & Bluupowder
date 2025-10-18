@@ -1,4 +1,4 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+     local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "Guts & Bluupowder",
@@ -25,7 +25,7 @@ local Window = Rayfield:CreateWindow({
       RememberJoins = true -- Set this to false to make them join the discord every time they load it up
    },
 
-   KeySystem = true, -- Set this to true to use our key system
+   KeySystem = false, -- Set this to true to use our key system
    KeySettings = {
       Title = "Verification",
       Subtitle = "No one of these hubs are mine",
@@ -39,7 +39,7 @@ local Window = Rayfield:CreateWindow({
 
 local MainTab = Window:CreateTab("Main", 4483362458) -- Title, Image
 
-local Main = Window:CreateTab("Scripts", 4483362458) -- Title, Image
+local Main = Window:CreateTab("Others", 4483362458) -- Title, Image
 
 local Section = Main:CreateSection("Hubs")
 
@@ -260,8 +260,25 @@ local Button = Main:CreateButton({
 
 local Section = MainTab:CreateSection("Combat")
 
+local LocalPlayer = game:GetService("Players").LocalPlayer
+local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local killAuraEnabled = false
 
+-- Function to get the currently equipped melee tool
+local function getMeleeTool()
+    local char = LocalPlayer.Character
+    if not char then return nil end
+    for _, item in pairs(char:GetChildren()) do
+        if item:IsA("Tool") and item:FindFirstChild("RemoteEvent") then
+            return item
+        end
+    end
+    return nil
+end
+
+-- Kill Aura Toggle
 MainTab:CreateToggle({
     Name = "Kill Aura",
     CurrentValue = false,
@@ -269,13 +286,24 @@ MainTab:CreateToggle({
         killAuraEnabled = Value
         task.spawn(function()
             while killAuraEnabled do
-                local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Heavy Sabre")
-                if tool then
+                local char = LocalPlayer.Character
+                local tool = getMeleeTool()
+                if char and tool then
                     for _, enemy in pairs(Workspace:GetChildren()) do
-                        if enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Zombie") then
-                            local distance = (enemy.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-                            if distance <= 13 then
-                                game:GetService("ReplicatedStorage").Remotes.Gib:FireServer(enemy)
+                        if enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") then
+                            local isZombie = enemy:FindFirstChild("Zombie") or enemy:FindFirstChild("Whale Oil Lantern") or enemy:FindFirstChild("Sword")
+                            local isBomber = enemy:FindFirstChild("Barrel")
+                            if isZombie and not isBomber then
+                                local distance = (enemy.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
+                                if distance <= 13 then
+                                    local head = enemy:FindFirstChild("Head") or enemy.HumanoidRootPart
+                                    if head then
+                                        -- Attack head
+                                        ReplicatedStorage.Remotes.Gib:FireServer(enemy, "Head", head.CFrame.Position, Vector3.new(0,1,0), true)
+                                        tool.RemoteEvent:FireServer("Swing", "Thrust")
+                                        tool.RemoteEvent:FireServer("HitZombie", enemy, head.CFrame.Position, true, Vector3.new(0,25,0), "Head", Vector3.new(0,1,0))
+                                    end
+                                end
                             end
                         end
                     end
@@ -285,6 +313,7 @@ MainTab:CreateToggle({
         end)
     end,
 })
+
 
 --====================================================
 -- AUTO HEADSHOT SECTION
@@ -318,7 +347,7 @@ MainTab:CreateToggle({
     end,
 })
 
-local Section = Maintab:CreateSection("Walkspeed")
+local Section = MainTab:CreateSection("Walkspeed")
 
 
 --====================================================
@@ -359,7 +388,7 @@ MainTab:CreateToggle({
     end,
 })
 
-local Section = Main:CreateSection("ESP")
+local Section = MainTab:CreateSection("ESP")
 
 --====================================================
 --// ESP SECTION (Separate Toggles per Zombie Type)
@@ -451,6 +480,31 @@ MainTab:CreateToggle({
         espToggles.Cuirassier = Value
     end,
 })
+
+local PlayerSection = MainTab:CreateSection("Player ESP")
+
+-- Medic Player ESP
+PlayerSection:CreateToggle({
+    Name = "Medic Player ESP",
+    CurrentValue = false,
+    Flag = "MedicESPToggle",
+    Callback = function(state)
+        espLifeToggled = state
+        checkPlayersLife() -- Handles highlighting low HP players
+    end
+})
+
+-- Father Infection ESP
+PlayerSection:CreateToggle({
+    Name = "Father Infection ESP",
+    CurrentValue = false,
+    Flag = "FatherInfectionESPToggle",
+    Callback = function(state)
+        espLifeToggled = state
+        checkPlayersLife() -- Handles highlighting infected players
+    end
+})
+
 
 local Section = MainTab:CreateSection("Misc")
 
