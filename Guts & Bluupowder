@@ -260,13 +260,18 @@ local Button = Main:CreateButton({
 
 local Section = MainTab:CreateSection("Combat")
 
-local LocalPlayer = game:GetService("Players").LocalPlayer
-local Workspace = game:GetService("Workspace")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
+--========================
+-- KILL AURA (Lightweight)
+--========================
 local killAuraEnabled = false
+MainTab:CreateToggle({
+    Name = "Kill Aura",
+    CurrentValue = false,
+    Callback = function(value)
+        killAuraEnabled = value
+    end
+})
 
--- Function to get the currently equipped melee tool
 local function getMeleeTool()
     local char = LocalPlayer.Character
     if not char then return nil end
@@ -278,62 +283,44 @@ local function getMeleeTool()
     return nil
 end
 
--- Kill Aura Toggle
-MainTab:CreateToggle({
-    Name = "Kill Aura",
-    CurrentValue = false,
-    Callback = function(Value)
-        killAuraEnabled = Value
-        task.spawn(function()
-            while killAuraEnabled do
-                local char = LocalPlayer.Character
-                local tool = getMeleeTool()
-                if char and tool then
-                    for _, enemy in pairs(Workspace:GetChildren()) do
-                        if enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") then
-                            local isZombie = enemy:FindFirstChild("Zombie") or enemy:FindFirstChild("Whale Oil Lantern") or enemy:FindFirstChild("Sword")
-                            local isBomber = enemy:FindFirstChild("Barrel")
-                            if isZombie and not isBomber then
-                                local distance = (enemy.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
-                                if distance <= 13 then
-                                    local head = enemy:FindFirstChild("Head") or enemy.HumanoidRootPart
-                                    if head then
-                                        -- Attack head
-                                        ReplicatedStorage.Remotes.Gib:FireServer(enemy, "Head", head.CFrame.Position, Vector3.new(0,1,0), true)
-                                        tool.RemoteEvent:FireServer("Swing", "Thrust")
-                                        tool.RemoteEvent:FireServer("HitZombie", enemy, head.CFrame.Position, true, Vector3.new(0,25,0), "Head", Vector3.new(0,1,0))
-                                    end
-                                end
-                            end
+task.spawn(function()
+    while true do
+        task.wait(0.5) -- slower for toaster
+        if killAuraEnabled then
+            local char = LocalPlayer.Character
+            local tool = getMeleeTool()
+            if char and tool then
+                for _, enemy in pairs(Workspace:GetChildren()) do
+                    if enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") then
+                        local dist = (enemy.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
+                        if dist <= 13 then
+                            pcall(function()
+                                tool.RemoteEvent:FireServer("Swing", "Thrust")
+                                tool.RemoteEvent:FireServer("HitZombie", enemy, enemy.HumanoidRootPart.Position, true, Vector3.new(0,15,0), "Head", Vector3.new(0,1,0))
+                            end)
                         end
                     end
                 end
-                task.wait(0.3)
             end
-        end)
-    end,
-})
+        end
+    end
+end)
 
-
---====================================================
--- AUTO HEADSHOT SECTION
---====================================================
+--========================
+-- AUTO HEADSHOT
+--========================
 local headshotEnabled = false
-
 MainTab:CreateToggle({
-    Name = "Auto Headshot (Meele)",
+    Name = "Auto Headshot",
     CurrentValue = false,
-    Callback = function(Value)
-        headshotEnabled = Value
-
+    Callback = function(value)
+        headshotEnabled = value
         if headshotEnabled then
-            -- Patch melee & bayonet modules to always aim for head
-            local Modules = {
+            local modules = {
                 Workspace:FindFirstChild("Flintlock") and Workspace.Flintlock:FindFirstChild("BayonetHitCheck"),
                 Workspace:FindFirstChild("MeleeBase") and Workspace.MeleeBase:FindFirstChild("MeleeHitCheck")
             }
-
-            for _, module in pairs(Modules) do
+            for _, module in pairs(modules) do
                 if module and module:IsA("ModuleScript") then
                     local old = require(module)
                     old.Check = function(_, target)
@@ -344,7 +331,7 @@ MainTab:CreateToggle({
                 end
             end
         end
-    end,
+    end
 })
 
 local Section = MainTab:CreateSection("Walkspeed")
@@ -390,9 +377,13 @@ MainTab:CreateToggle({
 
 local Section = MainTab:CreateSection("ESP")
 
---====================================================
---// ESP SECTION (Separate Toggles per Zombie Type)
---====================================================
+local LocalPlayer = game:GetService("Players").LocalPlayer
+local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+--========================
+-- ESP SETTINGS
+--========================
 local espToggles = {
     Runner = false,
     Bomber = false,
@@ -407,84 +398,100 @@ local colors = {
     Cuirassier = Color3.fromRGB(255, 0, 0)
 }
 
---// Utility function
-local function createHighlight(enemy, color)
-    if enemy:FindFirstChild("ESP_Highlight") then return end
-    local hl = Instance.new("Highlight")
-    hl.Name = "ESP_Highlight"
-    hl.Adornee = enemy
-    hl.FillColor = color
-    hl.OutlineColor = Color3.fromRGB(0, 0, 0)
-    hl.Parent = enemy
+local MAX_DISTANCE = 40
+local UPDATE_INTERVAL = 0.7
+
+local function getZombieType(zombie)
+    if zombie:FindFirstChild("Barrel") then
+        return "Bomber"
+    elseif zombie:FindFirstChild("Whale Oil Lantern") then
+        return "Igniter"
+    elseif zombie:FindFirstChild("Sword") then
+        return "Cuirassier"
+    elseif zombie:FindFirstChild("Humanoid") and zombie.Humanoid.WalkSpeed > 16 then
+        return "Runner"
+    end
+    return nil
 end
 
---// Clean Highlights
-local function clearHighlights()
-    for _, v in pairs(Workspace:GetDescendants()) do
-        if v.Name == "ESP_Highlight" then
-            v:Destroy()
+local function updateESP()
+    local char = LocalPlayer.Character
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    for _, zombie in pairs(Workspace:GetChildren()) do
+        if not zombie:FindFirstChild("HumanoidRootPart") then continue end
+        local distance = (root.Position - zombie.HumanoidRootPart.Position).Magnitude
+        if distance > MAX_DISTANCE then continue end
+
+        local zType = getZombieType(zombie)
+        if zType and espToggles[zType] then
+            local hl = zombie:FindFirstChild("ESP_Highlight")
+            if not hl then
+                hl = Instance.new("Highlight")
+                hl.Name = "ESP_Highlight"
+                hl.Adornee = zombie
+                hl.FillColor = colors[zType]
+                hl.OutlineColor = Color3.new(0,0,0)
+                hl.FillTransparency = 0.3
+                hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                hl.Parent = zombie
+            else
+                hl.FillColor = colors[zType]
+            end
+        elseif zombie:FindFirstChild("ESP_Highlight") then
+            zombie.ESP_Highlight:Destroy()
         end
     end
 end
 
---// Master ESP loop
+-- ESP loop
 task.spawn(function()
-    while task.wait(1) do
-        clearHighlights()
-
-        for _, enemy in pairs(Workspace:GetChildren()) do
-            if not enemy:FindFirstChild("Zombie") then continue end
-
-            if espToggles.Bomber and enemy:FindFirstChild("Barrel") then
-                createHighlight(enemy, colors.Bomber)
-            elseif espToggles.Igniter and enemy:FindFirstChild("Whale Oil Lantern") then
-                createHighlight(enemy, colors.Igniter)
-            elseif espToggles.Cuirassier and enemy:FindFirstChild("Sword") then
-                createHighlight(enemy, colors.Cuirassier)
-            elseif espToggles.Runner and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.WalkSpeed > 16 then
-                createHighlight(enemy, colors.Runner)
-            end
-        end
+    while true do
+        task.wait(UPDATE_INTERVAL)
+        pcall(updateESP)
     end
 end)
 
---// Create toggles in Rayfield
+--========================
+-- Rayfield Toggles
+--========================
 MainTab:CreateToggle({
-    Name = "Runner ESP (Green)",
+    Name = "Runner ESP",
     CurrentValue = false,
-    Callback = function(Value)
-        espToggles.Runner = Value
-    end,
+    Callback = function(value)
+        espToggles.Runner = value
+    end
 })
 
 MainTab:CreateToggle({
-    Name = "Bomber ESP (Blue)",
+    Name = "Bomber ESP",
     CurrentValue = false,
-    Callback = function(Value)
-        espToggles.Bomber = Value
-    end,
+    Callback = function(value)
+        espToggles.Bomber = value
+    end
 })
 
 MainTab:CreateToggle({
-    Name = "Igniter ESP (Yellow)",
+    Name = "Igniter ESP",
     CurrentValue = false,
-    Callback = function(Value)
-        espToggles.Igniter = Value
-    end,
+    Callback = function(value)
+        espToggles.Igniter = value
+    end
 })
 
 MainTab:CreateToggle({
-    Name = "Cuirassier ESP (Red)",
+    Name = "Cuirassier ESP",
     CurrentValue = false,
-    Callback = function(Value)
-        espToggles.Cuirassier = Value
-    end,
+    Callback = function(value)
+        espToggles.Cuirassier = value
+    end
 })
 
 local PlayerSection = MainTab:CreateSection("Player ESP")
 
 -- Medic Player ESP
-PlayerSection:CreateToggle({
+MainTab:CreateToggle({
     Name = "Medic Player ESP",
     CurrentValue = false,
     Flag = "MedicESPToggle",
@@ -495,7 +502,7 @@ PlayerSection:CreateToggle({
 })
 
 -- Father Infection ESP
-PlayerSection:CreateToggle({
+MainTab:CreateToggle({
     Name = "Father Infection ESP",
     CurrentValue = false,
     Flag = "FatherInfectionESPToggle",
@@ -1179,6 +1186,130 @@ end)
 print("Fly & Noclip System loaded!")
    end,
 })
+
+-- Bomber-only Aimbot (targets ONLY models that contain a child named "Torch")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+
+local LocalPlayer = Players.LocalPlayer
+local Camera = Workspace.CurrentCamera
+
+-- Config (defaults)
+local bomberAimbotEnabled = false
+local bomberAimbotDistance = 60     -- max range (studs)
+local bomberSmoothing = 0.18        -- lerp alpha (0 = instant, 0.2 = smooth)
+local bomberHoldToAim = false       -- when true, only aim while RMB is held
+
+-- Rayfield UI (assumes MainTab is defined)
+MainTab:CreateToggle({
+    Name = "Bomber Aimbot",
+    CurrentValue = bomberAimbotEnabled,
+    Callback = function(val) bomberAimbotEnabled = val end
+})
+
+MainTab:CreateSlider({
+    Name = "Bomber Aim Distance",
+    Range = {20, 200},
+    Increment = 5,
+    Suffix = " studs",
+    CurrentValue = bomberAimbotDistance,
+    Callback = function(val) bomberAimbotDistance = val end
+})
+
+MainTab:CreateSlider({
+    Name = "Bomber Aim Smoothing",
+    Range = {0, 1},
+    Increment = 0.01,
+    Suffix = "",
+    CurrentValue = bomberSmoothing,
+    Callback = function(val) bomberSmoothing = val end
+})
+
+MainTab:CreateToggle({
+    Name = "Hold Right Mouse To Aim",
+    CurrentValue = bomberHoldToAim,
+    Callback = function(val) bomberHoldToAim = val end
+})
+
+-- Internal hold state
+local rightHeld = false
+UserInputService.InputBegan:Connect(function(inp, gpe)
+    if gpe then return end
+    if inp.UserInputType == Enum.UserInputType.MouseButton2 then rightHeld = true end
+end)
+UserInputService.InputEnded:Connect(function(inp, gpe)
+    if gpe then return end
+    if inp.UserInputType == Enum.UserInputType.MouseButton2 then rightHeld = false end
+end)
+
+-- Helper: find the closest valid target (model that contains a child named "Torch")
+local function getClosestTorchTarget(maxDist)
+    local char = LocalPlayer.Character
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    if not root then return nil end
+
+    local bestTarget = nil
+    local bestDist = maxDist + 0.0001
+
+    -- Use GetDescendants to catch nested setups, but filter by model with Humanoid
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if obj:IsA("Model") and obj:FindFirstChildOfClass("Humanoid") then
+            -- check for Torch child anywhere inside the model
+            if obj:FindFirstChild("Torch", true) then
+                -- prefer Head, fallback to HumanoidRootPart
+                local targetPart = obj:FindFirstChild("Head") or obj:FindFirstChild("HumanoidRootPart")
+                if targetPart and targetPart.Position then
+                    local d = (root.Position - targetPart.Position).Magnitude
+                    if d <= maxDist and d < bestDist then
+                        bestDist = d
+                        bestTarget = targetPart
+                    end
+                end
+            end
+        end
+    end
+
+    return bestTarget
+end
+
+-- Aim loop: smooth camera rotation toward the chosen target
+local aimConn
+aimConn = RunService.RenderStepped:Connect(function(dt)
+    if not bomberAimbotEnabled then return end
+    if bomberHoldToAim and not rightHeld then return end
+
+    local targetPart = getClosestTorchTarget(bomberAimbotDistance)
+    if not targetPart then return end
+
+    -- compute lookCFrame preserving camera position
+    local camCFrame = Camera.CFrame
+    local camPos = camCFrame.Position
+    local targetPos = targetPart.Position
+
+    local desiredCFrame = CFrame.new(camPos, targetPos)
+    -- smooth lerp (clamp smoothing to 0..1)
+    local alpha = math.clamp(bomberSmoothing, 0, 1)
+    local newCFrame = camCFrame:Lerp(desiredCFrame, alpha)
+
+    -- apply new camera CFrame
+    Camera.CFrame = newCFrame
+end)
+
+-- Optional cleanup function (call if you unload script)
+local function cleanupAimbot()
+    if aimConn then
+        aimConn:Disconnect()
+        aimConn = nil
+    end
+end
+
+-- Return cleanup if you want to expose it (not required)
+return {
+    cleanup = cleanupAimbot
+}
+
 
 Rayfield:Notify({
    Title = "Guts & Bluupowder",
