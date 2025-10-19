@@ -457,7 +457,7 @@ Misc:CreateToggle({
                 local Button = Useful:CreateButton({
    Name = "Anti Kick (client Sided)",
    Callback = function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Anti-Kick/main/Anti-Kick.lua"))()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-118o8/refs/heads/main/Anti%20Kick"))()
    end,
 })
  
