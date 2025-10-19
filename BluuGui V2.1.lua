@@ -125,68 +125,75 @@ if LocalPlayer.Character then
     PlayDeathSound()
 end
  
-local Button = MainTab:CreateButton({
-   Name = "Inf Jump",
-   Callback = function()
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
+ --features down
+
+  local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
 
-local Player = Players.LocalPlayer
-_G.JumpPower = 50 -- how strong the jump boost is
+-- Default values
+local walkSpeedValue = 16
+local jumpPowerValue = 50
 
-local function SetupInfiniteJump()
-	UserInputService.InputBegan:Connect(function(input, processed)
-		if processed then return end
-		if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Space then
-			local character = Player.Character
-			if not character then return end
-
-			local humanoid = character:FindFirstChildOfClass("Humanoid")
-			local root = character:FindFirstChild("HumanoidRootPart")
-
-			if humanoid and root then
-				local state = humanoid:GetState()
-				if state == Enum.HumanoidStateType.Jumping or state == Enum.HumanoidStateType.Freefall then
-					RunService.Heartbeat:Wait() -- ensures physics applies correctly
-					root.Velocity = Vector3.new(0, _G.JumpPower, 0)
-				end
-			end
-		end
-	end)
+-- Function to apply WalkSpeed and JumpPower
+local function applyMovement(character)
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.WalkSpeed = walkSpeedValue
+        humanoid.JumpPower = jumpPowerValue
+    end
 end
 
--- Wait for character and respawn handling
-if Player.Character then
-	SetupInfiniteJump()
-end
-Player.CharacterAdded:Connect(function()
-	task.wait(1)
-	SetupInfiniteJump()
+-- Freeze WalkSpeed & JumpPower every frame
+RunService.RenderStepped:Connect(function()
+    local character = LocalPlayer.Character
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = walkSpeedValue
+            humanoid.JumpPower = jumpPowerValue
+        end
+    end
 end)
 
-   end,
-})
- 
-        local Slider = MainTab:CreateSlider({
-   Name = "WalkSpeed",
-   Range = {16, 100},
-   Increment = 1,
-   Suffix = "Speed",
-   CurrentValue = 16,
-   Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
-   end,
+-- Apply movement on respawn
+LocalPlayer.CharacterAdded:Connect(function(char)
+    task.wait(0.5)
+    applyMovement(char)
+end)
+
+-- WalkSpeed Slider
+MainTab:CreateSlider({
+    Name = "WalkSpeed",
+    Range = {16, 100},
+    Increment = 1,
+    Suffix = "Speed",
+    CurrentValue = walkSpeedValue,
+    Flag = "Slider1",
+    Callback = function(Value)
+        walkSpeedValue = Value
+        if LocalPlayer.Character then
+            applyMovement(LocalPlayer.Character)
+        end
+    end,
 })
 
-		local Button = MainTab:CreateButton({
-   Name = "BluVelosity (q)",
-   Callback = function()
-   		loadstring(game:HttpGet("https://pastebin.com/raw/VDxFA1Ze"))()
-   end,
+-- JumpPower Slider
+MainTab:CreateSlider({
+    Name = "JumpPower",
+    Range = {0, 300},
+    Increment = 2,
+    Suffix = "Stuts",
+    CurrentValue = jumpPowerValue,
+    Flag = "Slider2",
+    Callback = function(Value)
+        jumpPowerValue = Value
+        if LocalPlayer.Character then
+            applyMovement(LocalPlayer.Character)
+        end
+    end,
 })
- 
+
         local Button = MainTab:CreateButton({
    Name = "Fly Gui",
    Callback = function()
@@ -364,17 +371,6 @@ end)
    end,
 })
  
-        local Slider = MainTab:CreateSlider({
-   Name = "JumpPower",
-   Range = {0, 300},
-   Increment = 2,
-   Suffix = "Stuts",
-   CurrentValue = 50,
-   Flag = "Slider2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
-          game.Players.LocalPlayer.Character.Humanoid.JumpPower= (Value)
-   end,
-})
  
         local Button = MainTab:CreateButton({
    Name = "Tp on click (Press X to tp)",
@@ -406,97 +402,6 @@ end)
 
 
         local Section = Misc:CreateSection("Random stuff")
- 
-        local Button = Misc:CreateButton({
-   Name = "Loop Health Safe (SemiGod mode)",
-   Callback = function()
-                    local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-
-local godmodeEnabled = false
-
--- Toggle Godmode with G key
-game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.G then
-        godmodeEnabled = not godmodeEnabled
-        if godmodeEnabled then
-            print("Godmode: ON")
-            -- Auto heal loop
-            task.spawn(function()
-                while godmodeEnabled and humanoid and humanoid.Health > 0 do
-                    if humanoid.Health < humanoid.MaxHealth then
-                        humanoid.Health = humanoid.MaxHealth
-                    end
-                    task.wait(0.2)
-                end
-            end)
-        else
-            print("Godmode: OFF")
-        end
-    end
-end)
-
--- Update references on respawn
-player.CharacterAdded:Connect(function(char)
-    character = char
-    humanoid = character:WaitForChild("Humanoid")
-end)
-
-    end,
-})
-
-local Button = Misc:CreateButton({
-   Name = "ForceField",
-   Callback = function()
-   local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-
-local forceFieldEnabled = false
-local forceFieldInstance = nil
-
-local function toggleForceField()
-    local char = player.Character
-    if forceFieldEnabled then
-        -- Remove existing ForceField
-        if char and char:FindFirstChildOfClass("ForceField") then
-            char:FindFirstChildOfClass("ForceField"):Destroy()
-        end
-        forceFieldInstance = nil
-        forceFieldEnabled = false
-        print("ForceField: OFF")
-    else
-        -- Add ForceField
-        if char and not char:FindFirstChildOfClass("ForceField") then
-            forceFieldInstance = Instance.new("ForceField")
-            forceFieldInstance.Parent = char
-        end
-        forceFieldEnabled = true
-        print("ForceField: ON")
-    end
-end
-
-game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.F then
-        toggleForceField()
-    end
-end)
-
--- Reapply ForceField on respawn if enabled
-player.CharacterAdded:Connect(function(char)
-    character = char
-    if forceFieldEnabled then
-        if not char:FindFirstChildOfClass("ForceField") then
-            forceFieldInstance = Instance.new("ForceField")
-            forceFieldInstance.Parent = char
-        end
-    end
-end)
-
-   end,
-})
         
        -- NOCLIP
 local noclipEnabled = false
@@ -549,14 +454,14 @@ Misc:CreateToggle({
     Callback = toggleFullBright
 })
  
-                local Button = Misc:CreateButton({
+                local Button = Useful:CreateButton({
    Name = "Anti Kick (client Sided)",
    Callback = function()
            loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Anti-Kick/main/Anti-Kick.lua"))()
    end,
 })
  
-        local Button = Misc:CreateButton({
+        local Button = Useful:CreateButton({
    Name = "Unban VC",
    Callback = function()
            voiceChatService = game:GetService("VoiceChatService")
@@ -564,11 +469,53 @@ voiceChatService:joinVoice()
    end,
 })
  
-        local Button = Misc:CreateButton({
-   Name = "ESP",
-   Callback = function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexDevlpr/Simple-ESP-using-Highlight-Roblox-/main/Minified_ver.lua"))()
-   end,
+        -- Global ESP toggle
+_G.ESP = false
+local ESPColor = Color3.fromRGB(50, 138, 220) -- Bluu color
+
+-- Services
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Function to add highlight to a character
+local function addHighlight(character)
+    if not character:FindFirstChild("Highlight") then
+        local highlight = Instance.new("Highlight")
+        highlight.FillTransparency = 1
+        highlight.OutlineColor = ESPColor
+        highlight.Parent = character
+    end
+end
+
+-- Update highlights every frame
+RunService.RenderStepped:Connect(function()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            addHighlight(player.Character)
+            local highlight = player.Character:FindFirstChild("Highlight")
+            if highlight then
+                highlight.Enabled = _G.ESP
+                highlight.OutlineColor = ESPColor
+            end
+        end
+    end
+end)
+
+-- Automatically add highlight for players joining later
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        addHighlight(character)
+    end)
+end)
+
+-- Toggle via your Misc tab
+Misc:CreateToggle({
+    Name = "ESP",
+    CurrentValue = false,
+    Callback = function(Value)
+        _G.ESP = Value
+    end
 })
  
         local Button = Misc:CreateButton({
@@ -613,7 +560,6 @@ local Button = ScriptsTab:CreateButton({
        loadstring(game:HttpGet("https://raw.githubusercontent.com/agreed69-scripts/open-src-scripts/refs/heads/main/Universal%20Aimbot.lua",true))()
     end,
 })
-        local Utility = Misc:CreateSection("Utility")
  
         local Button = Misc:CreateButton({
    Name = "Check FPS and ping",
@@ -719,269 +665,143 @@ end)
  
    end,
 })
-local Button = Misc:CreateButton({
-   Name = "Esp Npc Tools Models etc...",
-   Callback = function()
-   -- ESP para Tools y Models con ProximityPrompt
+
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
-local StarterGui = game:GetService("StarterGui")
- 
-local ESPEnabled = true -- toggle para activar/desactivar
- 
--- Función para crear highlight en un item
-local function highlightItem(item)
-    if item:IsA("BasePart") or item:IsA("Model") then
-        if item:IsA("Model") then
-            if not item.PrimaryPart then
-                item.PrimaryPart = item:FindFirstChildWhichIsA("BasePart")
-            end
-            item = item.PrimaryPart
-        end
-        if not item:FindFirstChild("ESP_Highlight") then
-            local highlight = Instance.new("Highlight")
-            highlight.Name = "ESP_Highlight"
-            highlight.Adornee = item
-            highlight.FillColor = Color3.fromRGB(121, 156, 208) -- azul #799CD0
-            highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-            highlight.Parent = item
+local LocalPlayer = Players.LocalPlayer
+
+-- Function to set HP to max
+local function MaxHealth(character)
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.MaxHealth = 999999
+            humanoid.Health = 999999
         end
     end
 end
- 
--- Loop de ESP
-RunService.RenderStepped:Connect(function()
-    if ESPEnabled then
-        for _, obj in pairs(Workspace:GetDescendants()) do
-            if obj:IsA("Tool") then
-                highlightItem(obj.Handle or obj)
-            elseif obj:IsA("Model") and obj:FindFirstChildWhichIsA("ProximityPrompt") then
-                highlightItem(obj)
-            end
-        end
-    else
-        -- Limpiar ESP si se desactiva
-        for _, obj in pairs(Workspace:GetDescendants()) do
-            local h = obj:FindFirstChild("ESP_Highlight")
-            if h then h:Destroy() end
-        end
+
+-- Automatically apply max HP on respawn
+LocalPlayer.CharacterAdded:Connect(function(character)
+    task.wait(0.5) -- wait for character to load
+    if _G.GodmodeHP then
+        MaxHealth(character)
     end
 end)
- 
--- Notificación al ejecutar
-StarterGui:SetCore("SendNotification", {
-    Title = "ESP Activated",
-    Text = "HighLighting tools",
-    Duration = 3
+
+-- Rayfield toggle
+Misc:CreateToggle({
+    Name = "Godmode HP",
+    CurrentValue = false,
+    Callback = function(Value)
+        _G.GodmodeHP = Value
+
+        -- Create continuous loop only once
+        if not _G.GodmodeLoop then
+            _G.GodmodeLoop = true
+            spawn(function()
+                while true do
+                    task.wait(0.1) -- check 10 times per second
+                    if _G.GodmodeHP then
+                        MaxHealth(LocalPlayer.Character)
+                    end
+                end
+            end)
+        end
+
+        -- Immediately restore HP if toggle is turned on
+        if _G.GodmodeHP then
+            MaxHealth(LocalPlayer.Character)
+        end
+    end
 })
- 
-   end,
-})
- 
+
+
         local Button = Misc:CreateButton({
    Name = "Restore Live",
    Callback = function()
-           -- Heal Once Script (para tu simulador de exploits)
--- Solo cura al jugador una vez al ejecutarlo
- 
-local player = game.Players.LocalPlayer
- 
-local function healOnce()
-    local char = player.Character
-    if char then
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if hum and hum.MaxHealth > 0 then
-            hum.Health = hum.MaxHealth
+
+            -- Get the local player
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Function to restore full health
+local function RestoreFullHealth()
+    local character = LocalPlayer.Character
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.Health = humanoid.MaxHealth
         end
     end
 end
- 
--- Ejecutar la curación inmediata
-healOnce()
+
+-- Example usage
+RestoreFullHealth()
  
    end,
 })
- 
-        local Button = Misc:CreateButton({
-   Name = "Invisiblity v2 (z toggle)",
-   Callback = function()
-           --// Script: Invisibility Toggle con tecla Z
--- Tecla: Z
- 
-local player = game.Players.LocalPlayer
-local userInput = game:GetService("UserInputService")
-local sound = Instance.new("Sound", player:WaitForChild("PlayerGui"))
-sound.SoundId = "rbxassetid://942127495"
-sound.Volume = 1
- 
--- Estado global para mantener toggle aunque re-ejecutes
-if _G.invis_on == nil then
-    _G.invis_on = false
-end
- 
-local function setTransparency(character, transparency)
-    for _, part in pairs(character:GetDescendants()) do
-        if part:IsA("BasePart") or part:IsA("Decal") then
-            part.Transparency = transparency
+
+local InvisToggle = Misc:CreateToggle({
+    Name = "Invisibility v2",
+    CurrentValue = false,
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        local sound = Instance.new("Sound", player:WaitForChild("PlayerGui"))
+        sound.SoundId = "rbxassetid://942127495"
+        sound.Volume = 1
+
+        local function setTransparency(character, transparency)
+            for _, part in pairs(character:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("Decal") then
+                    part.Transparency = transparency
+                end
+            end
         end
-    end
-end
- 
-local function toggleInvisibility()
-    _G.invis_on = not _G.invis_on
-    sound:Play()
- 
-    if _G.invis_on then
-        local savedpos = player.Character.HumanoidRootPart.CFrame
-        task.wait()
-        player.Character:MoveTo(Vector3.new(-25.95, 84, 3537.55))
-        task.wait(0.15)
- 
-        local Seat = Instance.new("Seat", workspace)
-        Seat.Anchored = false
-        Seat.CanCollide = false
-        Seat.Name = "invischair"
-        Seat.Transparency = 1
-        Seat.Position = Vector3.new(-25.95, 84, 3537.55)
- 
-        local Weld = Instance.new("Weld", Seat)
-        Weld.Part0 = Seat
-        Weld.Part1 = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso")
- 
-        task.wait()
-        Seat.CFrame = savedpos
-        setTransparency(player.Character, 0.5)
- 
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Invis ON",
-            Duration = 3,
-            Text = "Now you are invisible"
-        })
-    else
-        local invisChair = workspace:FindFirstChild("invischair")
-        if invisChair then invisChair:Destroy() end
-        setTransparency(player.Character, 0)
- 
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Invis OFF",
-            Duration = 3,
-            Text = "Now you are visible"
-        })
-    end
-end
- 
--- Toggle con tecla Z
-userInput.InputBegan:Connect(function(input, gpe)
-    if not gpe and input.KeyCode == Enum.KeyCode.Z then
-        toggleInvisibility()
-    end
-end)
- 
--- También toggle inmediato al ejecutar
-toggleInvisibility()
- 
-   end,
-})
 
-local Button = Misc:CreateButton({
-   Name = "Bring all tools and models with PP",
-   Callback = function()
-           -- 🔹 Script: Traer todos los Tools y Modelos con Handle + ProximityPrompt hacia el jugador
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local root = character:WaitForChild("HumanoidRootPart")
+        if Value then
+            -- Invis ON
+            local savedpos = player.Character.HumanoidRootPart.CFrame
+            task.wait()
+            player.Character:MoveTo(Vector3.new(-25.95, 84, 3537.55))
+            task.wait(0.15)
 
--- Función para traer objetos
-local function bringObject(obj)
-	if obj:IsA("Tool") or (obj:IsA("Model") and obj:FindFirstChild("Handle")) then
-		obj:PivotTo(root.CFrame + Vector3.new(0, 5, 0)) -- Los trae justo arriba tuyo
-	elseif obj:IsA("BasePart") and obj:FindFirstChildOfClass("ProximityPrompt") then
-		obj.CFrame = root.CFrame + Vector3.new(0, 5, 0)
-	end
-end
+            local Seat = Instance.new("Seat", workspace)
+            Seat.Anchored = false
+            Seat.CanCollide = false
+            Seat.Name = "invischair"
+            Seat.Transparency = 1
+            Seat.Position = Vector3.new(-25.95, 84, 3537.55)
 
--- Buscar en Workspace
-for _, obj in pairs(workspace:GetDescendants()) do
-	bringObject(obj)
-end
+            local Weld = Instance.new("Weld", Seat)
+            Weld.Part0 = Seat
+            Weld.Part1 = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso")
 
--- 🔁 Auto detectar nuevos objetos
-workspace.DescendantAdded:Connect(function(obj)
-	task.wait(0.2)
-	bringObject(obj)
-end)
+            task.wait()
+            Seat.CFrame = savedpos
+            setTransparency(player.Character, 0.5)
 
--- 🔊 Notificación y Sonido
-game.StarterGui:SetCore("SendNotification", {
-	Title = "Bring Items",
-	Text = "All Tools & Prompt Objects have been teleported!",
-	Duration = 5
-})
-
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://12222225" -- Sonido simple
-sound.Volume = 3
-sound.Parent = root
-sound:Play()
-   end,
-})
-        
-        local Button = MainTab:CreateButton({
-   Name = "Velocity Boost (C)",
-   Callback = function()
-           --// Script: Speed Boost Toggle
--- Tecla: C
- 
-local player = game.Players.LocalPlayer
-local userInput = game:GetService("UserInputService")
-local sound = Instance.new("Sound", player:WaitForChild("PlayerGui"))
-sound.SoundId = "rbxassetid://942127495"
-sound.Volume = 1
- 
-local defaultSpeed = 16
-local boostedSpeed = 48
-local isSpeedBoosted = false
- 
-local function toggleSpeedBoost()
-    isSpeedBoosted = not isSpeedBoosted
-    sound:Play()
- 
-    local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
-    if humanoid then
-        if isSpeedBoosted then
-            humanoid.WalkSpeed = boostedSpeed
+            sound:Play()
             game.StarterGui:SetCore("SendNotification", {
-                Title = "Speed ON",
+                Title = "Invis ON",
                 Duration = 3,
-                Text = "Velocidad: " .. boostedSpeed
+                Text = "Now you are invisible"
             })
         else
-            humanoid.WalkSpeed = defaultSpeed
+            -- Invis OFF
+            local invisChair = workspace:FindFirstChild("invischair")
+            if invisChair then invisChair:Destroy() end
+            setTransparency(player.Character, 0)
+
+            sound:Play()
             game.StarterGui:SetCore("SendNotification", {
-                Title = "Speed OFF",
+                Title = "Invis OFF",
                 Duration = 3,
-                Text = "Velocidad: " .. defaultSpeed
+                Text = "Now you are visible"
             })
         end
     end
-end
- 
-userInput.InputBegan:Connect(function(input, gpe)
-    if not gpe and input.KeyCode == Enum.KeyCode.C then
-        toggleSpeedBoost()
-    end
-end)
- 
--- Reset al respawn
-player.CharacterAdded:Connect(function(character)
-    isSpeedBoosted = false
-    local humanoid = character:WaitForChild("Humanoid")
-    humanoid.WalkSpeed = defaultSpeed
-end)
- 
-   end,
 })
+
  
         local Trolling = Window:CreateTab("Trolling", 4483362458) -- Title, Image
         local Section = Trolling:CreateSection("Random stuff")
