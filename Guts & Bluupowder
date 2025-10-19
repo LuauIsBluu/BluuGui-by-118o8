@@ -377,9 +377,9 @@ MainTab:CreateToggle({
 
 local Section = MainTab:CreateSection("ESP")
 
-local LocalPlayer = game:GetService("Players").LocalPlayer
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 local Workspace = game:GetService("Workspace")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --========================
 -- ESP SETTINGS
@@ -399,9 +399,13 @@ local colors = {
 }
 
 local MAX_DISTANCE = 40
-local UPDATE_INTERVAL = 0.7
+local UPDATE_INTERVAL = 0.5 -- slightly faster for smoother ESP
 
+--========================
+-- ZOMBIE TYPE DETECTION
+--========================
 local function getZombieType(zombie)
+    if not zombie then return nil end
     if zombie:FindFirstChild("Barrel") then
         return "Bomber"
     elseif zombie:FindFirstChild("Whale Oil Lantern") then
@@ -414,38 +418,47 @@ local function getZombieType(zombie)
     return nil
 end
 
+--========================
+-- ESP UPDATE FUNCTION
+--========================
 local function updateESP()
     local char = LocalPlayer.Character
     local root = char and char:FindFirstChild("HumanoidRootPart")
     if not root then return end
 
     for _, zombie in pairs(Workspace:GetChildren()) do
-        if not zombie:FindFirstChild("HumanoidRootPart") then continue end
-        local distance = (root.Position - zombie.HumanoidRootPart.Position).Magnitude
-        if distance > MAX_DISTANCE then continue end
-
-        local zType = getZombieType(zombie)
-        if zType and espToggles[zType] then
-            local hl = zombie:FindFirstChild("ESP_Highlight")
-            if not hl then
-                hl = Instance.new("Highlight")
-                hl.Name = "ESP_Highlight"
-                hl.Adornee = zombie
-                hl.FillColor = colors[zType]
-                hl.OutlineColor = Color3.new(0,0,0)
-                hl.FillTransparency = 0.3
-                hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                hl.Parent = zombie
-            else
-                hl.FillColor = colors[zType]
+        local hrp = zombie:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local distance = (root.Position - hrp.Position).Magnitude
+            if distance <= MAX_DISTANCE then
+                local zType = getZombieType(zombie)
+                if zType and espToggles[zType] then
+                    local hl = zombie:FindFirstChild("ESP_Highlight")
+                    if not hl then
+                        hl = Instance.new("Highlight")
+                        hl.Name = "ESP_Highlight"
+                        hl.Adornee = zombie
+                        hl.FillColor = colors[zType]
+                        hl.OutlineColor = Color3.new(0, 0, 0)
+                        hl.FillTransparency = 0.3
+                        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                        hl.Parent = zombie
+                    else
+                        hl.FillColor = colors[zType] -- update color dynamically
+                    end
+                elseif zombie:FindFirstChild("ESP_Highlight") then
+                    zombie.ESP_Highlight:Destroy() -- remove highlight if toggle off
+                end
+            elseif zombie:FindFirstChild("ESP_Highlight") then
+                zombie.ESP_Highlight:Destroy() -- remove highlight if out of range
             end
-        elseif zombie:FindFirstChild("ESP_Highlight") then
-            zombie.ESP_Highlight:Destroy()
         end
     end
 end
 
--- ESP loop
+--========================
+-- ESP LOOP
+--========================
 task.spawn(function()
     while true do
         task.wait(UPDATE_INTERVAL)
@@ -454,39 +467,18 @@ task.spawn(function()
 end)
 
 --========================
--- Rayfield Toggles
+-- RAYFIELD TOGGLES
 --========================
-MainTab:CreateToggle({
-    Name = "Runner ESP",
-    CurrentValue = false,
-    Callback = function(value)
-        espToggles.Runner = value
-    end
-})
+for zType, _ in pairs(espToggles) do
+    MainTab:CreateToggle({
+        Name = zType .. " ESP",
+        CurrentValue = false,
+        Callback = function(value)
+            espToggles[zType] = value
+        end
+    })
+end
 
-MainTab:CreateToggle({
-    Name = "Bomber ESP",
-    CurrentValue = false,
-    Callback = function(value)
-        espToggles.Bomber = value
-    end
-})
-
-MainTab:CreateToggle({
-    Name = "Igniter ESP",
-    CurrentValue = false,
-    Callback = function(value)
-        espToggles.Igniter = value
-    end
-})
-
-MainTab:CreateToggle({
-    Name = "Cuirassier ESP",
-    CurrentValue = false,
-    Callback = function(value)
-        espToggles.Cuirassier = value
-    end
-})
 
 local PlayerSection = MainTab:CreateSection("Player ESP")
 
@@ -1297,6 +1289,13 @@ aimConn = RunService.RenderStepped:Connect(function(dt)
     Camera.CFrame = newCFrame
 end)
 
+Rayfield:Notify({
+   Title = "Guts & Bluupowder",
+   Content = "Loaded sucefuly",
+   Duration = 3.1,
+   Image = 4483362458,
+})
+
 -- Optional cleanup function (call if you unload script)
 local function cleanupAimbot()
     if aimConn then
@@ -1309,11 +1308,3 @@ end
 return {
     cleanup = cleanupAimbot
 }
-
-
-Rayfield:Notify({
-   Title = "Guts & Bluupowder",
-   Content = "Loaded sucefuly",
-   Duration = 3.1,
-   Image = 4483362458,
-})
