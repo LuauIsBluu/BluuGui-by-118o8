@@ -454,20 +454,6 @@ Misc:CreateToggle({
     Callback = toggleFullBright
 })
  
-                local Button = Useful:CreateButton({
-   Name = "Anti Kick (client Sided)",
-   Callback = function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-118o8/refs/heads/main/Anti%20Kick"))()
-   end,
-})
- 
-        local Button = Useful:CreateButton({
-   Name = "Unban VC",
-   Callback = function()
-           voiceChatService = game:GetService("VoiceChatService")
-voiceChatService:joinVoice()
-   end,
-})
  
         -- Global ESP toggle
 _G.ESP = false
@@ -1850,6 +1836,21 @@ for k, v in pairs(getgc(true)) do
 		}
 	end
 end
+   end,
+})
+
+local Button = Useful:CreateButton({
+   Name = "Anti Kick (client Sided)",
+   Callback = function()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by-118o8/refs/heads/main/Anti%20Kick"))()
+   end,
+})
+ 
+        local Button = Useful:CreateButton({
+   Name = "Unban VC",
+   Callback = function()
+           voiceChatService = game:GetService("VoiceChatService")
+voiceChatService:joinVoice()
    end,
 })
 
