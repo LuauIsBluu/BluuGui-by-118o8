@@ -183,7 +183,7 @@ end)
 })
 
 		local Button = MainTab:CreateButton({
-   Name = "BluVelosity (q)",
+   Name = "c00lVelosity (q)",
    Callback = function()
    		loadstring(game:HttpGet("https://pastebin.com/raw/VDxFA1Ze"))()
    end,
@@ -197,7 +197,7 @@ local STARTERGUI = game:GetService("StarterGui")
 
 if game:GetService("ReplicatedStorage"):FindFirstChild("BZn2q91BzN") then
 STARTERGUI:SetCore("SendNotification",{
-        Title = "BluuGui fly",
+        Title = "c00lgui fly",
         Text = "Script is already running",
          Icon = "rbxassetid://278315432",
          Duration = 4
@@ -228,7 +228,7 @@ end
 local VdbwjS = Instance.new("StringValue",game:GetService("ReplicatedStorage"))
 VdbwjS.Name = "BZn2q91BzN"
 
-Notify("BluuGui fly", 5)
+Notify("c00lgui fly", 5)
 
 local plr = game:GetService"Players"
 local Lp = plr.LocalPlayer
@@ -1558,7 +1558,7 @@ loadstring(game:HttpGet("https://gist.githubusercontent.com/Tesker-103/ed48b3ae8
    end,
 })
 
-local Button = Tab:CreateButton({
+local Button = Fun:CreateButton({
    Name = "Delete gui",
    Callback = function()
 
@@ -1712,7 +1712,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by
     end,
 })
 
-local Button = UsefulCreateButton({
+local Button = Useful:CreateButton({
    Name = "StrawberryCMD",
    Callback = function()
    
