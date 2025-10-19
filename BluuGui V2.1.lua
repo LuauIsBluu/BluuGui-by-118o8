@@ -8,7 +8,47 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "Coolest Gui ever",
    LoadingSubtitle = "by 118o8",
    ShowText = "BluuGui", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "Ocean", -- Check https://[Log in to view URL]
+   Theme = {
+    TextColor = Color3.fromRGB(240, 240, 240),
+
+    Background = Color3.fromRGB(20, 20, 20), -- main black background
+    Topbar = Color3.fromRGB(25, 25, 25),
+    Shadow = Color3.fromRGB(15, 15, 15),
+
+    NotificationBackground = Color3.fromRGB(119, 156, 208), -- Bluu
+    NotificationActionsBackground = Color3.fromRGB(20, 20, 20), -- black actions
+
+    TabBackground = Color3.fromRGB(119, 156, 208), -- Bluu tabs
+    TabStroke = Color3.fromRGB(100, 140, 190),
+    TabBackgroundSelected = Color3.fromRGB(85, 130, 180), -- darker Bluu for selected
+    TabTextColor = Color3.fromRGB(20, 20, 20), -- dark text on Bluu
+    SelectedTabTextColor = Color3.fromRGB(240, 240, 240), -- light text for contrast
+
+    ElementBackground = Color3.fromRGB(119, 156, 208), -- Bluu elements
+    ElementBackgroundHover = Color3.fromRGB(100, 140, 190),
+    SecondaryElementBackground = Color3.fromRGB(85, 130, 180),
+    ElementStroke = Color3.fromRGB(50, 50, 50),
+    SecondaryElementStroke = Color3.fromRGB(40, 40, 40),
+            
+    SliderBackground = Color3.fromRGB(40, 40, 40), -- black track
+    SliderProgress = Color3.fromRGB(119, 156, 208), -- Bluu progress
+    SliderStroke = Color3.fromRGB(100, 140, 190),
+
+    ToggleBackground = Color3.fromRGB(40, 40, 40), -- black
+    ToggleEnabled = Color3.fromRGB(119, 156, 208), -- Bluu
+    ToggleDisabled = Color3.fromRGB(100, 100, 100),
+    ToggleEnabledStroke = Color3.fromRGB(100, 140, 190),
+    ToggleDisabledStroke = Color3.fromRGB(125, 125, 125),
+    ToggleEnabledOuterStroke = Color3.fromRGB(60, 60, 60),
+    ToggleDisabledOuterStroke = Color3.fromRGB(65, 65, 65),
+
+    DropdownSelected = Color3.fromRGB(119, 156, 208), -- Bluu
+    DropdownUnselected = Color3.fromRGB(40, 40, 40),
+
+    InputBackground = Color3.fromRGB(119, 156, 208), -- Bluu
+    InputStroke = Color3.fromRGB(80, 120, 180),
+    PlaceholderColor = Color3.fromRGB(240, 240, 240)
+}, -- Check https://[Log in to view URL]
  
    ToggleUIKeybind = "B", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
  
