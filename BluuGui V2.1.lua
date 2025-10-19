@@ -1516,13 +1516,10 @@ loadstring(game:HttpGet("https://gist.githubusercontent.com/Tesker-103/ed48b3ae8
    end,
 })
 
-local Button = Tab:CreateButton({
+local Button = Fun:CreateButton({
    Name = "Delete gui",
    Callback = function()
 
---[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
 -- Source Code Skidds
 
 local Players = game:GetService("Players")
@@ -1670,7 +1667,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by
     end,
 })
 
-local Button = UsefulCreateButton({
+local Button = Useful:CreateButton({
    Name = "StrawberryCMD",
    Callback = function()
    
