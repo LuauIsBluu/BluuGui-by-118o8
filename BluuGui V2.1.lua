@@ -1751,7 +1751,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/LuauIsBluu/BluuGui-by
 
 local Section = Useful:CreateSection("Byapass")
 
-local Button = Tab:CreateButton({
+local Button = Useful:CreateButton({
    Name = "Try to delete ani-cheat",
    Callback = function()
 
